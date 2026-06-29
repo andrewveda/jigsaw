@@ -10,7 +10,6 @@
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 body{font-family:'DM Sans',sans-serif;background:#0a0a1a;color:#fff;min-height:100dvh;overflow:hidden;user-select:none}
 
-/* ── TOP NAV BAR ── */
 .top-nav{display:flex;align-items:center;gap:8px;padding:0.55rem 0.75rem;background:#0a0a1a;border-bottom:1px solid #111130;flex-shrink:0}
 .nav-btn{display:flex;align-items:center;gap:5px;padding:5px 10px;background:#12122a;border:1px solid #1e1e45;border-radius:8px;color:#888;font-size:0.68rem;font-weight:600;cursor:pointer;white-space:nowrap;transition:all 0.15s;text-decoration:none;font-family:'DM Sans',sans-serif}
 .nav-btn:active{background:#1e1e45;color:#fff}
@@ -22,16 +21,13 @@ body{font-family:'DM Sans',sans-serif;background:#0a0a1a;color:#fff;min-height:1
 .nav-btn.next-btn:active{background:#2a2a5a}
 .nav-btn.disabled-btn{opacity:0.25;pointer-events:none}
 
-/* ── COMMENTARY ── */
 .commentary{padding:0.5rem 3.5rem 0.5rem 0.9rem;font-size:0.8rem;font-weight:600;color:#FF2D78;min-height:36px;background:#0a0a1a;border-bottom:1px solid #111130;transition:opacity 0.25s;flex-shrink:0;line-height:1.35;text-align:center}
 
-/* ── PROGRESS ── */
 .prog-wrap{padding:0.35rem 0.9rem;background:#0a0a1a;border-bottom:1px solid #111130;flex-shrink:0;display:flex;align-items:center;gap:8px}
 .prog-track{flex:1;height:5px;background:#1e1e45;border-radius:3px;overflow:hidden}
 .prog-fill{height:100%;background:linear-gradient(90deg,#00F5FF,#39FF14);border-radius:3px;width:0%;transition:width 0.4s ease;box-shadow:0 0 6px rgba(57,255,20,0.4)}
 .prog-label{font-size:0.6rem;color:#333;font-weight:700;white-space:nowrap}
 
-/* ── PUZZLE AREA ── */
 .puzzle-screen{display:none;flex-direction:column;height:100dvh;overflow:hidden}
 .mute-btn{position:absolute;top:10px;right:10px;z-index:20;width:36px;height:36px;border-radius:50%;background:rgba(13,13,34,0.85);border:1px solid #2a2a5a;font-size:1rem;cursor:pointer;color:#fff;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(4px);transition:border-color 0.2s,transform 0.12s}
 .mute-btn:active{transform:scale(0.92)}
@@ -41,10 +37,9 @@ body{font-family:'DM Sans',sans-serif;background:#0a0a1a;color:#fff;min-height:1
 .loading-text{font-family:'Press Start 2P',monospace;font-size:0.5rem;color:#444;letter-spacing:2px}
 .puzzle-area{flex:1;overflow:hidden;position:relative;background:#0d0d22;touch-action:none}
 #puzzleCanvas{position:absolute;top:0;left:0;width:100%;height:100%;touch-action:none}
-@keyframes redPulse{0%{box-shadow:inset 0 0 60px rgba(255,0,50,0.85)}100%{box-shadow:inset 0 0 0px rgba(255,0,50,0)}}
+@keyframes redPulse{0%{box-shadow:inset 0 0 60px rgba(255,0,50,0.85)}100%{box-shadow:inset 0 0 0 rgba(255,0,50,0)}}
 .flash-red{animation:redPulse 0.4s ease-out}
 
-/* ── WIN SCREEN ── */
 #winScreen{display:none;flex-direction:column;align-items:center;justify-content:flex-start;min-height:100dvh;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:1.5rem 1.2rem 2.5rem;background:radial-gradient(ellipse at 50% 20%,#0d2a0d 0%,#0a0a1a 70%);text-align:center}
 .win-title{font-family:'Press Start 2P',monospace;font-size:0.9rem;line-height:2.2;color:#39FF14;text-shadow:0 0 20px rgba(57,255,20,0.5);margin-bottom:0.3rem}
 .win-player{font-size:0.85rem;color:#00F5FF;margin-bottom:0.2rem}
@@ -54,8 +49,6 @@ body{font-family:'DM Sans',sans-serif;background:#0a0a1a;color:#fff;min-height:1
 .win-stat{background:#12122a;border:1px solid #1e1e45;border-radius:12px;padding:0.8rem 0.5rem}
 .win-stat-val{font-family:'Press Start 2P',monospace;font-size:0.85rem;color:#FFE600;display:block}
 .win-stat-lbl{font-size:0.65rem;color:#555;margin-top:4px;display:block}
-
-/* Win action buttons */
 .win-actions{display:flex;flex-direction:column;gap:0.7rem;width:100%;max-width:280px}
 .win-btn{padding:0.85rem 1.5rem;font-family:'Press Start 2P',monospace;font-size:0.62rem;letter-spacing:1px;border:none;border-radius:12px;cursor:pointer;transition:transform 0.12s}
 .win-btn:active{transform:scale(0.97)}
@@ -63,23 +56,17 @@ body{font-family:'DM Sans',sans-serif;background:#0a0a1a;color:#fff;min-height:1
 .btn-again{background:#1e1e45;color:#888;border:1px solid #2a2a5a}
 .btn-back{background:#12122a;color:#555;border:1px solid #1e1e45;font-size:0.55rem}
 .win-streak{font-size:0.65rem;color:#FFB327;margin-bottom:0.6rem}
-
-/* Category colour badge on win */
 .cat-badge{display:inline-block;padding:3px 12px;border-radius:20px;font-size:0.6rem;font-weight:700;margin-bottom:1rem}
 .cat-quotes{background:#3a1a5a;color:#B57BFF}
 .cat-jokes{background:#3a2a00;color:#FFB327}
 .cat-comics{background:#002a3a;color:#00F5FF}
 .cat-thirukural{background:#3a0d0d;color:#FF6B6B}
-
-/* Slide‑in transition for next puzzle */
-@keyframes slideIn{from{opacity:0;transform:translateX(30px)}to{opacity:1;transform:translateX(0)}}
-.slide-in{animation:slideIn 0.3s ease both}
 </style>
 </head>
 <body>
 
 <div id="puzzleScreen" class="puzzle-screen">
-  <div class="top-nav" id="topNav">
+  <div class="top-nav">
     <a id="backBtn" href="directory.html" class="nav-btn">← Back</a>
     <div class="puzzle-nav-info">
       <div class="puzzle-nav-title" id="navTitle">—</div>
@@ -88,14 +75,11 @@ body{font-family:'DM Sans',sans-serif;background:#0a0a1a;color:#fff;min-height:1
     <button id="prevPuzzleBtn" class="nav-btn prev-btn" onclick="goToPrev()">‹</button>
     <button id="nextPuzzleBtn" class="nav-btn next-btn" onclick="goToNext()">Next ›</button>
   </div>
-
   <div class="commentary" id="commentary">Loading…</div>
-
   <div class="prog-wrap">
     <div class="prog-track"><div class="prog-fill" id="progFill"></div></div>
     <div class="prog-label" id="progLabel">0 / 0</div>
   </div>
-
   <div class="puzzle-area" id="puzzleArea">
     <button class="mute-btn" id="muteBtn" onclick="toggleMute()">🔊</button>
     <div id="loadingOverlay"><div class="spinner"></div><div class="loading-text">LOADING…</div></div>
@@ -123,87 +107,62 @@ body{font-family:'DM Sans',sans-serif;background:#0a0a1a;color:#fff;min-height:1
 
 <script src="puzzles.js"></script>
 <script>
-/* ═══════════════════════════════
-   URL PARAMS — read config
-═══════════════════════════════ */
-// REPLACE the whole URL PARAMS block with this:
-const _id = location.hash.slice(1) || "";
-const _puzzle = PUZZLES.find(p => p.id === _id) || PUZZLES[0];
+/* ═══════════════════════════════════════════════════
+   CONFIG — read puzzle by hash id, look up in PUZZLES
+   FIX: no long URL params; everything from puzzles.js
+═══════════════════════════════════════════════════ */
+const PUZZLE_ID   = location.hash.slice(1) || (PUZZLES[0] && PUZZLES[0].id);
+const _puz        = PUZZLES.find(p => p.id === PUZZLE_ID) || PUZZLES[0];
 
-const IMAGE_URL    = _puzzle.imageUrl;
-const COLS         = _puzzle.cols;
-const ROWS         = _puzzle.rows;
-const PUZZLE_ID    = _puzzle.id;
-const PUZZLE_TITLE = _puzzle.title;
-const PUZZLE_AUTHOR= _puzzle.author;
-const PUZZLE_CAT   = _puzzle.category;
-const PUZZLE_DIFF  = _puzzle.difficulty;
-const PLAYER_NAME  = localStorage.getItem("pq_name") || "Player";
-const PLAYER_DEPT  = localStorage.getItem("pq_dept") || "";
+const IMAGE_URL   = _puz.imageUrl;
+const COLS        = _puz.cols;
+const ROWS        = _puz.rows;
+const PUZZLE_TITLE  = _puz.title;
+const PUZZLE_AUTHOR = _puz.author;
+const PUZZLE_CAT    = _puz.category;
+const PUZZLE_DIFF   = _puz.difficulty;
+const PLAYER_NAME   = localStorage.getItem("pq_name") || "Player";
+const PLAYER_DEPT   = localStorage.getItem("pq_dept") || "";
 
-const idx   = PUZZLES.findIndex(p => p.id === _id);
-const PREV_ID = idx > 0 ? PUZZLES[idx - 1].id : "";
-const NEXT_ID = idx < PUZZLES.length - 1 ? PUZZLES[idx + 1].id : "";
+const _idx  = PUZZLES.findIndex(p => p.id === PUZZLE_ID);
+const PREV_ID = _idx > 0               ? PUZZLES[_idx - 1].id : "";
+const NEXT_ID = _idx < PUZZLES.length-1 ? PUZZLES[_idx + 1].id : "";
+
+const SUPABASE_URL = "https://yellow-lab-4999.andrewveda.workers.dev/functions/v1/logQuest";
+const TOTAL = COLS * ROWS;
+
 /* ═══════════════════════════════
-   PROGRESS helpers
+   PROGRESS
 ═══════════════════════════════ */
 function getProgress() { try { return JSON.parse(localStorage.getItem("pq_progress")||"{}"); } catch(e) { return {}; } }
 function markSolved(id) { const p=getProgress(); p[id]=true; localStorage.setItem("pq_progress",JSON.stringify(p)); }
 function getSolvedCount() { const p=getProgress(); return PUZZLES.filter(x=>p[x.id]).length; }
 
 /* ═══════════════════════════════
-   NAVIGATION helpers
+   NAVIGATION
 ═══════════════════════════════ */
-function puzzleLink(id) {
-  if (!id) return "";
-  const p = PUZZLES.find(x => x.id === id);
-  if (!p) return "";
-  const idx = PUZZLES.findIndex(x => x.id === id);
-  const prev = idx > 0 ? PUZZLES[idx-1].id : "";
-  const next = idx < PUZZLES.length-1 ? PUZZLES[idx+1].id : "";
-  const params = new URLSearchParams({
-    id:p.id, title:p.title, author:p.author, imageUrl:p.imageUrl,
-    cols:p.cols, rows:p.rows, category:p.category, difficulty:p.difficulty,
-    playerName:PLAYER_NAME, playerDept:PLAYER_DEPT, prevId:prev, nextId:next
-  });
-  return `puzzle.html?${params}`;
-}
+function goToNext() { if (NEXT_ID) location.href = "puzzle.html#" + NEXT_ID; }
+function goToPrev() { if (PREV_ID) location.href = "puzzle.html#" + PREV_ID; }
 
-function goToNext() {
-  if (!NEXT_ID) return;
-  window.location.href = puzzleLink(NEXT_ID);
-}
-function goToPrev() {
-  if (!PREV_ID) return;
-  window.location.href = puzzleLink(PREV_ID);
-}
-
-/* Directory link always carries solved param so directory can mark it */
-function dirLink() {
-  return `directory.html?solved=${PUZZLE_ID}`;
-}
-
-/* ═══════════════════════════════
-   INIT NAV UI
-═══════════════════════════════ */
 function setupNav() {
-  document.getElementById("navTitle").textContent  = PUZZLE_TITLE;
-  document.getElementById("navAuthor").textContent = PUZZLE_AUTHOR;
+  document.getElementById("navTitle").textContent   = PUZZLE_TITLE;
+  document.getElementById("navAuthor").textContent  = PUZZLE_AUTHOR;
   document.title = PUZZLE_TITLE + " · Puzzle Quest";
 
-  document.getElementById("backBtn").href = dirLink();
-  document.getElementById("dirBtnWin").href = dirLink();
+  const dirHref = "directory.html?solved=" + PUZZLE_ID;
+  document.getElementById("backBtn").href   = dirHref;
+  document.getElementById("dirBtnWin").href = dirHref;
 
-  const prevBtn = document.getElementById("prevPuzzleBtn");
-  const nextBtn = document.getElementById("nextPuzzleBtn");
-  if (!PREV_ID) prevBtn.classList.add("disabled-btn"); else prevBtn.classList.remove("disabled-btn");
-  if (!NEXT_ID) { nextBtn.classList.add("disabled-btn"); document.getElementById("nextPuzzleBtnWin").style.display="none"; }
-  else { nextBtn.classList.remove("disabled-btn"); document.getElementById("nextPuzzleBtnWin").style.display="block"; }
+  if (!PREV_ID) document.getElementById("prevPuzzleBtn").classList.add("disabled-btn");
+  if (!NEXT_ID) {
+    document.getElementById("nextPuzzleBtn").classList.add("disabled-btn");
+    document.getElementById("nextPuzzleBtnWin").style.display = "none";
+  }
 
   const catColors = {quotes:"cat-quotes",jokes:"cat-jokes",comics:"cat-comics",thirukural:"cat-thirukural"};
   const catLabels = {quotes:"💬 Quotes",jokes:"😄 Jokes",comics:"🎨 Comics",thirukural:"📖 Thirukkural"};
   const badge = document.getElementById("winCatBadge");
-  badge.className = "cat-badge " + (catColors[PUZZLE_CAT]||"");
+  badge.className  = "cat-badge " + (catColors[PUZZLE_CAT] || "");
   badge.textContent = catLabels[PUZZLE_CAT] || PUZZLE_CAT;
 }
 
@@ -217,7 +176,7 @@ let pieces = [], selectedPiece = null;
 let isDragging = false, dragAnchor = null;
 let startPointerX=0, startPointerY=0, currentPointerX=0, currentPointerY=0;
 const DRAG_THRESHOLD = 7;
-let placed=0, moves=0, startTime=null, timerInterval=null, isMuted=false;
+let placed=0, moves=0, startTime=null, isMuted=false;
 
 /* ═══════════════════════════════
    SPEECH
@@ -227,7 +186,11 @@ let speakTimeout = null;
 function speak(txt) {
   if (isMuted || !synth) return;
   clearTimeout(speakTimeout);
-  speakTimeout = setTimeout(() => { synth.cancel(); const u=new SpeechSynthesisUtterance(txt); u.rate=1.05; u.pitch=1.1; synth.speak(u); }, 80);
+  speakTimeout = setTimeout(() => {
+    synth.cancel();
+    const u = new SpeechSynthesisUtterance(txt);
+    u.rate=1.05; u.pitch=1.1; synth.speak(u);
+  }, 80);
 }
 function toggleMute() {
   isMuted = !isMuted;
@@ -239,26 +202,28 @@ function toggleMute() {
    COMMENTARY
 ═══════════════════════════════ */
 const correctLines = [
-  n=>`Yes! Perfect match! 🦅`, n=>`Snap! That piece is locked! 🔥`,
-  n=>`Found its home! Keep moving ${n}! 🎯`, n=>`Absolute lock! Progressing! ⚡`,
+  ()=>`Yes! Perfect match! 🦅`,
+  ()=>`Snap! That piece is locked! 🔥`,
+  n =>`Found its home! Keep moving ${n}! 🎯`,
+  ()=>`Absolute lock! Progressing! ⚡`,
 ];
 const milestones = {
-  25: n=>`${n} locked 25% done! 🎨`,
-  50: n=>`Half the puzzle locked! 💪`,
-  75: n=>`75% locked! Almost home! 🏁`,
+  25: n=>`${n} locked 25%! 🎨`,
+  50: ()=>`Half the puzzle locked! 💪`,
+  75: ()=>`75% locked! Almost home! 🏁`,
 };
 function setCommentary(txt) {
   const el = document.getElementById("commentary");
-  el.style.opacity=0;
-  setTimeout(()=>{ el.textContent=txt; el.style.opacity=1; }, 180);
+  el.style.opacity = 0;
+  setTimeout(() => { el.textContent = txt; el.style.opacity = 1; }, 180);
   speak(txt);
 }
 
 /* ═══════════════════════════════
-   TIMER
+   TIMER — FIX 7: no dummy interval
 ═══════════════════════════════ */
-function startTimer() { startTime=Date.now(); timerInterval=setInterval(()=>{},500); }
-function elapsed() { return startTime ? Math.floor((Date.now()-startTime)/1000) : 0; }
+function startTimer() { startTime = Date.now(); }
+function elapsed()    { return startTime ? Math.floor((Date.now()-startTime)/1000) : 0; }
 
 /* ═══════════════════════════════
    DOM READY
@@ -273,7 +238,11 @@ document.addEventListener("DOMContentLoaded", () => {
   canvas.addEventListener("touchstart", onDown, {passive:false});
   canvas.addEventListener("touchmove",  onMove, {passive:false});
   canvas.addEventListener("touchend",   onUp,   {passive:false});
-  canvas.addEventListener("click", (e)=>{ if (!selectedPiece) return; const {x,y}=getPos(e); if (!hitPiece(x,y)){selectedPiece=null;drawAll();} }, {passive:false});
+  canvas.addEventListener("click", e => {
+    if (!selectedPiece) return;
+    const {x,y} = getPos(e);
+    if (!hitPiece(x,y)) { selectedPiece=null; drawAll(); }
+  }, {passive:false});
 
   document.getElementById("puzzleScreen").style.display = "flex";
   setupNav();
@@ -285,63 +254,68 @@ document.addEventListener("DOMContentLoaded", () => {
 ═══════════════════════════════ */
 function initPuzzle() {
   pieces=[]; selectedPiece=null; isDragging=false; dragAnchor=null;
-  placed=0; moves=0;
-  clearInterval(timerInterval); startTime=null;
-  TOTAL = COLS * ROWS;
+  placed=0; moves=0; startTime=null;
   document.getElementById("progFill").style.width = "0%";
   document.getElementById("progLabel").textContent = `0 / ${TOTAL}`;
   document.getElementById("loadingOverlay").style.display = "flex";
 
-  if (img && img.complete && img.naturalWidth>0) { buildPuzzle(); return; }
-  img = new Image(); img.crossOrigin="anonymous";
+  /* FIX 6: don't null img on play-again — reuse the already-loaded image */
+  if (img && img.complete && img.naturalWidth > 0) { buildPuzzle(); return; }
+  img = new Image();
+  img.crossOrigin = "anonymous";
   img.onload  = buildPuzzle;
-  img.onerror = ()=>setCommentary("⚠️ Image failed to load.");
+  img.onerror = () => setCommentary("⚠️ Image failed to load.");
   img.src = IMAGE_URL;
 }
 
 /* ═══════════════════════════════
-   BUILD
+   BUILD PIECES & SHUFFLE
+   FIX 1: shuffle until ZERO pieces start in correct position
 ═══════════════════════════════ */
 function buildPuzzle() {
   const area = canvas.parentElement;
   const dpr  = window.devicePixelRatio || 1;
   cw = area.clientWidth; ch = area.clientHeight;
-  canvas.width=cw*dpr; canvas.height=ch*dpr;
-  canvas.style.width=cw+"px"; canvas.style.height=ch+"px";
-  ctx = canvas.getContext("2d"); ctx.scale(dpr,dpr);
+  canvas.width  = cw * dpr; canvas.height = ch * dpr;
+  canvas.style.width = cw+"px"; canvas.style.height = ch+"px";
+  ctx = canvas.getContext("2d"); ctx.scale(dpr, dpr);
 
   const pad=10, imgAR=img.naturalWidth/img.naturalHeight;
   const boardAR=(COLS/ROWS)*imgAR;
   const maxW=cw-pad*2, maxH=ch-pad*2;
   let boardW, boardH;
   if (maxW/maxH > boardAR) { boardH=maxH; boardW=Math.floor(boardH*boardAR); }
-  else { boardW=maxW; boardH=Math.floor(boardW/boardAR); }
+  else                     { boardW=maxW; boardH=Math.floor(boardW/boardAR); }
   pw=Math.floor(boardW/COLS); ph=Math.floor(boardH/ROWS);
   boardX=Math.floor((cw-pw*COLS)/2); boardY=Math.floor((ch-ph*ROWS)/2);
 
+  /* FIX 1: repeat shuffle until NO piece is in its correct grid position */
   let slots;
   do {
-    slots = Array.from({length:TOTAL},(_,i)=>({r:Math.floor(i/COLS),c:i%COLS}));
-    slots.sort(()=>Math.random()-0.5);
-  } while (slots.every((s,i)=>s.r===Math.floor(i/COLS)&&s.c===i%COLS));
+    slots = Array.from({length:TOTAL}, (_,i) => ({r:Math.floor(i/COLS), c:i%COLS}));
+    slots.sort(() => Math.random()-0.5);
+  } while (slots.some((s,i) => s.r===Math.floor(i/COLS) && s.c===i%COLS));
 
-  pieces=[];
-  let idx=0;
-  for (let r=0;r<ROWS;r++) for (let c=0;c<COLS;c++) {
-    const slot=slots[idx++];
-    pieces.push({id:pieces.length,tr:r,tc:c,row:slot.r,col:slot.c,locked:false});
+  pieces = [];
+  let idx = 0;
+  for (let r=0; r<ROWS; r++) {
+    for (let c=0; c<COLS; c++) {
+      const slot = slots[idx++];
+      /* locked:false guaranteed — shuffle ensures no piece starts correct */
+      pieces.push({id:pieces.length, tr:r, tc:c, row:slot.r, col:slot.c, locked:false});
+    }
   }
-  pieces.forEach(p=>{if(p.row===p.tr&&p.col===p.tc)p.locked=true;});
-  placed=pieces.filter(p=>p.locked).length;
+  placed = 0;
   updateProgress();
 
-  document.getElementById("loadingOverlay").style.display="none";
-  drawAll(); startTimer();
-  setTimeout(()=>setCommentary(`${PUZZLE_TITLE} — drag or tap to solve, ${PLAYER_NAME}! 🧩`),400);
+  document.getElementById("loadingOverlay").style.display = "none";
+  drawAll();
+  startTimer();
+  setTimeout(() => setCommentary(`${PUZZLE_TITLE} — drag or tap to solve, ${PLAYER_NAME}! 🧩`), 400);
 }
 
 /* ═══════════════════════════════
-   CLUSTER (single piece)
+   CLUSTER — single piece only
 ═══════════════════════════════ */
 function getCluster(p) { return [p]; }
 
@@ -349,7 +323,7 @@ function getCluster(p) { return [p]; }
    RED FLASH
 ═══════════════════════════════ */
 function triggerRedFlash() {
-  const a=document.getElementById("puzzleArea");
+  const a = document.getElementById("puzzleArea");
   a.classList.remove("flash-red"); void a.offsetWidth; a.classList.add("flash-red");
 }
 
@@ -362,10 +336,10 @@ function drawAll() {
   ctx.strokeStyle="rgba(0,245,255,0.12)"; ctx.lineWidth=1.5;
   ctx.strokeRect(boardX,boardY,pw*COLS,ph*ROWS);
 
-  const draggingCluster=(isDragging&&dragAnchor)?getCluster(dragAnchor):[];
-  const draggingIds=new Set(draggingCluster.map(p=>p.id));
-  let tapClusterIds=new Set();
-  if (!isDragging&&selectedPiece) getCluster(selectedPiece).forEach(p=>tapClusterIds.add(p.id));
+  const draggingCluster = (isDragging&&dragAnchor) ? getCluster(dragAnchor) : [];
+  const draggingIds     = new Set(draggingCluster.map(p=>p.id));
+  const tapClusterIds   = new Set();
+  if (!isDragging && selectedPiece) getCluster(selectedPiece).forEach(p=>tapClusterIds.add(p.id));
 
   for (const p of pieces) if (!draggingIds.has(p.id)) drawPiece(p,0,0,false,tapClusterIds.has(p.id));
   if (draggingCluster.length) {
@@ -374,18 +348,20 @@ function drawAll() {
   }
 }
 
-function drawPiece(p,offsetX,offsetY,isDragged,isTapSelected) {
+function drawPiece(p, offsetX, offsetY, isDragged, isTapSelected) {
   const x=boardX+p.col*pw+offsetX, y=boardY+p.row*ph+offsetY;
   ctx.save(); roundRect(ctx,x,y,pw,ph,4); ctx.clip();
-  const srcW=img.naturalWidth, srcH=img.naturalHeight;
-  ctx.drawImage(img, p.tc*(srcW/COLS), p.tr*(srcH/ROWS), srcW/COLS, srcH/ROWS, x,y,pw,ph);
+  ctx.drawImage(img,
+    p.tc*(img.naturalWidth/COLS), p.tr*(img.naturalHeight/ROWS),
+    img.naturalWidth/COLS, img.naturalHeight/ROWS,
+    x, y, pw, ph);
 
-  if (p.locked&&isTapSelected) {
+  if (p.locked && isTapSelected) {
     ctx.restore(); ctx.save();
     ctx.shadowColor="#39FF14"; ctx.shadowBlur=18;
-    roundRect(ctx,x,y,pw,ph,4); ctx.strokeStyle="rgba(57,255,20,0.9)"; ctx.lineWidth=3; ctx.stroke();
-    ctx.restore(); return;
-  } else if (!p.locked&&(isDragged||isTapSelected)) {
+    roundRect(ctx,x,y,pw,ph,4);
+    ctx.strokeStyle="rgba(57,255,20,0.9)"; ctx.lineWidth=3; ctx.stroke();
+  } else if (!p.locked && (isDragged||isTapSelected)) {
     ctx.strokeStyle="#FFE600"; ctx.lineWidth=3; ctx.stroke();
     ctx.fillStyle="rgba(255,230,0,0.15)"; ctx.fillRect(x,y,pw,ph);
   } else if (!p.locked) {
@@ -402,74 +378,181 @@ function roundRect(ctx,x,y,w,h,r) {
   ctx.lineTo(x,y+r); ctx.quadraticCurveTo(x,y,x+r,y); ctx.closePath();
 }
 
-/* ═══════════════════════════════
+/* ═══════════════════════════════════════════════════════════════
    EXECUTE MOVE
-═══════════════════════════════ */
-function executeClusterMove(anchor,deltaR,deltaC) {
-  if (deltaR===0&&deltaC===0) return false;
-  const cluster=getCluster(anchor), clusterIds=new Set(cluster.map(p=>p.id));
+   FIX 2: displaced piece landing position validated for all deltas
+   FIX 3: full collision check across cluster + all displaced landings
+   FIX 4: placed = placed + newLocks (no redundant full-array filter)
+═══════════════════════════════════════════════════════════════ */
+function executeClusterMove(anchor, deltaR, deltaC) {
+  if (deltaR===0 && deltaC===0) return false;
 
+  const cluster    = getCluster(anchor);
+  const clusterIds = new Set(cluster.map(p=>p.id));
+
+  /* --- PASS 1: collect displaced pieces and their intended new positions --- */
+  const displacedMap = new Map();
   for (const cp of cluster) {
     const tr=cp.row+deltaR, tc=cp.col+deltaC;
-    if (tr<0||tr>=ROWS||tc<0||tc>=COLS) { triggerRedFlash(); return false; }
-    const occ=pieces.find(p=>p.row===tr&&p.col===tc);
-    if (occ&&occ.locked) { triggerRedFlash(); return false; }
+    const occ = pieces.find(p=>p.row===tr&&p.col===tc&&!clusterIds.has(p.id));
+    if (occ && !displacedMap.has(occ.id)) {
+      /* displaced piece goes back to where the cluster piece came from */
+      displacedMap.set(occ.id, {
+        piece: occ,
+        toR: cp.row,   /* FIX 2: always the cluster piece's original cell */
+        toC: cp.col
+      });
+    }
   }
+
+  /* --- PASS 2: build complete final-position map for ALL moving pieces --- */
+  /* cluster destinations */
+  const finalPositions = new Map();
+  for (const cp of cluster) {
+    finalPositions.set(cp.id, {r: cp.row+deltaR, c: cp.col+deltaC});
+  }
+  /* displaced destinations */
+  for (const [id,{toR,toC}] of displacedMap) {
+    finalPositions.set(id, {r:toR, c:toC});
+  }
+
+  /* --- PASS 3: validate ALL final positions --- */
+  for (const [id,{r,c}] of finalPositions) {
+    /* bounds check */
+    if (r<0||r>=ROWS||c<0||c>=COLS) { triggerRedFlash(); return false; }
+
+    /* FIX 3: check for landing on a locked piece */
+    const occ = pieces.find(p=>p.row===r&&p.col===c);
+    if (occ && occ.locked && !finalPositions.has(occ.id)) { triggerRedFlash(); return false; }
+
+    /* FIX 3: check for two moving pieces landing on the same cell */
+    for (const [id2,pos2] of finalPositions) {
+      if (id2!==id && pos2.r===r && pos2.c===c) { triggerRedFlash(); return false; }
+    }
+  }
+
+  /* --- COMMIT --- */
   moves++;
-
-  const displacedMap=new Map();
-  for (const cp of cluster) {
-    const tr=cp.row+deltaR, tc=cp.col+deltaC;
-    const occ=pieces.find(p=>p.row===tr&&p.col===tc&&!clusterIds.has(p.id));
-    if (occ&&!displacedMap.has(occ.id)) displacedMap.set(occ.id,{row:occ.row,col:occ.col,piece:occ});
-  }
   for (const cp of cluster) { cp.row+=deltaR; cp.col+=deltaC; }
-  for (const [,{row:fromR,col:fromC,piece:dp}] of displacedMap) { dp.row=fromR-deltaR; dp.col=fromC-deltaC; }
+  for (const [,{piece:dp,toR,toC}] of displacedMap) { dp.row=toR; dp.col=toC; }
 
-  let newLocks=0;
-  for (const p of pieces) if (!p.locked&&p.row===p.tr&&p.col===p.tc) { p.locked=true; newLocks++; }
-  placed=pieces.filter(p=>p.locked).length;
+  /* --- LOCK CHECK — FIX 4: increment placed directly, no full rescan --- */
+  let newLocks = 0;
+  for (const p of pieces) {
+    if (!p.locked && p.row===p.tr && p.col===p.tc) { p.locked=true; newLocks++; }
+  }
+  placed += newLocks;
   updateProgress();
 
-  if (newLocks>0) {
+  if (newLocks > 0) {
     confetti({particleCount:25,spread:45,origin:{y:0.5},colors:["#FFE600","#00F5FF","#39FF14"]});
-    const pct=Math.round(placed/TOTAL*100);
-    const prevPct=Math.round((placed-newLocks)/TOTAL*100);
-    const milestone=[25,50,75].find(m=>prevPct<m&&pct>=m);
-    const msg=milestone?milestones[milestone](PLAYER_NAME):correctLines[Math.floor(Math.random()*correctLines.length)](PLAYER_NAME);
+    const pct     = Math.round(placed/TOTAL*100);
+    const prevPct = Math.round((placed-newLocks)/TOTAL*100);
+    const milestone = [25,50,75].find(m => prevPct<m && pct>=m);
+    const msg = milestone
+      ? milestones[milestone](PLAYER_NAME)
+      : correctLines[Math.floor(Math.random()*correctLines.length)](PLAYER_NAME);
     setCommentary(msg);
-    if (placed===TOTAL) setTimeout(showWin,700);
+    if (placed===TOTAL) setTimeout(showWin, 700);
   }
   return true;
 }
 
-/* ═══════════════════════════════
+/* ═══════════════════════════════════════════════════════════════
    POINTER HANDLERS
-═══════════════════════════════ */
+   FIX 5: locked-piece tap uses a separate glowPiece variable,
+           never touches selectedPiece — prevents bleed-through
+═══════════════════════════════════════════════════════════════ */
 function getPos(e) {
-  const rect=canvas.getBoundingClientRect();
+  const rect  = canvas.getBoundingClientRect();
   const scaleX=cw/rect.width, scaleY=ch/rect.height;
-  const src=(e.touches&&e.touches.length)?e.touches[0]:e;
+  const src   = (e.touches&&e.touches.length) ? e.touches[0] : e;
   return {x:(src.clientX-rect.left)*scaleX, y:(src.clientY-rect.top)*scaleY};
 }
+
 function hitPiece(x,y) {
   const col=Math.floor((x-boardX)/pw), row=Math.floor((y-boardY)/ph);
   if (row<0||row>=ROWS||col<0||col>=COLS) return null;
   return pieces.find(p=>p.row===row&&p.col===col)||null;
 }
+
+let glowPiece = null;   /* FIX 5: separate state for locked-piece confirmation glow */
+let glowTimer = null;
+
+function showGlow(p) {
+  clearTimeout(glowTimer);
+  glowPiece = p;
+  drawAll();
+  glowTimer = setTimeout(() => { glowPiece=null; drawAll(); }, 600);
+}
+
+function drawAll() {
+  if (!canvas||!ctx) return;
+  ctx.clearRect(0,0,cw,ch);
+  ctx.strokeStyle="rgba(0,245,255,0.12)"; ctx.lineWidth=1.5;
+  ctx.strokeRect(boardX,boardY,pw*COLS,ph*ROWS);
+
+  const draggingCluster = (isDragging&&dragAnchor) ? getCluster(dragAnchor) : [];
+  const draggingIds     = new Set(draggingCluster.map(p=>p.id));
+
+  /* tap-selected cluster (unlocked pieces only) */
+  const tapClusterIds = new Set();
+  if (!isDragging && selectedPiece) getCluster(selectedPiece).forEach(p=>tapClusterIds.add(p.id));
+
+  for (const p of pieces) {
+    if (!draggingIds.has(p.id)) {
+      /* FIX 5: glow uses glowPiece, completely separate from selectedPiece */
+      const isGlow = glowPiece && p.id===glowPiece.id;
+      drawPiece(p, 0, 0, false, tapClusterIds.has(p.id), isGlow);
+    }
+  }
+  if (draggingCluster.length) {
+    const dx=currentPointerX-startPointerX, dy=currentPointerY-startPointerY;
+    for (const p of draggingCluster) drawPiece(p,dx,dy,true,false,false);
+  }
+}
+
+function drawPiece(p, offsetX, offsetY, isDragged, isTapSelected, isGlow) {
+  const x=boardX+p.col*pw+offsetX, y=boardY+p.row*ph+offsetY;
+  ctx.save(); roundRect(ctx,x,y,pw,ph,4); ctx.clip();
+  ctx.drawImage(img,
+    p.tc*(img.naturalWidth/COLS), p.tr*(img.naturalHeight/ROWS),
+    img.naturalWidth/COLS, img.naturalHeight/ROWS,
+    x, y, pw, ph);
+
+  /* FIX 5: locked glow drawn via isGlow, never via isTapSelected */
+  if (p.locked && isGlow) {
+    ctx.restore(); ctx.save();
+    ctx.shadowColor="#39FF14"; ctx.shadowBlur=18;
+    roundRect(ctx,x,y,pw,ph,4);
+    ctx.strokeStyle="rgba(57,255,20,0.9)"; ctx.lineWidth=3; ctx.stroke();
+  } else if (!p.locked && (isDragged||isTapSelected)) {
+    ctx.strokeStyle="#FFE600"; ctx.lineWidth=3; ctx.stroke();
+    ctx.fillStyle="rgba(255,230,0,0.15)"; ctx.fillRect(x,y,pw,ph);
+  } else if (!p.locked) {
+    ctx.strokeStyle="rgba(255,255,255,0.1)"; ctx.lineWidth=1; ctx.stroke();
+  }
+  ctx.restore();
+}
+
 function onDown(e) {
   e.preventDefault();
   const {x,y}=getPos(e), p=hitPiece(x,y);
   if (!p) return;
-  if (p.locked) { selectedPiece=p; drawAll(); setTimeout(()=>{if(selectedPiece===p){selectedPiece=null;drawAll();}},600); return; }
+  /* FIX 5: locked tap → separate glow path, selectedPiece untouched */
+  if (p.locked) { showGlow(p); return; }
   dragAnchor=p; startPointerX=x; startPointerY=y; currentPointerX=x; currentPointerY=y; isDragging=false;
 }
+
 function onMove(e) {
   if (!dragAnchor) return; e.preventDefault();
   const {x,y}=getPos(e); currentPointerX=x; currentPointerY=y;
-  if (!isDragging&&Math.hypot(x-startPointerX,y-startPointerY)>DRAG_THRESHOLD) { isDragging=true; selectedPiece=null; }
+  if (!isDragging && Math.hypot(x-startPointerX,y-startPointerY)>DRAG_THRESHOLD) {
+    isDragging=true; selectedPiece=null;
+  }
   if (isDragging) drawAll();
 }
+
 function onUp(e) {
   if (!dragAnchor) return; e.preventDefault();
   if (isDragging) {
@@ -478,13 +561,14 @@ function onUp(e) {
     if (deltaCol!==0||deltaRow!==0) executeClusterMove(dragAnchor,deltaRow,deltaCol);
     isDragging=false; dragAnchor=null; drawAll(); return;
   }
+
+  /* TAP path */
   const p=dragAnchor; dragAnchor=null;
   if (!selectedPiece) { selectedPiece=p; drawAll(); return; }
   if (selectedPiece.id===p.id) { selectedPiece=null; drawAll(); return; }
-  const cluster=getCluster(selectedPiece);
-  if (cluster.some(cp=>cp.id===p.id)) { selectedPiece=p; drawAll(); return; }
+  if (getCluster(selectedPiece).some(cp=>cp.id===p.id)) { selectedPiece=p; drawAll(); return; }
   const deltaR=p.row-selectedPiece.row, deltaC=p.col-selectedPiece.col;
-  executeClusterMove(selectedPiece,deltaR,deltaC);
+  executeClusterMove(selectedPiece, deltaR, deltaC);
   selectedPiece=null; drawAll();
 }
 
@@ -492,28 +576,23 @@ function onUp(e) {
    PROGRESS
 ═══════════════════════════════ */
 function updateProgress() {
-  const pct=Math.round(placed/TOTAL*100);
-  document.getElementById("progFill").style.width=pct+"%";
-  document.getElementById("progLabel").textContent=`${placed} / ${TOTAL}`;
+  document.getElementById("progFill").style.width = Math.round(placed/TOTAL*100)+"%";
+  document.getElementById("progLabel").textContent = `${placed} / ${TOTAL}`;
 }
 
 /* ═══════════════════════════════
    WIN
 ═══════════════════════════════ */
 function showWin() {
-  clearInterval(timerInterval);
   markSolved(PUZZLE_ID);
-
   const s=elapsed(), m=Math.floor(s/60), sec=s%60;
   const timeStr=`${m}:${sec.toString().padStart(2,"0")}`;
-  const totalSolved=getSolvedCount();
-  const totalPuzzles=PUZZLES.length;
 
   const end=Date.now()+3000;
   (function frame(){
-    confetti({particleCount:6,angle:60,spread:55,origin:{x:0},colors:["#FFE600","#00F5FF","#39FF14","#FF2D78"]});
+    confetti({particleCount:6,angle:60, spread:55,origin:{x:0},colors:["#FFE600","#00F5FF","#39FF14","#FF2D78"]});
     confetti({particleCount:6,angle:120,spread:55,origin:{x:1},colors:["#FFE600","#00F5FF","#39FF14","#FF2D78"]});
-    if(Date.now()<end) requestAnimationFrame(frame);
+    if (Date.now()<end) requestAnimationFrame(frame);
   }());
 
   document.getElementById("puzzleScreen").style.display="none";
@@ -523,12 +602,11 @@ function showWin() {
   document.getElementById("wTime").textContent=timeStr;
   document.getElementById("wMoves").textContent=moves;
   document.getElementById("winImg").src=img.src;
-  document.getElementById("winStreak").textContent=`🏆 ${totalSolved} of ${totalPuzzles} puzzles solved`;
+  document.getElementById("winStreak").textContent=`🏆 ${getSolvedCount()} of ${PUZZLES.length} puzzles solved`;
 
-  const commentary=NEXT_ID
+  setCommentary(NEXT_ID
     ? `Nailed it, ${PLAYER_NAME}! Tap Next Puzzle to keep going! 🚀`
-    : `Amazing, ${PLAYER_NAME}! That's the last one! You're done! 🎉`;
-  setCommentary(commentary);
+    : `Amazing, ${PLAYER_NAME}! That's the last one! You're done! 🎉`);
 
   sendToSupabase({student_name:PLAYER_NAME,department:PLAYER_DEPT,time_spent:s,moves,quest_id:"Jigsaw-"+PUZZLE_ID});
 }
@@ -538,15 +616,15 @@ async function sendToSupabase(payload) {
   catch(e) { console.warn("Supabase log dropped:",e); }
 }
 
+/* FIX 6: playAgain does NOT null img — reuses the already-loaded image */
 function playAgain() {
   document.getElementById("winScreen").style.display="none";
   document.getElementById("puzzleScreen").style.display="flex";
-  img=null;
   initPuzzle();
 }
 
-window.addEventListener("resize",()=>{
-  if (document.getElementById("puzzleScreen").style.display==="flex"&&img?.complete) buildPuzzle();
+window.addEventListener("resize", () => {
+  if (document.getElementById("puzzleScreen").style.display==="flex" && img?.complete) buildPuzzle();
 });
 </script>
 </body>
