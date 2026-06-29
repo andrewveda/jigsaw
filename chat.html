@@ -1,0 +1,949 @@
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no"/>
+<title>Puzzle Quest</title>
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=DM+Sans:wght@400;700;800&display=swap" rel="stylesheet"/>
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{height:100%}
+body{font-family:'DM Sans',sans-serif;background:#0a0a1a;color:#fff;overflow:hidden;user-select:none}
+
+/* ── TOP NAV ── */
+.top-nav{display:flex;align-items:center;gap:8px;padding:0.55rem 0.75rem;background:#0a0a1a;border-bottom:1px solid #111130;flex-shrink:0}
+.nav-btn{display:flex;align-items:center;gap:5px;padding:5px 10px;background:#12122a;border:1px solid #1e1e45;border-radius:8px;color:#888;font-size:0.68rem;font-weight:700;cursor:pointer;white-space:nowrap;transition:all 0.15s;text-decoration:none;font-family:'DM Sans',sans-serif}
+.nav-btn:active{background:#1e1e45;color:#fff}
+.nav-btn.prev-btn{padding:5px 8px}
+.puzzle-nav-info{flex:1;text-align:center;min-width:0}
+.puzzle-nav-title{font-size:0.65rem;font-weight:700;color:#ccc;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.puzzle-nav-author{font-size:0.55rem;color:#444;margin-top:1px}
+.nav-btn.next-btn{background:#1a1a3a;border-color:#2a2a5a;color:#00F5FF}
+.nav-btn.disabled-btn{opacity:0.25;pointer-events:none}
+
+/* ── CHAT POPUP ── */
+.chat-popup{position:absolute;bottom:14px;left:50%;transform:translateX(-50%) translateY(20px);width:calc(100% - 28px);max-width:340px;background:#12122a;border:1px solid #1e1e45;border-radius:18px;padding:12px 14px 14px;z-index:25;opacity:0;pointer-events:none;transition:opacity 0.35s ease,transform 0.35s ease;box-shadow:0 8px 32px rgba(0,0,0,0.45)}
+.chat-popup.show{opacity:1;transform:translateX(-50%) translateY(0);pointer-events:auto}
+.chat-popup-header{display:flex;align-items:center;gap:6px;margin-bottom:8px}
+.chat-avatar{width:26px;height:26px;border-radius:50%;background:#1e1e45;display:flex;align-items:center;justify-content:center;font-size:0.85rem}
+.chat-bot-name{font-size:0.62rem;font-weight:800;color:#888;letter-spacing:0.5px}
+.chat-bubble-bot{background:#1e1e45;color:#ddd;font-size:0.78rem;font-weight:700;padding:8px 12px;border-radius:14px;border-bottom-left-radius:4px;line-height:1.35;max-width:100%;word-wrap:break-word;margin-bottom:10px;animation:chatPopIn 0.3s ease both}
+@keyframes chatPopIn{from{opacity:0;transform:scale(0.92) translateY(6px)}to{opacity:1;transform:scale(1) translateY(0)}}
+.chat-replies{display:flex;flex-wrap:wrap;gap:6px;animation:chatPopIn 0.3s 0.1s ease both}
+.chat-reply-btn{font-family:'DM Sans',sans-serif;font-size:0.72rem;font-weight:800;padding:6px 12px;border-radius:16px;border:none;cursor:pointer;transition:transform 0.12s,opacity 0.2s;color:#0a0a1a;background:#00F5FF;white-space:nowrap}
+.chat-reply-btn:active{transform:scale(0.93)}
+.chat-reply-btn.used{opacity:0;transform:scale(0.8);pointer-events:none}
+.chat-bubble-you{background:#2a2a5a;color:#fff;font-size:0.78rem;font-weight:700;padding:8px 12px;border-radius:14px;border-bottom-right-radius:4px;line-height:1.35;max-width:100%;word-wrap:break-word;margin-bottom:10px;margin-left:auto;width:fit-content;animation:chatPopIn 0.25s ease both}
+.chat-typing{font-size:0.6rem;color:#555;font-weight:700;margin-bottom:6px;display:flex;align-items:center;gap:4px;animation:chatPopIn 0.2s ease both}
+.chat-typing-dots{display:flex;gap:3px}
+.chat-typing-dots span{width:4px;height:4px;background:#555;border-radius:50%;animation:typingBounce 1.2s infinite}
+.chat-typing-dots span:nth-child(2){animation-delay:0.15s}
+.chat-typing-dots span:nth-child(3){animation-delay:0.3s}
+@keyframes typingBounce{0%,60%,100%{transform:translateY(0)}30%{transform:translateY(-4px)}}
+
+/* ── PROGRESS ── */
+.prog-wrap{padding:0.35rem 0.9rem;background:#0a0a1a;border-bottom:1px solid #111130;flex-shrink:0;display:flex;align-items:center;gap:8px}
+.prog-track{flex:1;height:5px;background:#1e1e45;border-radius:3px;overflow:hidden}
+.prog-fill{height:100%;background:linear-gradient(90deg,#00F5FF,#39FF14);border-radius:3px;width:0%;transition:width 0.4s ease}
+.prog-label{font-size:0.6rem;color:#333;font-weight:700;white-space:nowrap}
+
+/* ── PUZZLE SCREEN ── */
+.puzzle-screen{display:none;flex-direction:column;height:100dvh;overflow:hidden}
+#loadingOverlay{position:absolute;inset:0;background:#0d0d22;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1rem;z-index:10}
+.spinner{width:40px;height:40px;border:3px solid #1e1e45;border-top-color:#00F5FF;border-radius:50%;animation:spin 0.8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.loading-text{font-family:'Press Start 2P',monospace;font-size:0.5rem;color:#444;letter-spacing:2px}
+.puzzle-area{flex:1;overflow:hidden;position:relative;background:#0d0d22;touch-action:none}
+#puzzleCanvas{position:absolute;top:0;left:0;width:100%;height:100%;touch-action:none}
+@keyframes redPulse{0%{box-shadow:inset 0 0 60px rgba(255,0,50,0.85)}100%{box-shadow:inset 0 0 0 rgba(255,0,50,0)}}
+.flash-red{animation:redPulse 0.4s ease-out}
+
+/* ══════════════════════════════════════
+   WIN SCREEN
+══════════════════════════════════════ */
+#winScreen{
+  display:none;
+  flex-direction:column;
+  align-items:center;
+  /* FIX 1 & 17: scroll lives here, body stays overflow:hidden */
+  height:100dvh;
+  overflow-y:auto;
+  -webkit-overflow-scrolling:touch;
+  padding:0 0 3rem;
+  text-align:center;
+  position:relative;
+}
+
+/* FIX 13: category-tinted background set dynamically via --win-a/--win-b */
+.win-bg{
+  position:absolute;inset:0;z-index:0;
+  background:radial-gradient(ellipse at 50% 15%, var(--win-a,#0d2a0d) 0%, #0a0a1a 65%);
+  pointer-events:none;
+}
+
+.win-inner{position:relative;z-index:1;width:100%;max-width:360px;padding:0 1.2rem;margin:0 auto;display:flex;flex-direction:column;align-items:center}
+
+/* FIX 14: entry animation */
+@keyframes winTitleIn{from{opacity:0;transform:translateY(-18px) scale(0.9)}to{opacity:1;transform:translateY(0) scale(1)}}
+@keyframes winFadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+
+.win-crown{font-size:2.6rem;margin-top:1.4rem;animation:winTitleIn 0.5s cubic-bezier(0.22,1,0.36,1) both}
+/* FIX 13: title colour comes from category var */
+.win-title{
+  font-family:'Press Start 2P',monospace;
+  font-size:0.85rem;line-height:2;
+  color:var(--win-accent,#39FF14);
+  text-shadow:0 0 22px var(--win-glow,rgba(57,255,20,0.5));
+  margin-bottom:0.15rem;
+  animation:winTitleIn 0.55s 0.05s cubic-bezier(0.22,1,0.36,1) both;
+}
+.win-player{
+  font-size:0.8rem;font-weight:800;
+  color:var(--win-accent,#39FF14);
+  margin-bottom:0.1rem;
+  animation:winFadeUp 0.4s 0.15s ease both;
+}
+.win-dept{font-size:0.65rem;color:#444;margin-bottom:0.9rem;animation:winFadeUp 0.4s 0.2s ease both}
+
+/* FIX 13: category badge */
+.win-cat-badge{
+  display:inline-flex;align-items:center;gap:5px;
+  padding:4px 14px;border-radius:20px;
+  font-size:0.62rem;font-weight:800;letter-spacing:0.5px;
+  margin-bottom:1rem;
+  background:var(--win-badge-bg,#0d2a0d);
+  color:var(--win-accent,#39FF14);
+  border:1px solid var(--win-accent,#39FF14);
+  animation:winFadeUp 0.4s 0.25s ease both;
+}
+
+/* ── Win image ── */
+.win-img-wrap{
+  position:relative;width:100%;max-width:260px;
+  margin-bottom:0.9rem;
+  animation:winFadeUp 0.45s 0.3s ease both;
+}
+.win-img{
+  width:100%;border-radius:12px;display:block;
+  border:2px solid var(--win-accent,#39FF14);
+  box-shadow:0 0 28px var(--win-glow,rgba(57,255,20,0.35));
+}
+/* FIX 16: share/download icons sit right on the image bottom-right */
+.win-img-actions{
+  position:absolute;bottom:8px;right:8px;
+  display:flex;gap:6px;
+}
+.img-action-btn{
+  width:36px;height:36px;border-radius:50%;
+  background:rgba(10,10,26,0.82);
+  border:1px solid rgba(255,255,255,0.15);
+  color:#fff;font-size:1rem;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  transition:transform 0.12s,background 0.15s;
+  -webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px);
+}
+.img-action-btn:active{transform:scale(0.88)}
+.img-action-btn.share-btn{background:rgba(0,245,255,0.18);border-color:rgba(0,245,255,0.4);color:#00F5FF}
+.img-action-btn.dl-btn{background:rgba(57,255,20,0.15);border-color:rgba(57,255,20,0.4);color:#39FF14}
+/* toast for copy-link fallback */
+.copy-toast{
+  position:fixed;bottom:24px;left:50%;transform:translateX(-50%);
+  background:#12122a;border:1px solid #2a2a5a;border-radius:10px;
+  padding:8px 18px;font-size:0.75rem;font-weight:700;color:#00F5FF;
+  opacity:0;transition:opacity 0.2s;pointer-events:none;z-index:100;white-space:nowrap;
+}
+.copy-toast.show{opacity:1}
+
+/* ── Stats grid ── */
+/* FIX 7: 4 stats */
+.win-stats{
+  display:grid;grid-template-columns:1fr 1fr;
+  gap:8px;width:100%;
+  margin-bottom:0.85rem;
+  animation:winFadeUp 0.4s 0.38s ease both;
+}
+.win-stat{
+  background:#0d0d22;border:1px solid #1a1a3a;
+  border-radius:12px;padding:0.75rem 0.5rem;
+  position:relative;overflow:hidden;
+}
+.win-stat::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:2px;
+  background:var(--win-accent,#39FF14);opacity:0.5;
+}
+.win-stat-val{font-family:'Press Start 2P',monospace;font-size:0.8rem;color:#FFE600;display:block;margin-bottom:3px}
+.win-stat-lbl{font-size:0.58rem;color:#555;font-weight:700;letter-spacing:0.5px;text-transform:uppercase}
+
+/* FIX 18: best score badge */
+.best-badge{
+  display:inline-flex;align-items:center;gap:4px;
+  font-size:0.55rem;font-weight:800;color:#FFB327;
+  background:rgba(255,179,39,0.1);border:1px solid rgba(255,179,39,0.25);
+  border-radius:20px;padding:2px 7px;margin-top:3px;
+}
+
+/* ── FIX 8: Quest progress bar ── */
+.win-quest-bar{
+  width:100%;background:#0d0d22;border:1px solid #1a1a3a;
+  border-radius:12px;padding:0.7rem 0.9rem;
+  margin-bottom:1rem;
+  animation:winFadeUp 0.4s 0.44s ease both;
+}
+.win-quest-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
+.win-quest-label{font-size:0.6rem;font-weight:800;color:#444;letter-spacing:1.5px;text-transform:uppercase}
+.win-quest-val{font-size:0.68rem;font-weight:800;color:var(--win-accent,#39FF14)}
+.win-bar-track{height:6px;background:#1a1a3a;border-radius:3px;overflow:hidden}
+.win-bar-fill{height:100%;border-radius:3px;transition:width 0.8s 0.6s ease;background:linear-gradient(90deg,var(--win-accent,#39FF14),#FFE600)}
+
+/* ══ ACTION BUTTONS ══ */
+.win-actions{
+  display:flex;flex-direction:column;gap:0.65rem;width:100%;
+  animation:winFadeUp 0.4s 0.5s ease both;
+}
+
+/* FIX 9: Next is the hero — huge, glowing, pulsing */
+.btn-next{
+  width:100%;padding:1.05rem 1.5rem;
+  font-family:'Press Start 2P',monospace;font-size:0.72rem;letter-spacing:1.5px;
+  background:var(--win-accent,#39FF14);color:#000;
+  border:none;border-radius:14px;cursor:pointer;
+  font-weight:700;
+  box-shadow:0 0 28px var(--win-glow,rgba(57,255,20,0.5));
+  animation:winFadeUp 0.4s 0.5s ease both, nextPulse 2s 1.2s ease-in-out infinite;
+  transition:transform 0.12s,box-shadow 0.12s;
+}
+.btn-next:active{transform:scale(0.97)}
+@keyframes nextPulse{
+  0%,100%{box-shadow:0 0 28px var(--win-glow,rgba(57,255,20,0.5))}
+  50%{box-shadow:0 0 48px var(--win-glow,rgba(57,255,20,0.85)),0 0 80px var(--win-glow,rgba(57,255,20,0.3))}
+}
+
+/* teaser card — glimpse of next puzzle */
+.next-teaser{
+  width:100%;background:#0d0d22;
+  border:1px solid rgba(255,255,255,0.07);
+  border-left:3px solid var(--win-accent,#39FF14);
+  border-radius:10px;padding:0.65rem 0.9rem;
+  display:flex;align-items:center;gap:10px;
+  cursor:pointer;transition:background 0.15s;
+  text-align:left;
+  animation:winFadeUp 0.4s 0.56s ease both;
+}
+.next-teaser:active{background:#12122a}
+.next-teaser-icon{font-size:1.3rem;flex-shrink:0}
+.next-teaser-body{flex:1;min-width:0}
+.next-teaser-label{font-size:0.55rem;font-weight:800;color:#444;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:2px}
+.next-teaser-title{font-size:0.82rem;font-weight:800;color:#ddd;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.next-teaser-author{font-size:0.62rem;color:#555}
+.next-teaser-arrow{font-size:1.1rem;color:var(--win-accent,#39FF14);flex-shrink:0}
+
+/* secondary buttons row */
+.win-secondary{display:flex;gap:0.6rem;width:100%}
+.btn-again,.btn-back{
+  flex:1;padding:0.8rem 0.5rem;
+  font-family:'Press Start 2P',monospace;font-size:0.52rem;letter-spacing:0.5px;
+  border-radius:12px;cursor:pointer;transition:transform 0.12s,background 0.12s;
+  text-decoration:none;display:flex;align-items:center;justify-content:center;
+}
+.btn-again{background:#12122a;color:#888;border:1px solid #1e1e45}
+.btn-again:active{background:#1e1e45;transform:scale(0.97)}
+.btn-back{background:#0d0d22;color:#555;border:1px solid #111130}
+.btn-back:active{background:#12122a;transform:scale(0.97)}
+
+/* ── no-next end state ── */
+.win-all-done{
+  width:100%;background:linear-gradient(135deg,rgba(255,230,0,0.08),rgba(57,255,20,0.08));
+  border:1px solid rgba(255,230,0,0.2);border-radius:14px;
+  padding:1rem;text-align:center;
+  animation:winFadeUp 0.4s 0.5s ease both;
+}
+.win-all-done-title{font-family:'Press Start 2P',monospace;font-size:0.7rem;color:#FFE600;margin-bottom:0.4rem;line-height:1.8}
+.win-all-done-sub{font-size:0.75rem;color:#666;line-height:1.5}
+
+/* toast */
+.copy-toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#12122a;border:1px solid #2a2a5a;border-radius:10px;padding:8px 18px;font-size:0.75rem;font-weight:700;color:#00F5FF;opacity:0;transition:opacity 0.2s;pointer-events:none;z-index:100;white-space:nowrap}
+.copy-toast.show{opacity:1}
+</style>
+</head>
+<body>
+
+<!-- PUZZLE SCREEN -->
+<div id="puzzleScreen" class="puzzle-screen">
+  <div class="top-nav">
+    <a id="backBtn" href="directory.html" class="nav-btn">← Back</a>
+    <div class="puzzle-nav-info">
+      <div class="puzzle-nav-title" id="navTitle">—</div>
+      <div class="puzzle-nav-author" id="navAuthor">—</div>
+    </div>
+    <button id="prevPuzzleBtn" class="nav-btn prev-btn" onclick="goToPrev()">‹</button>
+    <button id="nextPuzzleBtn" class="nav-btn next-btn" onclick="goToNext()">Next ›</button>
+  </div>
+  <div class="prog-wrap">
+    <div class="prog-track"><div class="prog-fill" id="progFill"></div></div>
+    <div class="prog-label" id="progLabel">0 / 0</div>
+  </div>
+  <div class="puzzle-area" id="puzzleArea">
+    <div id="loadingOverlay"><div class="spinner"></div><div class="loading-text">LOADING…</div></div>
+    <canvas id="puzzleCanvas"></canvas>
+    <div class="chat-popup" id="chatPopup">
+      <div class="chat-popup-header">
+        <div class="chat-avatar">🤖</div>
+        <div class="chat-bot-name">Puzzle Bot</div>
+      </div>
+      <div id="chatContent"></div>
+    </div>
+  </div>
+</div>
+
+<!-- WIN SCREEN -->
+<div id="winScreen">
+  <div class="win-bg" id="winBg"></div>
+  <div class="win-inner">
+    <div class="win-crown" id="winCrown">🏆</div>
+    <div class="win-title" id="winTitle">PUZZLE<br>COMPLETE!</div>
+    <div class="win-player" id="winPlayer"></div>
+    <div class="win-dept" id="winDept"></div>
+    <div class="win-cat-badge" id="winCatBadge"></div>
+
+    <!-- FIX 5 alt text, FIX 16 overlay action buttons -->
+    <div class="win-img-wrap">
+      <img id="winImg" class="win-img" alt=""/>
+      <div class="win-img-actions">
+        <button class="img-action-btn share-btn" onclick="shareImage()" title="Share">⬆</button>
+        <button class="img-action-btn dl-btn"    onclick="downloadImage()" title="Download">⬇</button>
+      </div>
+    </div>
+
+    <!-- FIX 7: 4-stat grid -->
+    <div class="win-stats">
+      <div class="win-stat">
+        <span class="win-stat-val" id="wTime">-</span>
+        <span class="win-stat-lbl">Time</span>
+        <div class="best-badge" id="timeBest" style="display:none">⚡ Best!</div>
+      </div>
+      <div class="win-stat">
+        <span class="win-stat-val" id="wMoves">-</span>
+        <span class="win-stat-lbl">Moves</span>
+        <div class="best-badge" id="movesBest" style="display:none">⚡ Best!</div>
+      </div>
+      <div class="win-stat">
+        <span class="win-stat-val" id="wDiff">-</span>
+        <span class="win-stat-lbl">Difficulty</span>
+      </div>
+      <div class="win-stat">
+        <span class="win-stat-val" id="wPieces">-</span>
+        <span class="win-stat-lbl">Pieces</span>
+      </div>
+    </div>
+
+    <!-- FIX 8: quest progress bar -->
+    <div class="win-quest-bar">
+      <div class="win-quest-row">
+        <span class="win-quest-label">👑 Quest progress</span>
+        <span class="win-quest-val" id="wQuestVal">0 / 0</span>
+      </div>
+      <div class="win-bar-track"><div class="win-bar-fill" id="wQuestFill" style="width:0%"></div></div>
+    </div>
+
+    <!-- ACTION BUTTONS -->
+    <div class="win-actions" id="winActions"></div>
+  </div>
+</div>
+
+<div class="copy-toast" id="copyToast">Link copied!</div>
+
+<script src="puzzles.js"></script>
+<script>
+/* ═══════════════════════════════════════════════════
+   CONFIG
+═══════════════════════════════════════════════════ */
+const PUZZLE_ID     = location.hash.slice(1) || (PUZZLES[0] && PUZZLES[0].id);
+const _puz          = PUZZLES.find(p => p.id === PUZZLE_ID) || PUZZLES[0];
+const IMAGE_URL     = _puz.imageUrl;
+const COLS          = _puz.cols;
+const ROWS          = _puz.rows;
+const PUZZLE_TITLE  = _puz.title;
+const PUZZLE_AUTHOR = _puz.author;
+const PUZZLE_CAT    = _puz.category;
+const PUZZLE_DIFF   = _puz.difficulty;
+
+/* ── GATE ── */
+(function gate() {
+  const name = localStorage.getItem("pq_name");
+  const dept = localStorage.getItem("pq_dept");
+  if (!name || !dept) {
+    sessionStorage.setItem("pq_redirect", location.hash || "");
+    location.replace("directory.html");
+  }
+}());
+
+const PLAYER_NAME = localStorage.getItem("pq_name");
+const PLAYER_DEPT = localStorage.getItem("pq_dept");
+
+const _idx    = PUZZLES.findIndex(p => p.id === PUZZLE_ID);
+const PREV_ID = _idx > 0                ? PUZZLES[_idx-1].id : "";
+const NEXT_ID = _idx < PUZZLES.length-1 ? PUZZLES[_idx+1].id : "";
+const NEXT_PUZ = NEXT_ID ? PUZZLES.find(p => p.id === NEXT_ID) : null;
+
+const SUPABASE_URL = "https://yellow-lab-4999.andrewveda.workers.dev/functions/v1/logQuest";
+const TOTAL = COLS * ROWS;
+
+/* ── Category theme tokens ── */
+const CAT_THEME = {
+  quotes:     { a:"#1a0a3a", accent:"#B57BFF", glow:"rgba(181,123,255,0.5)", badge:"rgba(181,123,255,0.1)", icon:"💬", label:"Quotes"      },
+  jokes:      { a:"#1a1400", accent:"#FFD700", glow:"rgba(255,215,0,0.5)",   badge:"rgba(255,215,0,0.1)",   icon:"😄", label:"Jokes"       },
+  comics:     { a:"#00141a", accent:"#00F5FF", glow:"rgba(0,245,255,0.5)",   badge:"rgba(0,245,255,0.1)",   icon:"🎨", label:"Comics"      },
+  thirukural: { a:"#1a0014", accent:"#FF6B6B", glow:"rgba(255,107,107,0.5)", badge:"rgba(255,107,107,0.1)", icon:"📖", label:"Thirukkural" },
+};
+const THEME = CAT_THEME[PUZZLE_CAT] || CAT_THEME.quotes;
+
+/* ═══════════════════════════════
+   PROGRESS / BEST SCORES
+═══════════════════════════════ */
+function getProgress()  { try { return JSON.parse(localStorage.getItem("pq_progress")||"{}"); } catch(e){ return {}; } }
+function markSolved(id) { const p=getProgress(); p[id]=true; localStorage.setItem("pq_progress",JSON.stringify(p)); }
+function getSolvedCount(){ const p=getProgress(); return PUZZLES.filter(x=>p[x.id]).length; }
+
+function getBest(id)    { try { return JSON.parse(localStorage.getItem("pq_best_"+id)||"null"); } catch(e){ return null; } }
+function saveBest(id, secs, mv) {
+  const prev = getBest(id);
+  const isNewTime  = !prev || secs  < prev.secs;
+  const isNewMoves = !prev || mv    < prev.moves;
+  if (!prev || secs < prev.secs || mv < prev.moves) {
+    localStorage.setItem("pq_best_"+id, JSON.stringify({secs: Math.min(secs, prev?.secs??secs), moves: Math.min(mv, prev?.moves??mv)}));
+  }
+  return { newTime: isNewTime, newMoves: isNewMoves };
+}
+
+/* ═══════════════════════════════
+   NAVIGATION
+═══════════════════════════════ */
+function goToNext() { if (NEXT_ID) location.href = "puzzle.html#" + NEXT_ID; }
+function goToPrev() { if (PREV_ID) location.href = "puzzle.html#" + PREV_ID; }
+
+function setupNav() {
+  document.getElementById("navTitle").textContent  = PUZZLE_TITLE;
+  document.getElementById("navAuthor").textContent = PUZZLE_AUTHOR;
+  document.title = PUZZLE_TITLE + " · Puzzle Quest";
+  document.getElementById("backBtn").href = "directory.html";
+  if (!PREV_ID) document.getElementById("prevPuzzleBtn").classList.add("disabled-btn");
+  if (!NEXT_ID) document.getElementById("nextPuzzleBtn").classList.add("disabled-btn");
+}
+
+/* ═══════════════════════════════
+   STATE
+═══════════════════════════════ */
+let canvas, ctx;
+let img = null;
+let cw, ch, pw, ph, boardX, boardY;
+let pieces = [], selectedPiece = null;
+let isDragging=false, dragAnchor=null;
+let startPointerX=0, startPointerY=0, currentPointerX=0, currentPointerY=0;
+const DRAG_THRESHOLD = 7;
+let placed=0, moves=0, startTime=null;
+
+/* ═══════════════════════════════
+   CHAT SYSTEM
+═══════════════════════════════ */
+const CHAT_DB=[
+  {bot:"Nice! You've got one piece right! 🧩",reply:["Yes","I","Love","This!"]},
+  {bot:"That was a tricky one!",reply:["It","Really","Was! 😂"]},
+  {bot:"You're getting good at this.",reply:["I","Know. 😎"]},
+  {bot:"Halfway there!",reply:["Let's","Keep","Going! 🚀"]},
+  {bot:"That piece almost fooled you.",reply:["Not","Anymore! 😁"]},
+  {bot:"Ready for another?",reply:["Bring","It","On! 💪"],alt:["I'm","Scared. 😅"]},
+  {bot:"That clicked perfectly!",reply:["So","Satisfying! ✨"]},
+  {bot:"You're on a roll!",reply:["Don't","Jinx","Me! 😂"]},
+  {bot:"Only a few left now.",reply:["I","Can","Do","This! 💪"]},
+  {bot:"Oops... almost!",reply:["I'll","Get","It. 😄"]},
+  {bot:"Great recovery!",reply:["Thanks! 😊"]},
+  {bot:"You're flying through this!",reply:["Feeling","Lucky","Today! 🍀"]},
+  {bot:"One more piece locked!",reply:["Awesome! 🎉"]},
+  {bot:"Smooth move!",reply:["Too","Easy! 😎"]},
+  {bot:"Locked in!",reply:["Boom! 💥"]},
+  {bot:"Nailed it!",reply:["Crushed","It! 🔥"]},
+];
+let chatActive=false,chatTimer=null,lockCountSinceChat=0;
+
+function pickChatEntry(){
+  const entry=CHAT_DB[Math.floor(Math.random()*CHAT_DB.length)];
+  if(entry.alt&&Math.random()<0.5)return{bot:entry.bot,reply:entry.alt};
+  return{bot:entry.bot,reply:entry.reply};
+}
+
+function showChat(){
+  if(chatActive)return;
+  const data=pickChatEntry();
+  chatActive=true;
+  const popup=document.getElementById("chatPopup");
+  const content=document.getElementById("chatContent");
+  content.innerHTML="";
+  popup.classList.add("show");
+
+  // Bot bubble
+  const botBubble=document.createElement("div");
+  botBubble.className="chat-bubble-bot";
+  botBubble.textContent=data.bot;
+  content.appendChild(botBubble);
+
+  // Reply buttons
+  const replyWrap=document.createElement("div");
+  replyWrap.className="chat-replies";
+  const words=data.reply;
+  let built="";
+  words.forEach((word,i)=>{
+    const btn=document.createElement("button");
+    btn.className="chat-reply-btn";
+    btn.textContent=word;
+    btn.onclick=()=>{
+      btn.classList.add("used");
+      built+=(built?" ":"")+word;
+      // Remove old "you" bubble if exists
+      const oldYou=content.querySelector(".chat-bubble-you");
+      if(oldYou)oldYou.remove();
+      const youBubble=document.createElement("div");
+      youBubble.className="chat-bubble-you";
+      youBubble.textContent=built;
+      content.appendChild(youBubble);
+      content.scrollTop=content.scrollHeight;
+      // If last word
+      if(i===words.length-1){
+        setTimeout(()=>{hideChat();},1000);
+      }
+    };
+    replyWrap.appendChild(btn);
+  });
+  content.appendChild(replyWrap);
+}
+
+function hideChat(){
+  const popup=document.getElementById("chatPopup");
+  popup.classList.remove("show");
+  setTimeout(()=>{chatActive=false;document.getElementById("chatContent").innerHTML="";},400);
+}
+
+function maybeTriggerChat(newLocks){
+  lockCountSinceChat+=newLocks;
+  if(lockCountSinceChat>=3||Math.random()<0.35){
+    lockCountSinceChat=0;
+    showChat();
+  }
+}
+
+/* ═══════════════════════════════
+   TIMER
+═══════════════════════════════ */
+function startTimer(){ startTime=Date.now(); }
+function elapsed(){ return startTime ? Math.floor((Date.now()-startTime)/1000) : 0; }
+
+/* ═══════════════════════════════
+   DOM READY
+═══════════════════════════════ */
+document.addEventListener("DOMContentLoaded",()=>{
+  canvas=document.getElementById("puzzleCanvas");
+  ctx=canvas.getContext("2d");
+  canvas.addEventListener("mousedown",  onDown,{passive:false});
+  canvas.addEventListener("mousemove",  onMove,{passive:false});
+  canvas.addEventListener("mouseup",    onUp,  {passive:false});
+  canvas.addEventListener("mouseleave", onUp,  {passive:false});
+  canvas.addEventListener("touchstart", onDown,{passive:false});
+  canvas.addEventListener("touchmove",  onMove,{passive:false});
+  canvas.addEventListener("touchend",   onUp,  {passive:false});
+  canvas.addEventListener("click",e=>{
+    if(!selectedPiece)return;
+    const {x,y}=getPos(e);
+    if(!hitPiece(x,y)){selectedPiece=null;drawAll();}
+  },{passive:false});
+
+  document.getElementById("puzzleScreen").style.display="flex";
+  setupNav();
+  initPuzzle();
+});
+
+/* ═══════════════════════════════
+   INIT
+═══════════════════════════════ */
+function initPuzzle() {
+  pieces=[];selectedPiece=null;isDragging=false;dragAnchor=null;
+  placed=0;moves=0;startTime=null;
+  /* FIX 20: reset progress display BEFORE switching screens */
+  document.getElementById("progFill").style.width="0%";
+  document.getElementById("progLabel").textContent=`0 / ${TOTAL}`;
+  document.getElementById("loadingOverlay").style.display="flex";
+  if(img&&img.complete&&img.naturalWidth>0){buildPuzzle();return;}
+  img=new Image();img.crossOrigin="anonymous";
+  img.onload=buildPuzzle;
+  img.onerror=()=>console.warn("Image failed to load");
+  img.src=IMAGE_URL;
+}
+
+/* ═══════════════════════════════
+   BUILD — FIX 1: no pre-locked pieces
+═══════════════════════════════ */
+function buildPuzzle() {
+  const area=canvas.parentElement;
+  const dpr=window.devicePixelRatio||1;
+  cw=area.clientWidth;ch=area.clientHeight;
+  canvas.width=cw*dpr;canvas.height=ch*dpr;
+  canvas.style.width=cw+"px";canvas.style.height=ch+"px";
+  ctx=canvas.getContext("2d");ctx.scale(dpr,dpr);
+
+  const pad=10,imgAR=img.naturalWidth/img.naturalHeight;
+  const boardAR=(COLS/ROWS)*imgAR;
+  const maxW=cw-pad*2,maxH=ch-pad*2;
+  let boardW,boardH;
+  if(maxW/maxH>boardAR){boardH=maxH;boardW=Math.floor(boardH*boardAR);}
+  else{boardW=maxW;boardH=Math.floor(boardW/boardAR);}
+  pw=Math.floor(boardW/COLS);ph=Math.floor(boardH/ROWS);
+  boardX=Math.floor((cw-pw*COLS)/2);boardY=Math.floor((ch-ph*ROWS)/2);
+
+  let slots;
+  do {
+    slots=Array.from({length:TOTAL},(_,i)=>({r:Math.floor(i/COLS),c:i%COLS}));
+    slots.sort(()=>Math.random()-0.5);
+  } while(slots.some((s,i)=>s.r===Math.floor(i/COLS)&&s.c===i%COLS));
+
+  pieces=[];let idx=0;
+  for(let r=0;r<ROWS;r++) for(let c=0;c<COLS;c++){
+    const slot=slots[idx++];
+    pieces.push({id:pieces.length,tr:r,tc:c,row:slot.r,col:slot.c,locked:false});
+  }
+  placed=0;updateProgress();
+  document.getElementById("loadingOverlay").style.display="none";
+  drawAll();startTimer();
+}
+
+function getCluster(p){return[p];}
+
+function triggerRedFlash(){
+  const a=document.getElementById("puzzleArea");
+  a.classList.remove("flash-red");void a.offsetWidth;a.classList.add("flash-red");
+}
+
+/* ═══════════════════════════════
+   DRAW
+═══════════════════════════════ */
+let glowPiece=null,glowTimer=null;
+function showGlow(p){
+  clearTimeout(glowTimer);glowPiece=p;drawAll();
+  glowTimer=setTimeout(()=>{glowPiece=null;drawAll();},600);
+}
+
+function drawAll(){
+  if(!canvas||!ctx)return;
+  ctx.clearRect(0,0,cw,ch);
+  ctx.strokeStyle="rgba(0,245,255,0.12)";ctx.lineWidth=1.5;
+  ctx.strokeRect(boardX,boardY,pw*COLS,ph*ROWS);
+  const dc=(isDragging&&dragAnchor)?getCluster(dragAnchor):[];
+  const dIds=new Set(dc.map(p=>p.id));
+  const tIds=new Set();
+  if(!isDragging&&selectedPiece)getCluster(selectedPiece).forEach(p=>tIds.add(p.id));
+  for(const p of pieces)if(!dIds.has(p.id))drawPiece(p,0,0,false,tIds.has(p.id),glowPiece&&p.id===glowPiece.id);
+  if(dc.length){const dx=currentPointerX-startPointerX,dy=currentPointerY-startPointerY;for(const p of dc)drawPiece(p,dx,dy,true,false,false);}
+}
+
+function drawPiece(p,ox,oy,isDragged,isTap,isGlow){
+  const x=boardX+p.col*pw+ox,y=boardY+p.row*ph+oy;
+  ctx.save();roundRect(ctx,x,y,pw,ph,4);ctx.clip();
+  ctx.drawImage(img,p.tc*(img.naturalWidth/COLS),p.tr*(img.naturalHeight/ROWS),img.naturalWidth/COLS,img.naturalHeight/ROWS,x,y,pw,ph);
+  if(p.locked&&isGlow){
+    ctx.restore();ctx.save();ctx.shadowColor="#39FF14";ctx.shadowBlur=18;
+    roundRect(ctx,x,y,pw,ph,4);ctx.strokeStyle="rgba(57,255,20,0.9)";ctx.lineWidth=3;ctx.stroke();
+  }else if(!p.locked&&(isDragged||isTap)){
+    ctx.strokeStyle="#FFE600";ctx.lineWidth=3;ctx.stroke();
+    ctx.fillStyle="rgba(255,230,0,0.15)";ctx.fillRect(x,y,pw,ph);
+  }else if(!p.locked){
+    ctx.strokeStyle="rgba(255,255,255,0.1)";ctx.lineWidth=1;ctx.stroke();
+  }
+  ctx.restore();
+}
+
+function roundRect(ctx,x,y,w,h,r){
+  ctx.beginPath();
+  ctx.moveTo(x+r,y);ctx.lineTo(x+w-r,y);ctx.quadraticCurveTo(x+w,y,x+w,y+r);
+  ctx.lineTo(x+w,y+h-r);ctx.quadraticCurveTo(x+w,y+h,x+w-r,y+h);
+  ctx.lineTo(x+r,y+h);ctx.quadraticCurveTo(x,y+h,x,y+h-r);
+  ctx.lineTo(x,y+r);ctx.quadraticCurveTo(x,y,x+r,y);ctx.closePath();
+}
+
+/* ═══════════════════════════════
+   MOVE — fixes 2,3,4
+═══════════════════════════════ */
+function executeClusterMove(anchor,deltaR,deltaC){
+  if(deltaR===0&&deltaC===0)return false;
+  const cluster=getCluster(anchor),clusterIds=new Set(cluster.map(p=>p.id));
+  const displacedMap=new Map();
+  for(const cp of cluster){
+    const tr=cp.row+deltaR,tc=cp.col+deltaC;
+    const occ=pieces.find(p=>p.row===tr&&p.col===tc&&!clusterIds.has(p.id));
+    if(occ&&!displacedMap.has(occ.id))displacedMap.set(occ.id,{piece:occ,toR:cp.row,toC:cp.col});
+  }
+  const finalPositions=new Map();
+  for(const cp of cluster)finalPositions.set(cp.id,{r:cp.row+deltaR,c:cp.col+deltaC});
+  for(const[id,{toR,toC}]of displacedMap)finalPositions.set(id,{r:toR,c:toC});
+  for(const[id,{r,c}]of finalPositions){
+    if(r<0||r>=ROWS||c<0||c>=COLS){triggerRedFlash();return false;}
+    const occ=pieces.find(p=>p.row===r&&p.col===c);
+    if(occ&&occ.locked&&!finalPositions.has(occ.id)){triggerRedFlash();return false;}
+    for(const[id2,pos2]of finalPositions)if(id2!==id&&pos2.r===r&&pos2.c===c){triggerRedFlash();return false;}
+  }
+  moves++;
+  for(const cp of cluster){cp.row+=deltaR;cp.col+=deltaC;}
+  for(const[,{piece:dp,toR,toC}]of displacedMap){dp.row=toR;dp.col=toC;}
+  let newLocks=0;
+  for(const p of pieces)if(!p.locked&&p.row===p.tr&&p.col===p.tc){p.locked=true;newLocks++;}
+  placed+=newLocks;updateProgress();
+  if(newLocks>0){
+    confetti({particleCount:25,spread:45,origin:{y:0.5},colors:["#FFE600","#00F5FF","#39FF14"]});
+    const pct=Math.round(placed/TOTAL*100),prevPct=Math.round((placed-newLocks)/TOTAL*100);
+    const milestone=[25,50,75].find(m=>prevPct<m&&pct>=m);
+    maybeTriggerChat(newLocks);
+    if(placed===TOTAL)setTimeout(showWin,700);
+  }
+  return true;
+}
+
+/* ═══════════════════════════════
+   POINTER HANDLERS — fix 5
+═══════════════════════════════ */
+function getPos(e){
+  const rect=canvas.getBoundingClientRect();
+  const scaleX=cw/rect.width,scaleY=ch/rect.height;
+  const src=(e.touches&&e.touches.length)?e.touches[0]:e;
+  return{x:(src.clientX-rect.left)*scaleX,y:(src.clientY-rect.top)*scaleY};
+}
+function hitPiece(x,y){
+  const col=Math.floor((x-boardX)/pw),row=Math.floor((y-boardY)/ph);
+  if(row<0||row>=ROWS||col<0||col>=COLS)return null;
+  return pieces.find(p=>p.row===row&&p.col===col)||null;
+}
+function onDown(e){
+  e.preventDefault();
+  const{x,y}=getPos(e),p=hitPiece(x,y);
+  if(!p)return;
+  if(p.locked){showGlow(p);return;}
+  dragAnchor=p;startPointerX=x;startPointerY=y;currentPointerX=x;currentPointerY=y;isDragging=false;
+}
+function onMove(e){
+  if(!dragAnchor)return;e.preventDefault();
+  const{x,y}=getPos(e);currentPointerX=x;currentPointerY=y;
+  if(!isDragging&&Math.hypot(x-startPointerX,y-startPointerY)>DRAG_THRESHOLD){isDragging=true;selectedPiece=null;}
+  if(isDragging)drawAll();
+}
+function onUp(e){
+  if(!dragAnchor)return;e.preventDefault();
+  if(isDragging){
+    const deltaCol=Math.round((currentPointerX-startPointerX)/pw);
+    const deltaRow=Math.round((currentPointerY-startPointerY)/ph);
+    if(deltaCol!==0||deltaRow!==0)executeClusterMove(dragAnchor,deltaRow,deltaCol);
+    isDragging=false;dragAnchor=null;drawAll();return;
+  }
+  const p=dragAnchor;dragAnchor=null;
+  if(!selectedPiece){selectedPiece=p;drawAll();return;}
+  if(selectedPiece.id===p.id){selectedPiece=null;drawAll();return;}
+  if(getCluster(selectedPiece).some(cp=>cp.id===p.id)){selectedPiece=p;drawAll();return;}
+  const deltaR=p.row-selectedPiece.row,deltaC=p.col-selectedPiece.col;
+  executeClusterMove(selectedPiece,deltaR,deltaC);
+  selectedPiece=null;drawAll();
+}
+
+function updateProgress(){
+  document.getElementById("progFill").style.width=Math.round(placed/TOTAL*100)+"%";
+  document.getElementById("progLabel").textContent=`${placed} / ${TOTAL}`;
+}
+
+/* ═══════════════════════════════
+   WIN SCREEN
+═══════════════════════════════ */
+function showWin(){
+  markSolved(PUZZLE_ID);
+  const s=elapsed(),m=Math.floor(s/60),sec=s%60;
+  const timeStr=`${m}:${sec.toString().padStart(2,"0")}`;
+
+  /* FIX 18: best score */
+  const bests=saveBest(PUZZLE_ID,s,moves);
+  if(bests.newTime)  document.getElementById("timeBest").style.display="inline-flex";
+  if(bests.newMoves) document.getElementById("movesBest").style.display="inline-flex";
+
+  /* FIX 12: controlled confetti — stop cleanly */
+  let confettiRunning=true;
+  const confettiEnd=Date.now()+3000;
+  (function frame(){
+    if(!confettiRunning)return;
+    confetti({particleCount:5,angle:60, spread:55,origin:{x:0},colors:["#FFE600","#00F5FF","#39FF14","#FF2D78"]});
+    confetti({particleCount:5,angle:120,spread:55,origin:{x:1},colors:["#FFE600","#00F5FF","#39FF14","#FF2D78"]});
+    if(Date.now()<confettiEnd)requestAnimationFrame(frame);
+    else confettiRunning=false;
+  }());
+
+  /* FIX 1/17: unlock body scroll for win screen */
+  document.body.style.overflow="hidden";
+  document.getElementById("puzzleScreen").style.display="none";
+
+  /* Apply category theme via CSS vars */
+  const ws=document.getElementById("winScreen");
+  ws.style.setProperty("--win-a",     THEME.a);
+  ws.style.setProperty("--win-accent",THEME.accent);
+  ws.style.setProperty("--win-glow",  THEME.glow);
+  ws.style.setProperty("--win-badge-bg",THEME.badge);
+  ws.style.display="flex";
+  ws.scrollTop=0;
+
+  /* FIX 13: crown emoji by category */
+  const crowns={quotes:"💬",jokes:"😂",comics:"🎨",thirukural:"📿"};
+  document.getElementById("winCrown").textContent=crowns[PUZZLE_CAT]||"🏆";
+
+  /* FIX 19: name large, dept smaller */
+  document.getElementById("winPlayer").textContent=PLAYER_NAME;
+  document.getElementById("winDept").textContent=PLAYER_DEPT;
+
+  /* FIX 13: category badge */
+  const badge=document.getElementById("winCatBadge");
+  badge.textContent=`${THEME.icon} ${THEME.label}`;
+
+  /* FIX 5: descriptive alt text */
+  const winImg=document.getElementById("winImg");
+  winImg.alt=`${PUZZLE_TITLE} — solved`;
+  winImg.src=img.src;
+
+  /* FIX 7: 4 stats */
+  document.getElementById("wTime").textContent=timeStr;
+  document.getElementById("wMoves").textContent=moves;
+  document.getElementById("wDiff").textContent=PUZZLE_DIFF;
+  document.getElementById("wPieces").textContent=TOTAL;
+
+  /* FIX 8: quest progress bar */
+  const solved=getSolvedCount(),total=PUZZLES.length;
+  document.getElementById("wQuestVal").textContent=`${solved} / ${total}`;
+  document.getElementById("wQuestFill").style.width=(solved/total*100)+"%";
+
+  /* FIX 9 + teaser + FIX 10: action buttons built dynamically */
+  buildWinActions();
+
+  sendToSupabase({student_name:PLAYER_NAME,department:PLAYER_DEPT,time_spent:s,moves,quest_id:"Jigsaw-"+PUZZLE_ID});
+}
+
+function buildWinActions(){
+  const container=document.getElementById("winActions");
+  container.innerHTML="";
+
+  if(NEXT_ID && NEXT_PUZ){
+    /* Hero next button */
+    const btnNext=document.createElement("button");
+    btnNext.className="btn-next";
+    btnNext.innerHTML=`▶ NEXT PUZZLE`;
+    btnNext.onclick=goToNext;
+    container.appendChild(btnNext);
+
+    /* Teaser card — glimpse of what's coming */
+    const catMeta={quotes:{icon:"💬"},jokes:{icon:"😄"},comics:{icon:"🎨"},thirukural:{icon:"📖"}};
+    const nextIcon=(catMeta[NEXT_PUZ.category]||{icon:"🧩"}).icon;
+    const teaser=document.createElement("div");
+    teaser.className="next-teaser";
+    teaser.onclick=goToNext;
+    teaser.innerHTML=`
+      <div class="next-teaser-icon">${nextIcon}</div>
+      <div class="next-teaser-body">
+        <div class="next-teaser-label">Up next</div>
+        <div class="next-teaser-title">${NEXT_PUZ.title}</div>
+        <div class="next-teaser-author">${NEXT_PUZ.author}</div>
+      </div>
+      <div class="next-teaser-arrow">›</div>`;
+    container.appendChild(teaser);
+  } else {
+    /* All done — end state */
+    const done=document.createElement("div");
+    done.className="win-all-done";
+    done.innerHTML=`<div class="win-all-done-title">ALL PUZZLES<br>COMPLETE! 🎉</div>
+      <div class="win-all-done-sub">You've solved every puzzle in the quest.<br>Legendary!</div>`;
+    container.appendChild(done);
+  }
+
+  /* Secondary row: play again + back */
+  const row=document.createElement("div");
+  row.className="win-secondary";
+  const btnAgain=document.createElement("button");
+  btnAgain.className="btn-again";btnAgain.textContent="↺ AGAIN";btnAgain.onclick=playAgain;
+  const btnBack=document.createElement("a");
+  btnBack.className="btn-back";btnBack.textContent="← MENU";btnBack.href="directory.html";
+  row.appendChild(btnAgain);row.appendChild(btnBack);
+  container.appendChild(row);
+}
+
+/* ═══════════════════════════════
+   SHARE & DOWNLOAD — FIX 3 & 4
+═══════════════════════════════ */
+function getShareText(){
+  return `I just solved "${PUZZLE_TITLE}" on Puzzle Quest in ${document.getElementById("wMoves").textContent} moves! 🧩`;
+}
+function getPuzzleUrl(){
+  return location.origin+location.pathname+"#"+PUZZLE_ID;
+}
+
+async function shareImage(){
+  const shareText=getShareText();
+  const url=getPuzzleUrl();
+  if(navigator.share){
+    try{
+      /* Try sharing with the image file if browser supports it */
+      const response=await fetch(img.src);
+      const blob=await response.blob();
+      const file=new File([blob],"puzzle.jpg",{type:blob.type});
+      if(navigator.canShare&&navigator.canShare({files:[file]})){
+        await navigator.share({title:"Puzzle Quest",text:shareText,files:[file],url});
+      } else {
+        await navigator.share({title:"Puzzle Quest",text:shareText,url});
+      }
+    } catch(e){
+      if(e.name!=="AbortError") copyLink();
+    }
+  } else {
+    copyLink();
+  }
+}
+
+function downloadImage(){
+  const a=document.createElement("a");
+  a.href=img.src;
+  a.download=PUZZLE_TITLE.replace(/\s+/g,"_")+".jpg";
+  a.target="_blank";
+  a.click();
+}
+
+function copyLink(){
+  const url=getPuzzleUrl();
+  if(navigator.clipboard){
+    navigator.clipboard.writeText(url).then(()=>showToast("Link copied!")).catch(()=>showToast("Copy: "+url));
+  } else {
+    showToast("Link copied!");
+  }
+}
+
+function showToast(msg){
+  const t=document.getElementById("copyToast");
+  t.textContent=msg;t.classList.add("show");
+  setTimeout(()=>t.classList.remove("show"),2200);
+}
+
+async function sendToSupabase(payload){
+  try{await fetch(SUPABASE_URL,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(payload)});}
+  catch(e){console.warn("Supabase dropped:",e);}
+}
+
+/* FIX 6 & 20: playAgain — clean reset */
+function playAgain(){
+  document.getElementById("winScreen").style.display="none";
+  document.getElementById("puzzleScreen").style.display="flex";
+  chatActive=false;lockCountSinceChat=0;
+  const popup=document.getElementById("chatPopup");
+  popup.classList.remove("show");
+  document.getElementById("chatContent").innerHTML="";
+  initPuzzle();
+}
+
+window.addEventListener("resize",()=>{
+  if(document.getElementById("puzzleScreen").style.display==="flex"&&img?.complete)buildPuzzle();
+});
+</script>
+</body>
+</html>
