@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no"/>
+<title>Puzzle Quest — Directory</title>
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=DM+Sans:wght@400;600;700&display=swap" rel="stylesheet"/>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: #0a0a1a;
+  color: #fff;
+  min-height: 100dvh;
+  overscroll-behavior: none;
+}
+
+/* ── HEADER ── */
+.header {
+  padding: 1.2rem 1rem 0.8rem;
+  background: #0a0a1a;
+  border-bottom: 1px solid #1a1a3a;
+  position: sticky; top: 0; z-index: 10;
+}
+.header-top {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 0.8rem;
+}
+.logo {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 0.75rem;
+  color: #FFE600;
+  text-shadow: 0 0 14px rgba(255,230,0,0.4);
+  line-height: 1.6;
+}
+.logo-sub {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 0.38rem;
+  color: #00F5FF;
+  letter-spacing: 2px;
+}
+.puzzle-count {
+  font-size: 0.72rem;
+  color: #555;
+  text-align: right;
+}
+.puzzle-count span {
+  font-weight: 700;
+  color: #00F5FF;
+}
+
+/* Search */
+.search-wrap {
+  position: relative;
+  margin-bottom: 0.75rem;
+}
+.search-wrap input {
+  width: 100%;
+  padding: 0.65rem 1rem 0.65rem 2.4rem;
+  background: #12122a;
+  border: 1px solid #2a2a5a;
+  border-radius: 10px;
+  color: #fff;
+  font-size: 0.9rem;
+  font-family: 'DM Sans', sans-serif;
+  outline: none;
+  transition: border-color 0.15s;
+}
+.search-wrap input::placeholder { color: #444; }
+.search-wrap input:focus { border-color: #00F5FF; }
+.search-icon {
+  position: absolute;
+  left: 0.75rem; top: 50%;
+  transform: translateY(-50%);
+  font-size: 0.9rem; color: #444;
+  pointer-events: none;
+}
+
+/* Category tabs */
+.tabs {
+  display: flex; gap: 6px;
+  overflow-x: auto; scrollbar-width: none;
+  padding-bottom: 2px;
+}
+.tabs::-webkit-scrollbar { display: none; }
+.tab {
+  flex-shrink: 0;
+  padding: 5px 14px;
+  border-radius: 20px;
+  font-size: 0.72rem;
+  font-weight: 600;
+  cursor: pointer;
+  border: 1px solid #2a2a5a;
+  background: #12122a;
+  color: #555;
+  transition: all 0.14s;
+  white-space: nowrap;
+  letter-spacing: 0.3px;
+}
+.tab.active {
+  color: #000;
+  border-color: transparent;
+}
+.tab[data-cat="all"].active    { background: #FFE600; }
+.tab[data-cat="quotes"].active { background: #B57BFF; }
+.tab[data-cat="jokes"].active  { background: #FFB327; }
+.tab[data-cat="comics"].active { background: #00F5FF; }
+.tab[data-cat="thirukural"].active { background: #FF6B6B; }
+
+/* ── PUZZLE GRID ── */
+.section-label {
+  padding: 1rem 1rem 0.45rem;
+  font-size: 0.62rem;
+  font-weight: 700;
+  color: #333;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+}
+
+.puzzle-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  padding: 0 10px 10px;
+}
+
+.puzzle-card {
+  background: #12122a;
+  border: 1px solid #1e1e45;
+  border-radius: 14px;
+  overflow: hidden;
+  text-decoration: none;
+  display: flex;
+  flex-direction: column;
+  transition: border-color 0.15s, transform 0.12s;
+  cursor: pointer;
+}
+.puzzle-card:active { transform: scale(0.97); }
+
+/* Category accent top border */
+.puzzle-card[data-cat="quotes"]     { border-top: 2px solid #B57BFF; }
+.puzzle-card[data-cat="jokes"]      { border-top: 2px solid #FFB327; }
+.puzzle-card[data-cat="comics"]     { border-top: 2px solid #00F5FF; }
+.puzzle-card[data-cat="thirukural"] { border-top: 2px solid #FF6B6B; }
+
+.card-thumb {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  object-fit: cover;
+  display: block;
+  background: #060610;
+}
+.card-thumb-placeholder {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.8rem;
+  background: #0d0d22;
+}
+
+.card-body {
+  padding: 0.6rem 0.65rem 0.7rem;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.card-title {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #eee;
+  line-height: 1.35;
+}
+
+.card-author {
+  font-size: 0.65rem;
+  color: #555;
+  line-height: 1.3;
+}
+
+.card-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: auto;
+  padding-top: 5px;
+}
+
+.diff-badge {
+  font-size: 0.58rem;
+  font-weight: 700;
+  padding: 2px 7px;
+  border-radius: 20px;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+.diff-easy   { background: #0d2a0d; color: #39FF14; }
+.diff-medium { background: #2a1e00; color: #FFB327; }
+.diff-hard   { background: #2a0d0d; color: #FF2D78; }
+
+.pieces-label {
+  font-size: 0.6rem;
+  color: #444;
+}
+
+/* ── EMPTY STATE ── */
+.empty {
+  text-align: center;
+  padding: 3rem 2rem;
+  color: #333;
+  grid-column: 1 / -1;
+}
+.empty-icon { font-size: 2.5rem; margin-bottom: 0.75rem; }
+.empty p { font-size: 0.8rem; line-height: 1.6; }
+
+/* ── FOOTER ── */
+.footer {
+  text-align: center;
+  padding: 1.5rem 1rem 2rem;
+  font-size: 0.62rem;
+  color: #222;
+  letter-spacing: 1px;
+  border-top: 1px solid #111128;
+}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-top">
+    <div>
+      <div class="logo">PUZZLE QUEST</div>
+      <div class="logo-sub">DIRECTORY</div>
+    </div>
+    <div class="puzzle-count"><span id="visibleCount">0</span> puzzles</div>
+  </div>
+
+  <div class="search-wrap">
+    <span class="search-icon">🔍</span>
+    <input type="text" id="searchInput" placeholder="Search puzzles…" autocomplete="off" oninput="render()"/>
+  </div>
+
+  <div class="tabs" role="tablist">
+    <button class="tab active" data-cat="all"        onclick="setTab(this)" role="tab">All</button>
+    <button class="tab"        data-cat="quotes"     onclick="setTab(this)" role="tab">Quotes</button>
+    <button class="tab"        data-cat="jokes"      onclick="setTab(this)" role="tab">Jokes</button>
+    <button class="tab"        data-cat="comics"     onclick="setTab(this)" role="tab">Comics</button>
+    <button class="tab"        data-cat="thirukural" onclick="setTab(this)" role="tab">Thirukkural</button>
+  </div>
+</div>
+
+<div id="content"></div>
+
+<div class="footer">PUZZLE QUEST · ALL CATEGORIES</div>
+
+<!-- Load puzzle data -->
+<script src="puzzles.js"></script>
+<script>
+const PUZZLE_FILE = "puzzle.html"; // path to your puzzle engine
+
+const CATEGORY_META = {
+  quotes:     { label: "Quotes",      emoji: "💬" },
+  jokes:      { label: "Jokes",       emoji: "😄" },
+  comics:     { label: "Comics",      emoji: "🎨" },
+  thirukural: { label: "Thirukkural", emoji: "📖" },
+};
+
+let activeTab = "all";
+
+function setTab(el) {
+  document.querySelectorAll(".tab").forEach(t => t.classList.remove("active"));
+  el.classList.add("active");
+  activeTab = el.dataset.cat;
+  render();
+}
+
+function getFiltered() {
+  const q = document.getElementById("searchInput").value.trim().toLowerCase();
+  return PUZZLES.filter(p => {
+    const matchCat = activeTab === "all" || p.category === activeTab;
+    const matchQ   = !q || p.title.toLowerCase().includes(q) || p.author.toLowerCase().includes(q);
+    return matchCat && matchQ;
+  });
+}
+
+function buildLink(p) {
+  const params = new URLSearchParams({
+    id:       p.id,
+    title:    p.title,
+    imageUrl: p.imageUrl,
+    cols:     p.cols,
+    rows:     p.rows,
+  });
+  return `${PUZZLE_FILE}?${params.toString()}`;
+}
+
+function render() {
+  const filtered = getFiltered();
+  document.getElementById("visibleCount").textContent = filtered.length;
+
+  // Group by category when "All" tab active
+  let html = "";
+  if (activeTab === "all") {
+    const byCategory = {};
+    filtered.forEach(p => {
+      if (!byCategory[p.category]) byCategory[p.category] = [];
+      byCategory[p.category].push(p);
+    });
+    const catOrder = ["quotes", "jokes", "comics", "thirukural"];
+    catOrder.forEach(cat => {
+      if (!byCategory[cat] || byCategory[cat].length === 0) return;
+      const meta = CATEGORY_META[cat];
+      html += `<div class="section-label">${meta.emoji} ${meta.label}</div>`;
+      html += `<div class="puzzle-grid">`;
+      byCategory[cat].forEach(p => { html += cardHTML(p); });
+      html += `</div>`;
+    });
+  } else {
+    html += `<div class="puzzle-grid" style="margin-top:10px;">`;
+    if (filtered.length === 0) {
+      html += `<div class="empty"><div class="empty-icon">🧩</div><p>No puzzles match your search.</p></div>`;
+    } else {
+      filtered.forEach(p => { html += cardHTML(p); });
+    }
+    html += `</div>`;
+  }
+
+  if (activeTab === "all" && filtered.length === 0) {
+    html = `<div class="puzzle-grid" style="margin-top:10px;">
+      <div class="empty"><div class="empty-icon">🧩</div><p>No puzzles match your search.</p></div>
+    </div>`;
+  }
+
+  document.getElementById("content").innerHTML = html;
+}
+
+function cardHTML(p) {
+  const pieces = p.cols * p.rows;
+  return `
+    <a class="puzzle-card" href="${buildLink(p)}" data-cat="${p.category}">
+      <img class="card-thumb" src="${p.imageUrl}" alt="${p.title}" loading="lazy"
+        onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'"/>
+      <div class="card-thumb-placeholder" style="display:none">${CATEGORY_META[p.category].emoji}</div>
+      <div class="card-body">
+        <div class="card-title">${p.title}</div>
+        <div class="card-author">${p.author}</div>
+        <div class="card-footer">
+          <span class="diff-badge diff-${p.difficulty}">${p.difficulty}</span>
+          <span class="pieces-label">${pieces} pcs</span>
+        </div>
+      </div>
+    </a>`;
+}
+
+render();
+</script>
+</body>
+</html>
