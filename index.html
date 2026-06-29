@@ -127,7 +127,7 @@ body{font-family:'DM Sans',sans-serif;background:#0a0a1a;color:#fff;min-height:1
    URL PARAMS — read config
 ═══════════════════════════════ */
 // REPLACE the whole URL PARAMS block with this:
-const _id = new URLSearchParams(location.search).get("id") || "";
+const _id = location.hash.slice(1) || "";
 const _puzzle = PUZZLES.find(p => p.id === _id) || PUZZLES[0];
 
 const IMAGE_URL    = _puzzle.imageUrl;
