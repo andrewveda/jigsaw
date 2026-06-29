@@ -3,8 +3,8 @@ const PUZZLES = [
   {
     id: "q01",
     category: "quotes",
-    title: "Einstein on curiosity",
-    author: "Albert Einstein",
+    title: "Persistence",
+    author: "Samuel Beckett",
     imageUrl: "https://raw.githubusercontent.com/andrewveda/SRM-VEC-English-PWA/db8b23b2c55fe5c176a928628ac078611c614441/assets/51LMkrllR3S._AC_UF1000%2C1000_QL80_.jpg",
     cols: 4, rows: 4,
     difficulty: "easy"
