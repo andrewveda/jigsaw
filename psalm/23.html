@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no"/>
-<title>Psalm 1 — Puzzle Quest</title>
+<title>Psalm 23 — Puzzle Quest</title>
 <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700;900&family=Press+Start+2P&family=DM+Sans:wght@400;700;800&display=swap" rel="stylesheet"/>
 <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 <style>
@@ -205,7 +205,7 @@ body{font-family:'DM Sans',sans-serif;background:#0a0008;color:#fff;overflow:hid
   <div class="entry-glow"></div>
   <div class="entry-glow2"></div>
   <div class="entry-cross">✝️</div>
-  <div class="entry-title">Psalm 1</div>
+  <div class="entry-title">Psalm 23</div>
   <div class="entry-sub">Puzzle Journey</div>
   <div class="entry-verse">"Blessed is the one who does not walk in step with the wicked…"</div>
   <div class="form-card">
@@ -237,7 +237,7 @@ body{font-family:'DM Sans',sans-serif;background:#0a0008;color:#fff;overflow:hid
   <div class="top-nav">
     <button id="prevBtn" class="nav-btn disabled-btn" onclick="goToPrev()">‹ Prev</button>
     <div class="puzzle-nav-info">
-      <div class="puzzle-nav-title" id="navTitle">Psalm 1</div>
+      <div class="puzzle-nav-title" id="navTitle">Psalm 23</div>
       <div class="puzzle-nav-sub" id="navSub">Verse 1 of 6</div>
     </div>
     <button id="muteBtn" class="mute-btn" onclick="toggleMute()" style="position:static;width:30px;height:30px;font-size:0.85rem;flex-shrink:0">🔊</button>
@@ -285,14 +285,14 @@ body{font-family:'DM Sans',sans-serif;background:#0a0008;color:#fff;overflow:hid
   <div class="finale-bg"></div>
   <div class="finale-inner">
     <div class="finale-trophy">🏆</div>
-    <div class="finale-title">Psalm 1<br>Complete!</div>
+    <div class="finale-title">Psalm 23<br>Complete!</div>
     <div class="finale-psalm">All 6 Verses Solved</div>
     <div class="finale-player" id="finalePlayer"></div>
     <div class="finale-dept" id="finaleDept"></div>
 
     <div class="finale-quote">
       <div class="finale-quote-text">"But whose delight is in the law of the Lord, and who meditates on his law day and night. That person is like a tree planted by streams of water, which yields its fruit in season…"</div>
-      <div class="finale-quote-ref">— Psalm 1:2–3</div>
+      <div class="finale-quote-ref">— Psalm 23:2–3</div>
     </div>
 
     <div class="gallery-label">✦ All 6 Verses</div>
@@ -750,7 +750,7 @@ function showVerseWin(){
 
   const isLast=currentVerseIdx===VERSES.length-1;
   speak(isLast
-    ? `Magnificent, ${playerName}! You've completed all six verses of Psalm 1! Hallelujah!`
+    ? `Magnificent, ${playerName}! You've completed all six verses of Psalm 23! Hallelujah!`
     : `Wonderful, ${playerName}! Verse ${v.num} revealed! Onward to verse ${v.num+1}!`);
 
   sendToSupabase({student_name:playerName,department:playerDept,time_spent:s,moves,quest_id:"Psalm1-v"+v.num});
@@ -858,7 +858,7 @@ function closeLightbox(){document.getElementById("lightbox").style.display="none
    SHARE & DOWNLOAD
 ═══════════════════════════════ */
 function getVerseShareText(v){
-  return`✝️ I just solved ${v.title} (${v.sub}) of Psalm 1 on Puzzle Quest in ${moves} moves!\n\nTry it: ${location.href}`;
+  return`✝️ I just solved ${v.title} (${v.sub}) of Psalm 23 on Puzzle Quest in ${moves} moves!\n\nTry it: ${location.href}`;
 }
 
 async function shareCurrentVerse(){
@@ -870,8 +870,8 @@ async function shareCurrentVerse(){
       const blob=await resp.blob();
       const file=new File([blob],`psalm1_v${v.num}.png`,{type:blob.type});
       if(navigator.canShare&&navigator.canShare({files:[file]})){
-        await navigator.share({title:"Psalm 1 Puzzle",text,files:[file]});
-      }else{await navigator.share({title:"Psalm 1 Puzzle",text,url:location.href});}
+        await navigator.share({title:"Psalm 23 Puzzle",text,files:[file]});
+      }else{await navigator.share({title:"Psalm 23 Puzzle",text,url:location.href});}
     }catch(e){if(e.name!=="AbortError")copyPuzzleLink();}
   }else{copyPuzzleLink();}
 }
@@ -884,15 +884,15 @@ function downloadCurrentVerse(){
 async function shareCurrentVerseFromWin(){
   const v=currentVerse();
   const vwImg=document.getElementById("vwImg");
-  const text=`✝️ I just solved "${v.title}: ${v.sub}" of Psalm 1! Praise God! 🙏\n${location.href}`;
+  const text=`✝️ I just solved "${v.title}: ${v.sub}" of Psalm 23! Praise God! 🙏\n${location.href}`;
   if(navigator.share){
     try{
       const resp=await fetch(vwImg.src);
       const blob=await resp.blob();
       const file=new File([blob],`psalm1_v${v.num}.png`,{type:blob.type});
       if(navigator.canShare&&navigator.canShare({files:[file]})){
-        await navigator.share({title:"Psalm 1",text,files:[file]});
-      }else{await navigator.share({title:"Psalm 1",text,url:location.href});}
+        await navigator.share({title:"Psalm 23",text,files:[file]});
+      }else{await navigator.share({title:"Psalm 23",text,url:location.href});}
     }catch(e){if(e.name!=="AbortError")copyPuzzleLink();}
   }else{copyPuzzleLink();}
 }
@@ -911,7 +911,7 @@ document.addEventListener("DOMContentLoaded",()=>{
 function shareWhatsApp(){
   const tm=Math.floor(totalTime/60),ts=totalTime%60;
   const timeStr=`${tm}:${ts.toString().padStart(2,"0")}`;
-  const text=`✝️ *Psalm 1 — Puzzle Quest*\n\nI, ${playerName}, just completed all 6 verses of Psalm 1 in ${timeStr} with ${totalMoves} total moves!\n\n🏆 ${VERSES.map(v=>v.sub).join(" · ")}\n\n"Blessed is the one who does not walk in step with the wicked…"\n\n🧩 Try it yourself: ${location.href}`;
+  const text=`✝️ *Psalm 23 — Puzzle Quest*\n\nI, ${playerName}, just completed all 6 verses of Psalm 23 in ${timeStr} with ${totalMoves} total moves!\n\n🏆 ${VERSES.map(v=>v.sub).join(" · ")}\n\n"Blessed is the one who does not walk in step with the wicked…"\n\n🧩 Try it yourself: ${location.href}`;
   const url="https://wa.me/?text="+encodeURIComponent(text);
   window.open(url,"_blank");
 }
@@ -919,9 +919,9 @@ function shareWhatsApp(){
 async function shareGeneral(){
   const tm=Math.floor(totalTime/60),ts=totalTime%60;
   const timeStr=`${tm}:${ts.toString().padStart(2,"0")}`;
-  const text=`✝️ I completed all 6 verses of Psalm 1 on Puzzle Quest in ${timeStr}! 🏆`;
+  const text=`✝️ I completed all 6 verses of Psalm 23 on Puzzle Quest in ${timeStr}! 🏆`;
   if(navigator.share){
-    try{await navigator.share({title:"Psalm 1 Complete!",text,url:location.href});}
+    try{await navigator.share({title:"Psalm 23 Complete!",text,url:location.href});}
     catch(e){if(e.name!=="AbortError")copyPuzzleLink();}
   }else{copyPuzzleLink();}
 }
