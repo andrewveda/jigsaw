@@ -126,23 +126,24 @@ body{font-family:'DM Sans',sans-serif;background:#0a0a1a;color:#fff;min-height:1
 /* ═══════════════════════════════
    URL PARAMS — read config
 ═══════════════════════════════ */
-const _p           = new URLSearchParams(location.search);
-let IMAGE_URL      = _p.get("imageUrl") || "";
-let COLS           = parseInt(_p.get("cols")) || 4;
-let ROWS           = parseInt(_p.get("rows")) || 4;
-let PUZZLE_ID      = _p.get("id") || "";
-let PUZZLE_TITLE   = _p.get("title") || "Puzzle";
-let PUZZLE_AUTHOR  = _p.get("author") || "";
-let PUZZLE_CAT     = _p.get("category") || "";
-let PUZZLE_DIFF    = _p.get("difficulty") || "";
-let PLAYER_NAME    = _p.get("playerName") || localStorage.getItem("pq_name") || "Player";
-let PLAYER_DEPT    = _p.get("playerDept") || localStorage.getItem("pq_dept") || "";
-let PREV_ID        = _p.get("prevId") || "";
-let NEXT_ID        = _p.get("nextId") || "";
+// REPLACE the whole URL PARAMS block with this:
+const _id = new URLSearchParams(location.search).get("id") || "";
+const _puzzle = PUZZLES.find(p => p.id === _id) || PUZZLES[0];
 
-const SUPABASE_URL = "https://yellow-lab-4999.andrewveda.workers.dev/functions/v1/logQuest";
-let TOTAL = COLS * ROWS;
+const IMAGE_URL    = _puzzle.imageUrl;
+const COLS         = _puzzle.cols;
+const ROWS         = _puzzle.rows;
+const PUZZLE_ID    = _puzzle.id;
+const PUZZLE_TITLE = _puzzle.title;
+const PUZZLE_AUTHOR= _puzzle.author;
+const PUZZLE_CAT   = _puzzle.category;
+const PUZZLE_DIFF  = _puzzle.difficulty;
+const PLAYER_NAME  = localStorage.getItem("pq_name") || "Player";
+const PLAYER_DEPT  = localStorage.getItem("pq_dept") || "";
 
+const idx   = PUZZLES.findIndex(p => p.id === _id);
+const PREV_ID = idx > 0 ? PUZZLES[idx - 1].id : "";
+const NEXT_ID = idx < PUZZLES.length - 1 ? PUZZLES[idx + 1].id : "";
 /* ═══════════════════════════════
    PROGRESS helpers
 ═══════════════════════════════ */
