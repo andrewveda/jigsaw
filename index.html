@@ -3,834 +3,549 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no"/>
-<title>Jigsaw Puzzle</title>
+<title>Puzzle Quest</title>
 <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=DM+Sans:wght@400;600;700&display=swap" rel="stylesheet"/>
 <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 <style>
-* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
-body {
-  font-family: 'DM Sans', sans-serif;
-  background: #0a0a1a;
-  color: #fff;
-  min-height: 100dvh;
-  overflow: hidden;
-  user-select: none;
-}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+body{font-family:'DM Sans',sans-serif;background:#0a0a1a;color:#fff;min-height:100dvh;overflow:hidden;user-select:none}
 
-/* ── NAME SCREEN ── */
-#nameScreen {
-  display: flex; flex-direction: column; align-items: center;
-  justify-content: center; min-height: 100dvh;
-  padding: 2rem 1.4rem;
-  background: radial-gradient(ellipse at 60% 20%, #1a0a3a 0%, #0a0a1a 70%);
-}
-.logo {
-  font-family: 'Press Start 2P', monospace;
-  font-size: 1.2rem; line-height: 2;
-  color: #FFE600;
-  text-shadow: 0 0 24px rgba(255,230,0,0.55);
-  text-align: center; margin-bottom: 0.3rem;
-}
-.logo-sub {
-  font-family: 'Press Start 2P', monospace;
-  font-size: 0.6rem; color: #00F5FF;
-  letter-spacing: 3px; margin-bottom: 2.2rem;
-  text-align: center;
-}
-.form-card {
-  width: 100%; max-width: 340px;
-  background: #12122a; border: 1px solid #2a2a5a;
-  border-radius: 18px; padding: 1.8rem 1.4rem;
-  display: flex; flex-direction: column; gap: 1.1rem;
-}
-.field-label {
-  font-size: 0.7rem; font-weight: 700;
-  color: #00F5FF; letter-spacing: 1.5px;
-  text-transform: uppercase; margin-bottom: 0.35rem; display: block;
-}
-.form-card input, .form-card select {
-  width: 100%; padding: 0.9rem 1rem;
-  background: #060610; border: 1px solid #2a2a5a;
-  border-radius: 10px; font-size: 1rem; color: #fff;
-  outline: none; font-family: 'DM Sans', sans-serif;
-  -webkit-appearance: none; appearance: none;
-}
-.form-card input:focus, .form-card select:focus {
-  border-color: #00F5FF;
-  box-shadow: 0 0 0 2px rgba(0,245,255,0.12);
-}
-.form-card select option { background: #12122a; }
-.start-btn {
-  width: 100%; padding: 1rem;
-  font-family: 'Press Start 2P', monospace;
-  font-size: 0.72rem; letter-spacing: 1px;
-  background: #FFE600; color: #000;
-  border: none; border-radius: 12px; cursor: pointer;
-  box-shadow: 0 0 22px rgba(255,230,0,0.35);
-  transition: transform 0.12s;
-}
-.start-btn:active { transform: scale(0.96); }
+/* ── TOP NAV BAR ── */
+.top-nav{display:flex;align-items:center;gap:8px;padding:0.55rem 0.75rem;background:#0a0a1a;border-bottom:1px solid #111130;flex-shrink:0}
+.nav-btn{display:flex;align-items:center;gap:5px;padding:5px 10px;background:#12122a;border:1px solid #1e1e45;border-radius:8px;color:#888;font-size:0.68rem;font-weight:600;cursor:pointer;white-space:nowrap;transition:all 0.15s;text-decoration:none;font-family:'DM Sans',sans-serif}
+.nav-btn:active{background:#1e1e45;color:#fff}
+.nav-btn.prev-btn{padding:5px 8px}
+.puzzle-nav-info{flex:1;text-align:center;min-width:0}
+.puzzle-nav-title{font-size:0.65rem;font-weight:700;color:#ccc;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.puzzle-nav-author{font-size:0.55rem;color:#444;margin-top:1px}
+.nav-btn.next-btn{background:#1a1a3a;border-color:#2a2a5a;color:#00F5FF}
+.nav-btn.next-btn:active{background:#2a2a5a}
+.nav-btn.disabled-btn{opacity:0.25;pointer-events:none}
 
-/* ── PUZZLE SCREEN ── */
-#puzzleScreen {
-  display: none; flex-direction: column;
-  height: 100dvh; overflow: hidden;
-}
+/* ── COMMENTARY ── */
+.commentary{padding:0.5rem 3.5rem 0.5rem 0.9rem;font-size:0.8rem;font-weight:600;color:#FF2D78;min-height:36px;background:#0a0a1a;border-bottom:1px solid #111130;transition:opacity 0.25s;flex-shrink:0;line-height:1.35;text-align:center}
 
-/* Commentary */
-.commentary {
-  padding: 0.55rem 3.5rem 0.55rem 1rem;
-  text-align: center;
-  font-size: 0.82rem; font-weight: 600;
-  color: #FF2D78; min-height: 38px;
-  background: #0a0a1a; border-bottom: 1px solid #1a1a3a;
-  transition: opacity 0.25s; flex-shrink: 0;
-  line-height: 1.35;
-}
+/* ── PROGRESS ── */
+.prog-wrap{padding:0.35rem 0.9rem;background:#0a0a1a;border-bottom:1px solid #111130;flex-shrink:0;display:flex;align-items:center;gap:8px}
+.prog-track{flex:1;height:5px;background:#1e1e45;border-radius:3px;overflow:hidden}
+.prog-fill{height:100%;background:linear-gradient(90deg,#00F5FF,#39FF14);border-radius:3px;width:0%;transition:width 0.4s ease;box-shadow:0 0 6px rgba(57,255,20,0.4)}
+.prog-label{font-size:0.6rem;color:#333;font-weight:700;white-space:nowrap}
 
-/* Progress */
-.prog-wrap {
-  padding: 0.4rem 0.9rem;
-  background: #0a0a1a; border-bottom: 1px solid #1a1a3a;
-  flex-shrink: 0;
-}
-.prog-track {
-  height: 5px; background: #1e1e45; border-radius: 3px; overflow: hidden;
-}
-.prog-fill {
-  height: 100%;
-  background: linear-gradient(90deg, #00F5FF, #39FF14);
-  border-radius: 3px; width: 0%;
-  transition: width 0.4s ease;
-  box-shadow: 0 0 6px rgba(57,255,20,0.5);
-}
-
-/* Floating mute button */
-.mute-btn {
-  position: absolute;
-  top: 10px; left: 10px;
-  z-index: 20;
-  width: 40px; height: 40px;
-  border-radius: 50%;
-  background: rgba(13,13,34,0.85);
-  border: 1.5px solid #2a2a5a;
-  font-size: 1.1rem;
-  cursor: pointer; color: #fff;
-  display: flex; align-items: center; justify-content: center;
-  backdrop-filter: blur(6px);
-  box-shadow: 0 2px 12px rgba(0,0,0,0.4);
-  transition: border-color 0.2s, transform 0.12s;
-}
-.mute-btn:active { transform: scale(0.92); }
-.mute-btn:hover  { border-color: #00F5FF; }
-
-/* Loading overlay */
-#loadingOverlay {
-  position: absolute; inset: 0;
-  background: #0d0d22;
-  display: flex; flex-direction: column;
-  align-items: center; justify-content: center;
-  gap: 1rem; z-index: 10;
-}
-.spinner {
-  width: 44px; height: 44px;
-  border: 3px solid #1e1e45;
-  border-top-color: #00F5FF;
-  border-radius: 50%;
-  animation: spin 0.8s linear infinite;
-}
-@keyframes spin { to { transform: rotate(360deg); } }
-.loading-text {
-  font-family: 'Press Start 2P', monospace;
-  font-size: 0.55rem; color: #555; letter-spacing: 2px;
-}
-
-/* Main puzzle canvas area */
-.puzzle-area {
-  flex: 1; overflow: hidden; position: relative;
-  background: #0d0d22; touch-action: none;
-}
-
-/* Red Flash Animation */
-@keyframes redPulse {
-  0%   { box-shadow: inset 0 0 60px rgba(255,0,50,0.85); }
-  100% { box-shadow: inset 0 0 0px rgba(255,0,50,0); }
-}
-.flash-red { animation: redPulse 0.4s ease-out; }
-
-#puzzleCanvas {
-  position: absolute; top: 0; left: 0;
-  width: 100%; height: 100%;
-  touch-action: none;
-}
+/* ── PUZZLE AREA ── */
+.puzzle-screen{display:none;flex-direction:column;height:100dvh;overflow:hidden}
+.mute-btn{position:absolute;top:10px;right:10px;z-index:20;width:36px;height:36px;border-radius:50%;background:rgba(13,13,34,0.85);border:1px solid #2a2a5a;font-size:1rem;cursor:pointer;color:#fff;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(4px);transition:border-color 0.2s,transform 0.12s}
+.mute-btn:active{transform:scale(0.92)}
+#loadingOverlay{position:absolute;inset:0;background:#0d0d22;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1rem;z-index:10}
+.spinner{width:40px;height:40px;border:3px solid #1e1e45;border-top-color:#00F5FF;border-radius:50%;animation:spin 0.8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.loading-text{font-family:'Press Start 2P',monospace;font-size:0.5rem;color:#444;letter-spacing:2px}
+.puzzle-area{flex:1;overflow:hidden;position:relative;background:#0d0d22;touch-action:none}
+#puzzleCanvas{position:absolute;top:0;left:0;width:100%;height:100%;touch-action:none}
+@keyframes redPulse{0%{box-shadow:inset 0 0 60px rgba(255,0,50,0.85)}100%{box-shadow:inset 0 0 0px rgba(255,0,50,0)}}
+.flash-red{animation:redPulse 0.4s ease-out}
 
 /* ── WIN SCREEN ── */
-#winScreen {
-  display: none; flex-direction: column;
-  align-items: center; justify-content: center;
-  min-height: 100dvh; padding: 2rem 1.2rem;
-  text-align: center;
-  background: radial-gradient(ellipse at 50% 30%, #0d2a0d 0%, #0a0a1a 70%);
-}
-.win-title {
-  font-family: 'Press Start 2P', monospace;
-  font-size: 1rem; line-height: 2;
-  color: #39FF14;
-  text-shadow: 0 0 20px rgba(57,255,20,0.6);
-  margin-bottom: 0.5rem;
-}
-.win-player { font-size: 0.95rem; color: #00F5FF; margin-bottom: 1.2rem; }
-.win-img {
-  width: 100%; max-width: 300px;
-  border-radius: 12px; border: 2px solid #39FF14;
-  box-shadow: 0 0 28px rgba(57,255,20,0.35);
-  margin-bottom: 1.4rem;
-}
-.win-stats {
-  display: grid; grid-template-columns: 1fr 1fr;
-  gap: 0.8rem; width: 100%; max-width: 300px; margin-bottom: 1.6rem;
-}
-.win-stat {
-  background: #12122a; border: 1px solid #2a2a5a;
-  border-radius: 12px; padding: 0.9rem 0.5rem;
-}
-.win-stat-val {
-  font-family: 'Press Start 2P', monospace;
-  font-size: 0.95rem; color: #FFE600; display: block;
-}
-.win-stat-lbl { font-size: 0.7rem; color: #888; margin-top: 4px; display: block; }
-.again-btn {
-  padding: 0.9rem 2rem;
-  font-family: 'Press Start 2P', monospace;
-  font-size: 0.68rem; letter-spacing: 1px;
-  background: #39FF14; color: #000;
-  border: none; border-radius: 12px; cursor: pointer;
-  box-shadow: 0 0 20px rgba(57,255,20,0.4);
-}
+#winScreen{display:none;flex-direction:column;align-items:center;justify-content:flex-start;min-height:100dvh;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:1.5rem 1.2rem 2.5rem;background:radial-gradient(ellipse at 50% 20%,#0d2a0d 0%,#0a0a1a 70%);text-align:center}
+.win-title{font-family:'Press Start 2P',monospace;font-size:0.9rem;line-height:2.2;color:#39FF14;text-shadow:0 0 20px rgba(57,255,20,0.5);margin-bottom:0.3rem}
+.win-player{font-size:0.85rem;color:#00F5FF;margin-bottom:0.2rem}
+.win-puzzle-name{font-size:0.72rem;color:#555;margin-bottom:1rem}
+.win-img{width:100%;max-width:280px;border-radius:12px;border:2px solid #39FF14;box-shadow:0 0 24px rgba(57,255,20,0.3);margin-bottom:1.2rem}
+.win-stats{display:grid;grid-template-columns:1fr 1fr;gap:0.7rem;width:100%;max-width:280px;margin-bottom:1.4rem}
+.win-stat{background:#12122a;border:1px solid #1e1e45;border-radius:12px;padding:0.8rem 0.5rem}
+.win-stat-val{font-family:'Press Start 2P',monospace;font-size:0.85rem;color:#FFE600;display:block}
+.win-stat-lbl{font-size:0.65rem;color:#555;margin-top:4px;display:block}
+
+/* Win action buttons */
+.win-actions{display:flex;flex-direction:column;gap:0.7rem;width:100%;max-width:280px}
+.win-btn{padding:0.85rem 1.5rem;font-family:'Press Start 2P',monospace;font-size:0.62rem;letter-spacing:1px;border:none;border-radius:12px;cursor:pointer;transition:transform 0.12s}
+.win-btn:active{transform:scale(0.97)}
+.btn-next{background:#00F5FF;color:#000;box-shadow:0 0 18px rgba(0,245,255,0.3)}
+.btn-again{background:#1e1e45;color:#888;border:1px solid #2a2a5a}
+.btn-back{background:#12122a;color:#555;border:1px solid #1e1e45;font-size:0.55rem}
+.win-streak{font-size:0.65rem;color:#FFB327;margin-bottom:0.6rem}
+
+/* Category colour badge on win */
+.cat-badge{display:inline-block;padding:3px 12px;border-radius:20px;font-size:0.6rem;font-weight:700;margin-bottom:1rem}
+.cat-quotes{background:#3a1a5a;color:#B57BFF}
+.cat-jokes{background:#3a2a00;color:#FFB327}
+.cat-comics{background:#002a3a;color:#00F5FF}
+.cat-thirukural{background:#3a0d0d;color:#FF6B6B}
+
+/* Slide‑in transition for next puzzle */
+@keyframes slideIn{from{opacity:0;transform:translateX(30px)}to{opacity:1;transform:translateX(0)}}
+.slide-in{animation:slideIn 0.3s ease both}
 </style>
 </head>
 <body>
 
-<!-- NAME SCREEN -->
-<div id="nameScreen">
-  <div class="logo">JIGSAW</div>
-  <div class="logo-sub">PUZZLE QUEST</div>
-  <div class="form-card">
-    <div>
-      <label class="field-label">Your Name</label>
-      <input type="text" id="nameInput" placeholder="Enter your name" autocomplete="off"/>
+<div id="puzzleScreen" class="puzzle-screen">
+  <div class="top-nav" id="topNav">
+    <a id="backBtn" href="directory.html" class="nav-btn">← Back</a>
+    <div class="puzzle-nav-info">
+      <div class="puzzle-nav-title" id="navTitle">—</div>
+      <div class="puzzle-nav-author" id="navAuthor">—</div>
     </div>
-    <div>
-      <label class="field-label">Department</label>
-      <select id="deptSelect">
-        <option value="">-- Select Department --</option>
-        <option>Cyber Security</option><option>EIE</option>
-        <option>CSE-1</option><option>CSE-2</option><option>CSE-3</option>
-        <option>Mechanical Engineering</option>
-        <option>ECE-1</option><option>ECE-2</option><option>ECE-3</option>
-        <option>AI DS-1</option><option>AI DS-2</option>
-        <option>Agri and Civil</option><option>EEE</option>
-        <option>Medical Electronics</option>
-        <option>IT-1</option><option>IT-2</option>
-      </select>
-    </div>
-    <button class="start-btn" onclick="startGame()">▶ START PUZZLE</button>
+    <button id="prevPuzzleBtn" class="nav-btn prev-btn" onclick="goToPrev()">‹</button>
+    <button id="nextPuzzleBtn" class="nav-btn next-btn" onclick="goToNext()">Next ›</button>
   </div>
-</div>
 
-<!-- PUZZLE SCREEN -->
-<div id="puzzleScreen">
-  <div class="commentary" id="commentary">Loading puzzle…</div>
+  <div class="commentary" id="commentary">Loading…</div>
+
   <div class="prog-wrap">
     <div class="prog-track"><div class="prog-fill" id="progFill"></div></div>
+    <div class="prog-label" id="progLabel">0 / 0</div>
   </div>
+
   <div class="puzzle-area" id="puzzleArea">
-    <!-- Floating mute button inside puzzle area so it's positioned relative to it -->
-    <button class="mute-btn" id="muteBtn" onclick="toggleMute()" title="Toggle sound">🔊</button>
-    <!-- Loading overlay -->
-    <div id="loadingOverlay">
-      <div class="spinner"></div>
-      <div class="loading-text">LOADING…</div>
-    </div>
+    <button class="mute-btn" id="muteBtn" onclick="toggleMute()">🔊</button>
+    <div id="loadingOverlay"><div class="spinner"></div><div class="loading-text">LOADING…</div></div>
     <canvas id="puzzleCanvas"></canvas>
   </div>
 </div>
 
-<!-- WIN SCREEN -->
 <div id="winScreen">
   <div class="win-title">PUZZLE<br>COMPLETE!</div>
   <div class="win-player" id="winPlayer"></div>
+  <div class="win-puzzle-name" id="winPuzzleName"></div>
+  <div id="winCatBadge" class="cat-badge"></div>
   <img id="winImg" class="win-img" alt="Solved puzzle"/>
   <div class="win-stats">
-    <div class="win-stat">
-      <span class="win-stat-val" id="wTime">-</span>
-      <span class="win-stat-lbl">Time</span>
-    </div>
-    <div class="win-stat">
-      <span class="win-stat-val" id="wMoves">-</span>
-      <span class="win-stat-lbl">Moves</span>
-    </div>
+    <div class="win-stat"><span class="win-stat-val" id="wTime">-</span><span class="win-stat-lbl">Time</span></div>
+    <div class="win-stat"><span class="win-stat-val" id="wMoves">-</span><span class="win-stat-lbl">Moves</span></div>
   </div>
-  <button class="again-btn" onclick="playAgain()">▶ PLAY AGAIN</button>
+  <div class="win-streak" id="winStreak"></div>
+  <div class="win-actions">
+    <button class="win-btn btn-next" id="nextPuzzleBtnWin" onclick="goToNext()">▶ NEXT PUZZLE</button>
+    <button class="win-btn btn-again" onclick="playAgain()">↺ PLAY AGAIN</button>
+    <a class="win-btn btn-back" id="dirBtnWin" href="directory.html">← BACK TO DIRECTORY</a>
+  </div>
 </div>
 
+<script src="puzzles.js"></script>
 <script>
-/* ════════════════════════════════
-   CONFIG
-════════════════════════════════ */
-
+/* ═══════════════════════════════
+   URL PARAMS — read config
+═══════════════════════════════ */
 const _p           = new URLSearchParams(location.search);
-const IMAGE_URL    = _p.get("imageUrl") || "https://raw.githubusercontent.com/andrewveda/SRM-VEC-English-PWA/db8b23b2c55fe5c176a928628ac078611c614441/assets/51LMkrllR3S._AC_UF1000%2C1000_QL80_.jpg";
-const COLS         = parseInt(_p.get("cols"))  || 4;
-const ROWS         = parseInt(_p.get("rows"))  || 4;
-const PUZZLE_TITLE = _p.get("title") || "Puzzle";
+let IMAGE_URL      = _p.get("imageUrl") || "";
+let COLS           = parseInt(_p.get("cols")) || 4;
+let ROWS           = parseInt(_p.get("rows")) || 4;
+let PUZZLE_ID      = _p.get("id") || "";
+let PUZZLE_TITLE   = _p.get("title") || "Puzzle";
+let PUZZLE_AUTHOR  = _p.get("author") || "";
+let PUZZLE_CAT     = _p.get("category") || "";
+let PUZZLE_DIFF    = _p.get("difficulty") || "";
+let PLAYER_NAME    = _p.get("playerName") || localStorage.getItem("pq_name") || "Player";
+let PLAYER_DEPT    = _p.get("playerDept") || localStorage.getItem("pq_dept") || "";
+let PREV_ID        = _p.get("prevId") || "";
+let NEXT_ID        = _p.get("nextId") || "";
+
 const SUPABASE_URL = "https://yellow-lab-4999.andrewveda.workers.dev/functions/v1/logQuest";
-const TOTAL        = COLS * ROWS;
-  
-/* ════════════════════════════════
-   STATE
-════════════════════════════════ */
-let canvas, ctx;
-let playerName = "", playerDept = "";
-let img = null;
-let cw, ch, pw, ph;
-let boardX = 0, boardY = 0;
-let pieces = [];
-let selectedPiece = null;
+let TOTAL = COLS * ROWS;
 
-let isDragging   = false;
-let dragAnchor   = null;
-let startPointerX = 0, startPointerY = 0;
-let currentPointerX = 0, currentPointerY = 0;
-const DRAG_THRESHOLD = 7;
+/* ═══════════════════════════════
+   PROGRESS helpers
+═══════════════════════════════ */
+function getProgress() { try { return JSON.parse(localStorage.getItem("pq_progress")||"{}"); } catch(e) { return {}; } }
+function markSolved(id) { const p=getProgress(); p[id]=true; localStorage.setItem("pq_progress",JSON.stringify(p)); }
+function getSolvedCount() { const p=getProgress(); return PUZZLES.filter(x=>p[x.id]).length; }
 
-let placed = 0, moves = 0;
-let startTime = null, timerInterval = null;
-let isMuted = false;
-
-/* ════════════════════════════════
-   DOM READY — bind canvas once
-════════════════════════════════ */
-document.addEventListener("DOMContentLoaded", () => {
-  canvas = document.getElementById("puzzleCanvas");
-  ctx    = canvas.getContext("2d");
-
-  // Restore saved name/dept
-  const n = localStorage.getItem("jigName");
-  const d = localStorage.getItem("jigDept");
-  if (n) document.getElementById("nameInput").value  = n;
-  if (d) document.getElementById("deptSelect").value = d;
-
-  // Attach all pointer listeners here — canvas is guaranteed to exist
-  canvas.addEventListener("mousedown",  onDown,  { passive: false });
-  canvas.addEventListener("mousemove",  onMove,  { passive: false });
-  canvas.addEventListener("mouseup",    onUp,    { passive: false });
-  canvas.addEventListener("mouseleave", onUp,    { passive: false });
-  canvas.addEventListener("touchstart", onDown,  { passive: false });
-  canvas.addEventListener("touchmove",  onMove,  { passive: false });
-  canvas.addEventListener("touchend",   onUp,    { passive: false });
-});
-
-/* ════════════════════════════════
-   WEB SPEECH  — debounced cancel
-════════════════════════════════ */
-const synth = window.speechSynthesis;
-let speakTimeout = null;
-
-function speak(txt) {
-  if (isMuted || !synth) return;
-  // Debounce rapid calls so utterances don't stack
-  clearTimeout(speakTimeout);
-  speakTimeout = setTimeout(() => {
-    synth.cancel();
-    const u = new SpeechSynthesisUtterance(txt);
-    u.rate = 1.05; u.pitch = 1.1;
-    synth.speak(u);
-  }, 80);
+/* ═══════════════════════════════
+   NAVIGATION helpers
+═══════════════════════════════ */
+function puzzleLink(id) {
+  if (!id) return "";
+  const p = PUZZLES.find(x => x.id === id);
+  if (!p) return "";
+  const idx = PUZZLES.findIndex(x => x.id === id);
+  const prev = idx > 0 ? PUZZLES[idx-1].id : "";
+  const next = idx < PUZZLES.length-1 ? PUZZLES[idx+1].id : "";
+  const params = new URLSearchParams({
+    id:p.id, title:p.title, author:p.author, imageUrl:p.imageUrl,
+    cols:p.cols, rows:p.rows, category:p.category, difficulty:p.difficulty,
+    playerName:PLAYER_NAME, playerDept:PLAYER_DEPT, prevId:prev, nextId:next
+  });
+  return `puzzle.html?${params}`;
 }
 
+function goToNext() {
+  if (!NEXT_ID) return;
+  window.location.href = puzzleLink(NEXT_ID);
+}
+function goToPrev() {
+  if (!PREV_ID) return;
+  window.location.href = puzzleLink(PREV_ID);
+}
+
+/* Directory link always carries solved param so directory can mark it */
+function dirLink() {
+  return `directory.html?solved=${PUZZLE_ID}`;
+}
+
+/* ═══════════════════════════════
+   INIT NAV UI
+═══════════════════════════════ */
+function setupNav() {
+  document.getElementById("navTitle").textContent  = PUZZLE_TITLE;
+  document.getElementById("navAuthor").textContent = PUZZLE_AUTHOR;
+  document.title = PUZZLE_TITLE + " · Puzzle Quest";
+
+  document.getElementById("backBtn").href = dirLink();
+  document.getElementById("dirBtnWin").href = dirLink();
+
+  const prevBtn = document.getElementById("prevPuzzleBtn");
+  const nextBtn = document.getElementById("nextPuzzleBtn");
+  if (!PREV_ID) prevBtn.classList.add("disabled-btn"); else prevBtn.classList.remove("disabled-btn");
+  if (!NEXT_ID) { nextBtn.classList.add("disabled-btn"); document.getElementById("nextPuzzleBtnWin").style.display="none"; }
+  else { nextBtn.classList.remove("disabled-btn"); document.getElementById("nextPuzzleBtnWin").style.display="block"; }
+
+  const catColors = {quotes:"cat-quotes",jokes:"cat-jokes",comics:"cat-comics",thirukural:"cat-thirukural"};
+  const catLabels = {quotes:"💬 Quotes",jokes:"😄 Jokes",comics:"🎨 Comics",thirukural:"📖 Thirukkural"};
+  const badge = document.getElementById("winCatBadge");
+  badge.className = "cat-badge " + (catColors[PUZZLE_CAT]||"");
+  badge.textContent = catLabels[PUZZLE_CAT] || PUZZLE_CAT;
+}
+
+/* ═══════════════════════════════
+   STATE
+═══════════════════════════════ */
+let canvas, ctx;
+let img = null;
+let cw, ch, pw, ph, boardX, boardY;
+let pieces = [], selectedPiece = null;
+let isDragging = false, dragAnchor = null;
+let startPointerX=0, startPointerY=0, currentPointerX=0, currentPointerY=0;
+const DRAG_THRESHOLD = 7;
+let placed=0, moves=0, startTime=null, timerInterval=null, isMuted=false;
+
+/* ═══════════════════════════════
+   SPEECH
+═══════════════════════════════ */
+const synth = window.speechSynthesis;
+let speakTimeout = null;
+function speak(txt) {
+  if (isMuted || !synth) return;
+  clearTimeout(speakTimeout);
+  speakTimeout = setTimeout(() => { synth.cancel(); const u=new SpeechSynthesisUtterance(txt); u.rate=1.05; u.pitch=1.1; synth.speak(u); }, 80);
+}
 function toggleMute() {
   isMuted = !isMuted;
   document.getElementById("muteBtn").textContent = isMuted ? "🔇" : "🔊";
   if (isMuted) { clearTimeout(speakTimeout); synth.cancel(); }
 }
 
-/* ════════════════════════════════
+/* ═══════════════════════════════
    COMMENTARY
-════════════════════════════════ */
+═══════════════════════════════ */
 const correctLines = [
-  n => `Yes! Perfect match! 🦅`,
-  n => `Snap! That piece is locked! 🔥`,
-  n => `Found its home! Keep moving ${n}! 🎯`,
-  n => `Absolute lock! Progressing! ⚡`,
+  n=>`Yes! Perfect match! 🦅`, n=>`Snap! That piece is locked! 🔥`,
+  n=>`Found its home! Keep moving ${n}! 🎯`, n=>`Absolute lock! Progressing! ⚡`,
 ];
 const milestones = {
-  25: n => `${n} locked 25% of the frame! 🎨`,
-  50: n => `Half the puzzle locked! 💪`,
-  75: n => `75% locked! Almost home! 🏁`,
+  25: n=>`${n} locked 25% done! 🎨`,
+  50: n=>`Half the puzzle locked! 💪`,
+  75: n=>`75% locked! Almost home! 🏁`,
 };
-
 function setCommentary(txt) {
   const el = document.getElementById("commentary");
-  el.style.opacity = 0;
-  setTimeout(() => { el.textContent = txt; el.style.opacity = 1; }, 180);
+  el.style.opacity=0;
+  setTimeout(()=>{ el.textContent=txt; el.style.opacity=1; }, 180);
   speak(txt);
 }
 
-/* ════════════════════════════════
+/* ═══════════════════════════════
    TIMER
-════════════════════════════════ */
-function startTimer() {
-  startTime = Date.now();
-  timerInterval = setInterval(() => {}, 500); // kept alive for elapsed()
-}
-function elapsed() {
-  return startTime ? Math.floor((Date.now() - startTime) / 1000) : 0;
-}
+═══════════════════════════════ */
+function startTimer() { startTime=Date.now(); timerInterval=setInterval(()=>{},500); }
+function elapsed() { return startTime ? Math.floor((Date.now()-startTime)/1000) : 0; }
 
-/* ════════════════════════════════
-   START GAME
-════════════════════════════════ */
-function startGame() {
-  const n = document.getElementById("nameInput").value.trim();
-  const d = document.getElementById("deptSelect").value;
-  if (!n) { alert("Please enter your name!"); return; }
-  if (!d) { alert("Please select your department!"); return; }
-  playerName = n; playerDept = d;
-  localStorage.setItem("jigName", n);
-  localStorage.setItem("jigDept", d);
-  document.getElementById("nameScreen").style.display = "none";
+/* ═══════════════════════════════
+   DOM READY
+═══════════════════════════════ */
+document.addEventListener("DOMContentLoaded", () => {
+  canvas = document.getElementById("puzzleCanvas");
+  ctx    = canvas.getContext("2d");
+  canvas.addEventListener("mousedown",  onDown, {passive:false});
+  canvas.addEventListener("mousemove",  onMove, {passive:false});
+  canvas.addEventListener("mouseup",    onUp,   {passive:false});
+  canvas.addEventListener("mouseleave", onUp,   {passive:false});
+  canvas.addEventListener("touchstart", onDown, {passive:false});
+  canvas.addEventListener("touchmove",  onMove, {passive:false});
+  canvas.addEventListener("touchend",   onUp,   {passive:false});
+  canvas.addEventListener("click", (e)=>{ if (!selectedPiece) return; const {x,y}=getPos(e); if (!hitPiece(x,y)){selectedPiece=null;drawAll();} }, {passive:false});
+
   document.getElementById("puzzleScreen").style.display = "flex";
+  setupNav();
   initPuzzle();
-}
+});
 
-/* ════════════════════════════════
+/* ═══════════════════════════════
    PUZZLE INIT
-════════════════════════════════ */
+═══════════════════════════════ */
 function initPuzzle() {
-  pieces = []; selectedPiece = null;
-  isDragging = false; dragAnchor = null;
-  placed = 0; moves = 0;
-  clearInterval(timerInterval); startTime = null;
-
+  pieces=[]; selectedPiece=null; isDragging=false; dragAnchor=null;
+  placed=0; moves=0;
+  clearInterval(timerInterval); startTime=null;
+  TOTAL = COLS * ROWS;
   document.getElementById("progFill").style.width = "0%";
+  document.getElementById("progLabel").textContent = `0 / ${TOTAL}`;
   document.getElementById("loadingOverlay").style.display = "flex";
 
-  // Reuse already-loaded image if available (fixes win-screen reload bug)
-  if (img && img.complete && img.naturalWidth > 0) {
-    buildPuzzle();
-  } else {
-    img = new Image();
-    img.crossOrigin = "anonymous";
-    img.onload  = buildPuzzle;
-    img.onerror = () => setCommentary("⚠️ Image failed to load. Check connection.");
-    img.src = IMAGE_URL;
-  }
+  if (img && img.complete && img.naturalWidth>0) { buildPuzzle(); return; }
+  img = new Image(); img.crossOrigin="anonymous";
+  img.onload  = buildPuzzle;
+  img.onerror = ()=>setCommentary("⚠️ Image failed to load.");
+  img.src = IMAGE_URL;
 }
 
-/* ════════════════════════════════
-   BUILD PIECES & SHUFFLE
-════════════════════════════════ */
+/* ═══════════════════════════════
+   BUILD
+═══════════════════════════════ */
 function buildPuzzle() {
   const area = canvas.parentElement;
   const dpr  = window.devicePixelRatio || 1;
-  cw = area.clientWidth;
-  ch = area.clientHeight;
-  canvas.width  = cw * dpr;
-  canvas.height = ch * dpr;
-  canvas.style.width  = cw + "px";
-  canvas.style.height = ch + "px";
-  ctx = canvas.getContext("2d");
-  ctx.scale(dpr, dpr);
+  cw = area.clientWidth; ch = area.clientHeight;
+  canvas.width=cw*dpr; canvas.height=ch*dpr;
+  canvas.style.width=cw+"px"; canvas.style.height=ch+"px";
+  ctx = canvas.getContext("2d"); ctx.scale(dpr,dpr);
 
-  // Preserve image aspect ratio — fit board inside available area
-  const pad    = 10;
-  const imgAR  = img.naturalWidth / img.naturalHeight;
-  const boardAR = (COLS / ROWS) * imgAR;
-
-  const maxW = cw - pad * 2;
-  const maxH = ch - pad * 2;
-
+  const pad=10, imgAR=img.naturalWidth/img.naturalHeight;
+  const boardAR=(COLS/ROWS)*imgAR;
+  const maxW=cw-pad*2, maxH=ch-pad*2;
   let boardW, boardH;
-  if (maxW / maxH > boardAR) {
-    boardH = maxH;
-    boardW = Math.floor(boardH * boardAR);
-  } else {
-    boardW = maxW;
-    boardH = Math.floor(boardW / boardAR);
-  }
+  if (maxW/maxH > boardAR) { boardH=maxH; boardW=Math.floor(boardH*boardAR); }
+  else { boardW=maxW; boardH=Math.floor(boardW/boardAR); }
+  pw=Math.floor(boardW/COLS); ph=Math.floor(boardH/ROWS);
+  boardX=Math.floor((cw-pw*COLS)/2); boardY=Math.floor((ch-ph*ROWS)/2);
 
-  pw = Math.floor(boardW / COLS);
-  ph = Math.floor(boardH / ROWS);
-  boardX = Math.floor((cw - pw * COLS) / 2);
-  boardY = Math.floor((ch - ph * ROWS) / 2);
-
-  // Build shuffled slots — guarantee no piece starts solved
   let slots;
   do {
-    slots = Array.from({ length: TOTAL }, (_, i) => ({ r: Math.floor(i / COLS), c: i % COLS }));
-    slots.sort(() => Math.random() - 0.5);
-  } while (slots.every((s, i) => s.r === Math.floor(i / COLS) && s.c === i % COLS));
+    slots = Array.from({length:TOTAL},(_,i)=>({r:Math.floor(i/COLS),c:i%COLS}));
+    slots.sort(()=>Math.random()-0.5);
+  } while (slots.every((s,i)=>s.r===Math.floor(i/COLS)&&s.c===i%COLS));
 
-  pieces = [];
-  let idx = 0;
-  for (let r = 0; r < ROWS; r++) {
-    for (let c = 0; c < COLS; c++) {
-      const slot = slots[idx++];
-      pieces.push({ id: pieces.length, tr: r, tc: c, row: slot.r, col: slot.c, locked: false });
-    }
+  pieces=[];
+  let idx=0;
+  for (let r=0;r<ROWS;r++) for (let c=0;c<COLS;c++) {
+    const slot=slots[idx++];
+    pieces.push({id:pieces.length,tr:r,tc:c,row:slot.r,col:slot.c,locked:false});
   }
-
-  // Pre-lock any accidentally correct pieces from shuffle
-  pieces.forEach(p => { if (p.row === p.tr && p.col === p.tc) p.locked = true; });
-  placed = pieces.filter(p => p.locked).length;
+  pieces.forEach(p=>{if(p.row===p.tr&&p.col===p.tc)p.locked=true;});
+  placed=pieces.filter(p=>p.locked).length;
   updateProgress();
 
-  document.getElementById("loadingOverlay").style.display = "none";
-  drawAll();
-  startTimer();
-  setTimeout(() => setCommentary(`Drag or tap pieces to solve it, ${playerName}! 🧩`), 400);
+  document.getElementById("loadingOverlay").style.display="none";
+  drawAll(); startTimer();
+  setTimeout(()=>setCommentary(`${PUZZLE_TITLE} — drag or tap to solve, ${PLAYER_NAME}! 🧩`),400);
 }
 
-/* ════════════════════════════════
-   NO CLUSTERING — single piece only
-════════════════════════════════ */
+/* ═══════════════════════════════
+   CLUSTER (single piece)
+═══════════════════════════════ */
 function getCluster(p) { return [p]; }
 
-/* ════════════════════════════════
+/* ═══════════════════════════════
    RED FLASH
-════════════════════════════════ */
+═══════════════════════════════ */
 function triggerRedFlash() {
-  const area = document.getElementById("puzzleArea");
-  area.classList.remove("flash-red");
-  void area.offsetWidth;
-  area.classList.add("flash-red");
+  const a=document.getElementById("puzzleArea");
+  a.classList.remove("flash-red"); void a.offsetWidth; a.classList.add("flash-red");
 }
 
-/* ════════════════════════════════
+/* ═══════════════════════════════
    DRAWING
-════════════════════════════════ */
+═══════════════════════════════ */
 function drawAll() {
-  if (!canvas || !ctx) return;
-  ctx.clearRect(0, 0, cw, ch);
+  if (!canvas||!ctx) return;
+  ctx.clearRect(0,0,cw,ch);
+  ctx.strokeStyle="rgba(0,245,255,0.12)"; ctx.lineWidth=1.5;
+  ctx.strokeRect(boardX,boardY,pw*COLS,ph*ROWS);
 
-  // Board outline
-  ctx.strokeStyle = "rgba(0,245,255,0.15)";
-  ctx.lineWidth   = 1.5;
-  ctx.strokeRect(boardX, boardY, pw * COLS, ph * ROWS);
+  const draggingCluster=(isDragging&&dragAnchor)?getCluster(dragAnchor):[];
+  const draggingIds=new Set(draggingCluster.map(p=>p.id));
+  let tapClusterIds=new Set();
+  if (!isDragging&&selectedPiece) getCluster(selectedPiece).forEach(p=>tapClusterIds.add(p.id));
 
-  const draggingCluster = (isDragging && dragAnchor) ? getCluster(dragAnchor) : [];
-  const draggingIds     = new Set(draggingCluster.map(p => p.id));
-
-  // Tap-selection cluster
-  let tapClusterIds = new Set();
-  if (!isDragging && selectedPiece) {
-    getCluster(selectedPiece).forEach(p => tapClusterIds.add(p.id));
-  }
-
-  // Draw non-dragging pieces first
-  for (const p of pieces) {
-    if (!draggingIds.has(p.id)) drawPiece(p, 0, 0, false, tapClusterIds.has(p.id));
-  }
-
-  // Draw dragging cluster on top
+  for (const p of pieces) if (!draggingIds.has(p.id)) drawPiece(p,0,0,false,tapClusterIds.has(p.id));
   if (draggingCluster.length) {
-    const dx = currentPointerX - startPointerX;
-    const dy = currentPointerY - startPointerY;
-    for (const p of draggingCluster) drawPiece(p, dx, dy, true, false);
+    const dx=currentPointerX-startPointerX, dy=currentPointerY-startPointerY;
+    for (const p of draggingCluster) drawPiece(p,dx,dy,true,false);
   }
 }
 
-function drawPiece(p, offsetX, offsetY, isDragged, isTapSelected) {
-  const x = boardX + p.col * pw + offsetX;
-  const y = boardY + p.row * ph + offsetY;
+function drawPiece(p,offsetX,offsetY,isDragged,isTapSelected) {
+  const x=boardX+p.col*pw+offsetX, y=boardY+p.row*ph+offsetY;
+  ctx.save(); roundRect(ctx,x,y,pw,ph,4); ctx.clip();
+  const srcW=img.naturalWidth, srcH=img.naturalHeight;
+  ctx.drawImage(img, p.tc*(srcW/COLS), p.tr*(srcH/ROWS), srcW/COLS, srcH/ROWS, x,y,pw,ph);
 
-  ctx.save();
-  roundRect(ctx, x, y, pw, ph, 4);
-  ctx.clip();
-
-  const srcW = img.naturalWidth;
-  const srcH = img.naturalHeight;
-  ctx.drawImage(img,
-    p.tc * (srcW / COLS), p.tr * (srcH / ROWS),
-    srcW / COLS,           srcH / ROWS,
-    x, y, pw, ph
-  );
-
-  if (p.locked && isTapSelected) {
-    // Correct piece tapped — green glow to confirm, drawn outside clip
-    ctx.restore();
-    ctx.save();
-    ctx.shadowColor = "#39FF14";
-    ctx.shadowBlur  = 18;
-    roundRect(ctx, x, y, pw, ph, 4);
-    ctx.strokeStyle = "rgba(57,255,20,0.9)";
-    ctx.lineWidth   = 3;
-    ctx.stroke();
-    ctx.restore();
-    return;
-  } else if (!p.locked && (isDragged || isTapSelected)) {
-    ctx.strokeStyle = "#FFE600";
-    ctx.lineWidth   = 3;
-    ctx.stroke();
-    ctx.fillStyle   = "rgba(255,230,0,0.15)";
-    ctx.fillRect(x, y, pw, ph);
+  if (p.locked&&isTapSelected) {
+    ctx.restore(); ctx.save();
+    ctx.shadowColor="#39FF14"; ctx.shadowBlur=18;
+    roundRect(ctx,x,y,pw,ph,4); ctx.strokeStyle="rgba(57,255,20,0.9)"; ctx.lineWidth=3; ctx.stroke();
+    ctx.restore(); return;
+  } else if (!p.locked&&(isDragged||isTapSelected)) {
+    ctx.strokeStyle="#FFE600"; ctx.lineWidth=3; ctx.stroke();
+    ctx.fillStyle="rgba(255,230,0,0.15)"; ctx.fillRect(x,y,pw,ph);
   } else if (!p.locked) {
-    ctx.strokeStyle = "rgba(255,255,255,0.12)";
-    ctx.lineWidth   = 1;
-    ctx.stroke();
+    ctx.strokeStyle="rgba(255,255,255,0.1)"; ctx.lineWidth=1; ctx.stroke();
   }
-  // locked + not selected → no border, fully seamless
   ctx.restore();
 }
 
-function roundRect(ctx, x, y, w, h, r) {
+function roundRect(ctx,x,y,w,h,r) {
   ctx.beginPath();
-  ctx.moveTo(x+r, y);
-  ctx.lineTo(x+w-r, y); ctx.quadraticCurveTo(x+w, y, x+w, y+r);
-  ctx.lineTo(x+w, y+h-r); ctx.quadraticCurveTo(x+w, y+h, x+w-r, y+h);
-  ctx.lineTo(x+r, y+h); ctx.quadraticCurveTo(x, y+h, x, y+h-r);
-  ctx.lineTo(x, y+r); ctx.quadraticCurveTo(x, y, x+r, y);
-  ctx.closePath();
+  ctx.moveTo(x+r,y); ctx.lineTo(x+w-r,y); ctx.quadraticCurveTo(x+w,y,x+w,y+r);
+  ctx.lineTo(x+w,y+h-r); ctx.quadraticCurveTo(x+w,y+h,x+w-r,y+h);
+  ctx.lineTo(x+r,y+h); ctx.quadraticCurveTo(x,y+h,x,y+h-r);
+  ctx.lineTo(x,y+r); ctx.quadraticCurveTo(x,y,x+r,y); ctx.closePath();
 }
 
-/* ════════════════════════════════
+/* ═══════════════════════════════
    EXECUTE MOVE
-════════════════════════════════ */
-function executeClusterMove(anchor, deltaR, deltaC) {
-  if (deltaR === 0 && deltaC === 0) return false;
+═══════════════════════════════ */
+function executeClusterMove(anchor,deltaR,deltaC) {
+  if (deltaR===0&&deltaC===0) return false;
+  const cluster=getCluster(anchor), clusterIds=new Set(cluster.map(p=>p.id));
 
-  const cluster    = getCluster(anchor);
-  const clusterIds = new Set(cluster.map(p => p.id));
-
-  // Validate: no out-of-bounds, no locked cell in destination
   for (const cp of cluster) {
-    const tr = cp.row + deltaR;
-    const tc = cp.col + deltaC;
-    if (tr < 0 || tr >= ROWS || tc < 0 || tc >= COLS) { triggerRedFlash(); return false; }
-    const occ = pieces.find(p => p.row === tr && p.col === tc);
-    if (occ && occ.locked) { triggerRedFlash(); return false; }
+    const tr=cp.row+deltaR, tc=cp.col+deltaC;
+    if (tr<0||tr>=ROWS||tc<0||tc>=COLS) { triggerRedFlash(); return false; }
+    const occ=pieces.find(p=>p.row===tr&&p.col===tc);
+    if (occ&&occ.locked) { triggerRedFlash(); return false; }
   }
-
   moves++;
 
-  // Collect displaced pieces (those in destination cells, not in cluster)
-  // Map each cluster cell to the piece currently occupying its target, before any moves
-  const displacedMap = new Map(); // displaced piece → { fromR, fromC } before move
+  const displacedMap=new Map();
   for (const cp of cluster) {
-    const tr = cp.row + deltaR;
-    const tc = cp.col + deltaC;
-    const occ = pieces.find(p => p.row === tr && p.col === tc && !clusterIds.has(p.id));
-    if (occ && !displacedMap.has(occ.id)) {
-      displacedMap.set(occ.id, { row: occ.row, col: occ.col, piece: occ });
-    }
+    const tr=cp.row+deltaR, tc=cp.col+deltaC;
+    const occ=pieces.find(p=>p.row===tr&&p.col===tc&&!clusterIds.has(p.id));
+    if (occ&&!displacedMap.has(occ.id)) displacedMap.set(occ.id,{row:occ.row,col:occ.col,piece:occ});
   }
+  for (const cp of cluster) { cp.row+=deltaR; cp.col+=deltaC; }
+  for (const [,{row:fromR,col:fromC,piece:dp}] of displacedMap) { dp.row=fromR-deltaR; dp.col=fromC-deltaC; }
 
-  // Move cluster forward
-  for (const cp of cluster) { cp.row += deltaR; cp.col += deltaC; }
-
-  // Move each displaced piece to where the first cluster piece that displaced it came from
-  // Use a stable approach: find the cluster piece whose target was their origin
-  for (const [, { row: fromR, col: fromC, piece: dp }] of displacedMap) {
-    // The cluster piece that was at (fromR - deltaR, fromC - deltaC) moved to (fromR, fromC)
-    // So dp should go to (fromR - deltaR, fromC - deltaC) — the cluster piece's old position
-    dp.row = fromR - deltaR;
-    dp.col = fromC - deltaC;
-  }
-
-  // Check for new locks
-  let newLocks = 0;
-  for (const p of pieces) {
-    if (!p.locked && p.row === p.tr && p.col === p.tc) { p.locked = true; newLocks++; }
-  }
-  placed = pieces.filter(p => p.locked).length;
+  let newLocks=0;
+  for (const p of pieces) if (!p.locked&&p.row===p.tr&&p.col===p.tc) { p.locked=true; newLocks++; }
+  placed=pieces.filter(p=>p.locked).length;
   updateProgress();
 
-  if (newLocks > 0) {
-    confetti({ particleCount: 25, spread: 45, origin: { y: 0.5 }, colors: ["#FFE600","#00F5FF","#39FF14"] });
-
-    // Fixed milestone detection: check if placed count crossed a threshold
-    const pct = Math.round(placed / TOTAL * 100);
-    // Milestone triggers when we just crossed 25/50/75 — compare before and after
-    const prevPct = Math.round((placed - newLocks) / TOTAL * 100);
-    const milestone = [25, 50, 75].find(m => prevPct < m && pct >= m);
-    const msg = milestone
-      ? milestones[milestone](playerName)
-      : correctLines[Math.floor(Math.random() * correctLines.length)](playerName);
+  if (newLocks>0) {
+    confetti({particleCount:25,spread:45,origin:{y:0.5},colors:["#FFE600","#00F5FF","#39FF14"]});
+    const pct=Math.round(placed/TOTAL*100);
+    const prevPct=Math.round((placed-newLocks)/TOTAL*100);
+    const milestone=[25,50,75].find(m=>prevPct<m&&pct>=m);
+    const msg=milestone?milestones[milestone](PLAYER_NAME):correctLines[Math.floor(Math.random()*correctLines.length)](PLAYER_NAME);
     setCommentary(msg);
-
-    if (placed === TOTAL) setTimeout(showWin, 700);
+    if (placed===TOTAL) setTimeout(showWin,700);
   }
-  // No red flash on valid-but-no-lock moves — neutral feedback only
-
   return true;
 }
 
-/* ════════════════════════════════
+/* ═══════════════════════════════
    POINTER HANDLERS
-════════════════════════════════ */
+═══════════════════════════════ */
 function getPos(e) {
-  const rect   = canvas.getBoundingClientRect();
-  const scaleX = cw / rect.width;
-  const scaleY = ch / rect.height;
-  const src    = (e.touches && e.touches.length) ? e.touches[0] : e;
-  return { x: (src.clientX - rect.left) * scaleX, y: (src.clientY - rect.top) * scaleY };
+  const rect=canvas.getBoundingClientRect();
+  const scaleX=cw/rect.width, scaleY=ch/rect.height;
+  const src=(e.touches&&e.touches.length)?e.touches[0]:e;
+  return {x:(src.clientX-rect.left)*scaleX, y:(src.clientY-rect.top)*scaleY};
 }
-
-function hitPiece(x, y) {
-  const col = Math.floor((x - boardX) / pw);
-  const row = Math.floor((y - boardY) / ph);
-  if (row < 0 || row >= ROWS || col < 0 || col >= COLS) return null;
-  return pieces.find(p => p.row === row && p.col === col) || null;
+function hitPiece(x,y) {
+  const col=Math.floor((x-boardX)/pw), row=Math.floor((y-boardY)/ph);
+  if (row<0||row>=ROWS||col<0||col>=COLS) return null;
+  return pieces.find(p=>p.row===row&&p.col===col)||null;
 }
-
 function onDown(e) {
   e.preventDefault();
-  const { x, y } = getPos(e);
-  const p = hitPiece(x, y);
+  const {x,y}=getPos(e), p=hitPiece(x,y);
   if (!p) return;
-  if (p.locked) {
-    // Briefly show green glow to confirm correct placement, then clear
-    selectedPiece = p;
-    drawAll();
-    setTimeout(() => { if (selectedPiece === p) { selectedPiece = null; drawAll(); } }, 600);
-    return;
-  }
-
-  dragAnchor     = p;
-  startPointerX  = x; startPointerY  = y;
-  currentPointerX = x; currentPointerY = y;
-  isDragging     = false;
+  if (p.locked) { selectedPiece=p; drawAll(); setTimeout(()=>{if(selectedPiece===p){selectedPiece=null;drawAll();}},600); return; }
+  dragAnchor=p; startPointerX=x; startPointerY=y; currentPointerX=x; currentPointerY=y; isDragging=false;
 }
-
 function onMove(e) {
-  if (!dragAnchor) return;
-  e.preventDefault();
-  const { x, y } = getPos(e);
-  currentPointerX = x; currentPointerY = y;
-
-  if (!isDragging) {
-    if (Math.hypot(x - startPointerX, y - startPointerY) > DRAG_THRESHOLD) {
-      isDragging    = true;
-      selectedPiece = null; // cancel any pending tap selection
-    }
-  }
+  if (!dragAnchor) return; e.preventDefault();
+  const {x,y}=getPos(e); currentPointerX=x; currentPointerY=y;
+  if (!isDragging&&Math.hypot(x-startPointerX,y-startPointerY)>DRAG_THRESHOLD) { isDragging=true; selectedPiece=null; }
   if (isDragging) drawAll();
 }
-
 function onUp(e) {
-  if (!dragAnchor) return;
-  e.preventDefault();
-
+  if (!dragAnchor) return; e.preventDefault();
   if (isDragging) {
-    const deltaCol = Math.round((currentPointerX - startPointerX) / pw);
-    const deltaRow = Math.round((currentPointerY - startPointerY) / ph);
-    if (deltaCol !== 0 || deltaRow !== 0) executeClusterMove(dragAnchor, deltaRow, deltaCol);
-    isDragging = false;
-    dragAnchor = null;
-    drawAll();
-    return;
+    const deltaCol=Math.round((currentPointerX-startPointerX)/pw);
+    const deltaRow=Math.round((currentPointerY-startPointerY)/ph);
+    if (deltaCol!==0||deltaRow!==0) executeClusterMove(dragAnchor,deltaRow,deltaCol);
+    isDragging=false; dragAnchor=null; drawAll(); return;
   }
-
-  // TAP logic
-  const p = dragAnchor;
-  dragAnchor = null;
-
-  if (!selectedPiece) {
-    selectedPiece = p;
-    drawAll();
-    return;
-  }
-
-  // Tapping empty area or same piece → deselect
-  if (selectedPiece.id === p.id) {
-    selectedPiece = null;
-    drawAll();
-    return;
-  }
-
-  // Tapping within same cluster → shift selection to tapped piece
-  const cluster = getCluster(selectedPiece);
-  if (cluster.some(cp => cp.id === p.id)) {
-    selectedPiece = p;
-    drawAll();
-    return;
-  }
-
-  // Tap second piece to swap
-  const deltaR = p.row - selectedPiece.row;
-  const deltaC = p.col - selectedPiece.col;
-  executeClusterMove(selectedPiece, deltaR, deltaC);
-  selectedPiece = null;
-  drawAll();
+  const p=dragAnchor; dragAnchor=null;
+  if (!selectedPiece) { selectedPiece=p; drawAll(); return; }
+  if (selectedPiece.id===p.id) { selectedPiece=null; drawAll(); return; }
+  const cluster=getCluster(selectedPiece);
+  if (cluster.some(cp=>cp.id===p.id)) { selectedPiece=p; drawAll(); return; }
+  const deltaR=p.row-selectedPiece.row, deltaC=p.col-selectedPiece.col;
+  executeClusterMove(selectedPiece,deltaR,deltaC);
+  selectedPiece=null; drawAll();
 }
 
-/* ════════════════════════════════
-   CANVAS CLICK ON EMPTY SPACE → DESELECT
-════════════════════════════════ */
-canvas && canvas.addEventListener("click", (e) => {
-  if (!selectedPiece) return;
-  const { x, y } = getPos(e);
-  if (!hitPiece(x, y)) { selectedPiece = null; drawAll(); }
-}, { passive: false });
-
-/* ════════════════════════════════
+/* ═══════════════════════════════
    PROGRESS
-════════════════════════════════ */
+═══════════════════════════════ */
 function updateProgress() {
-  const pct = Math.round(placed / TOTAL * 100);
-  document.getElementById("progFill").style.width = pct + "%";
+  const pct=Math.round(placed/TOTAL*100);
+  document.getElementById("progFill").style.width=pct+"%";
+  document.getElementById("progLabel").textContent=`${placed} / ${TOTAL}`;
 }
 
-/* ════════════════════════════════
+/* ═══════════════════════════════
    WIN
-════════════════════════════════ */
+═══════════════════════════════ */
 function showWin() {
   clearInterval(timerInterval);
-  const s   = elapsed();
-  const m   = Math.floor(s / 60), sec = s % 60;
-  const timeStr = `${m}:${sec.toString().padStart(2, "0")}`;
+  markSolved(PUZZLE_ID);
 
-  const end = Date.now() + 3000;
-  (function frame() {
-    confetti({ particleCount: 6, angle:  60, spread: 55, origin: { x: 0 }, colors: ["#FFE600","#00F5FF","#39FF14","#FF2D78"] });
-    confetti({ particleCount: 6, angle: 120, spread: 55, origin: { x: 1 }, colors: ["#FFE600","#00F5FF","#39FF14","#FF2D78"] });
-    if (Date.now() < end) requestAnimationFrame(frame);
+  const s=elapsed(), m=Math.floor(s/60), sec=s%60;
+  const timeStr=`${m}:${sec.toString().padStart(2,"0")}`;
+  const totalSolved=getSolvedCount();
+  const totalPuzzles=PUZZLES.length;
+
+  const end=Date.now()+3000;
+  (function frame(){
+    confetti({particleCount:6,angle:60,spread:55,origin:{x:0},colors:["#FFE600","#00F5FF","#39FF14","#FF2D78"]});
+    confetti({particleCount:6,angle:120,spread:55,origin:{x:1},colors:["#FFE600","#00F5FF","#39FF14","#FF2D78"]});
+    if(Date.now()<end) requestAnimationFrame(frame);
   }());
 
-  document.getElementById("puzzleScreen").style.display = "none";
-  document.getElementById("winScreen").style.display    = "flex";
-  document.getElementById("winPlayer").textContent = `${playerName} · ${playerDept}`;
-  document.getElementById("wTime").textContent     = timeStr;
-  document.getElementById("wMoves").textContent    = moves;
+  document.getElementById("puzzleScreen").style.display="none";
+  document.getElementById("winScreen").style.display="flex";
+  document.getElementById("winPlayer").textContent=`${PLAYER_NAME} · ${PLAYER_DEPT}`;
+  document.getElementById("winPuzzleName").textContent=`"${PUZZLE_TITLE}"`;
+  document.getElementById("wTime").textContent=timeStr;
+  document.getElementById("wMoves").textContent=moves;
+  document.getElementById("winImg").src=img.src;
+  document.getElementById("winStreak").textContent=`🏆 ${totalSolved} of ${totalPuzzles} puzzles solved`;
 
-  // Reuse the already-loaded image object — no re-fetch
-  document.getElementById("winImg").src = img.src;
+  const commentary=NEXT_ID
+    ? `Nailed it, ${PLAYER_NAME}! Tap Next Puzzle to keep going! 🚀`
+    : `Amazing, ${PLAYER_NAME}! That's the last one! You're done! 🎉`;
+  setCommentary(commentary);
 
-  setCommentary(`Congratulations ${playerName}! Solved in ${timeStr}!`);
-  sendToSupabase({ student_name: playerName, department: playerDept, time_spent: s, moves, quest_id: "Jigsaw-HybridSwap" });
+  sendToSupabase({student_name:PLAYER_NAME,department:PLAYER_DEPT,time_spent:s,moves,quest_id:"Jigsaw-"+PUZZLE_ID});
 }
 
 async function sendToSupabase(payload) {
-  try {
-    await fetch(SUPABASE_URL, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(payload) });
-  } catch (e) { console.warn("Supabase log dropped:", e); }
+  try { await fetch(SUPABASE_URL,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(payload)}); }
+  catch(e) { console.warn("Supabase log dropped:",e); }
 }
 
-/* ════════════════════════════════
-   PLAY AGAIN
-════════════════════════════════ */
 function playAgain() {
-  document.getElementById("winScreen").style.display    = "none";
-  document.getElementById("puzzleScreen").style.display = "flex";
+  document.getElementById("winScreen").style.display="none";
+  document.getElementById("puzzleScreen").style.display="flex";
+  img=null;
   initPuzzle();
 }
 
-/* ════════════════════════════════
-   RESIZE
-════════════════════════════════ */
-window.addEventListener("resize", () => {
-  if (document.getElementById("puzzleScreen").style.display === "flex" && img?.complete) buildPuzzle();
+window.addEventListener("resize",()=>{
+  if (document.getElementById("puzzleScreen").style.display==="flex"&&img?.complete) buildPuzzle();
 });
 </script>
 </body>
