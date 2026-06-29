@@ -288,14 +288,7 @@ function getFiltered() {
 }
 
 function buildLink(p) {
-  const params = new URLSearchParams({
-    id:       p.id,
-    title:    p.title,
-    imageUrl: p.imageUrl,
-    cols:     p.cols,
-    rows:     p.rows,
-  });
-  return `${PUZZLE_FILE}?${params.toString()}`;
+  return `puzzle.html#${p.id}`;
 }
 
 function render() {
