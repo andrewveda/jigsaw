@@ -121,8 +121,23 @@ const PUZZLE_TITLE  = _puz.title;
 const PUZZLE_AUTHOR = _puz.author;
 const PUZZLE_CAT    = _puz.category;
 const PUZZLE_DIFF   = _puz.difficulty;
-const PLAYER_NAME   = localStorage.getItem("pq_name") || "Player";
-const PLAYER_DEPT   = localStorage.getItem("pq_dept") || "";
+/* ═══════════════════════════════════════════════════
+   GATE — block direct access if player hasn't registered.
+   Redirect to directory, which stores the intended puzzle
+   in sessionStorage so it can bounce back after sign-in.
+═══════════════════════════════════════════════════ */
+(function gate() {
+  const name = localStorage.getItem("pq_name");
+  const dept = localStorage.getItem("pq_dept");
+  if (!name || !dept) {
+    /* Remember where they were trying to go */
+    sessionStorage.setItem("pq_redirect", location.hash || "");
+    location.replace("directory.html");
+  }
+}());
+
+const PLAYER_NAME   = localStorage.getItem("pq_name");
+const PLAYER_DEPT   = localStorage.getItem("pq_dept");
 
 const _idx  = PUZZLES.findIndex(p => p.id === PUZZLE_ID);
 const PREV_ID = _idx > 0               ? PUZZLES[_idx - 1].id : "";
