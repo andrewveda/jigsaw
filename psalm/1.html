@@ -246,14 +246,7 @@ body{font-family:'DM Sans',sans-serif;background:#0a0008;color:#fff;overflow:hid
       <label class="field-label">Your name</label>
       <input type="text" id="nameInput" placeholder="Enter your name" autocomplete="off"/>
     </div>
-    <div>
-      <label class="field-label">I am from</label>
-      <select id="deptSelect">
-        <option value="">— Select —</option>
-        <option>Friends &amp; Family</option>
-       
-      </select>
-    </div>
+   
     <button class="start-btn" onclick="enterPsalm()">BEGIN THE PSALM ✝</button>
   </div>
 </div>
@@ -421,12 +414,14 @@ function markVerseSolved(id){ const s=getSolvedVerses(); if(!s.includes(id)){s.p
 ═══════════════════════════════ */
 function enterPsalm(){
   const n=document.getElementById("nameInput").value.trim();
-  const d=document.getElementById("deptSelect").value;
-  if(!n){alert("Please enter your name!");return;}
-  if(!d){alert("Please select where you are from!");return;}
-  playerName=n; playerDept=d;
-  localStorage.setItem("ps1_name",n); localStorage.setItem("ps1_dept",d);
-  document.getElementById("entryScreen").style.display="none";
+  
+ playerName = n;
+playerDept = "Friends & Family";
+
+localStorage.setItem("ps1_name", n);
+localStorage.setItem("ps1_dept", playerDept);
+  
+   document.getElementById("entryScreen").style.display="none";
   document.getElementById("puzzleScreen").style.display="flex";
   currentVerseIdx=0; totalTime=0; totalMoves=0;
   buildDots();
@@ -602,14 +597,11 @@ document.addEventListener("DOMContentLoaded",()=>{
     if(!hitPiece(x,y)){selectedPiece=null;drawAll();}
   },{passive:false});
 
-  // auto-login if returning
-  const n=localStorage.getItem("ps1_name"),d=localStorage.getItem("ps1_dept");
-  if(n&&d){
-    document.getElementById("nameInput").value=n;
-    document.getElementById("deptSelect").value=d;
+  const n = localStorage.getItem("ps1_name");
+  if (n) {
+    document.getElementById("nameInput").value = n;
   }
 });
-
 /* ═══════════════════════════════
    PUZZLE INIT
 ═══════════════════════════════ */
