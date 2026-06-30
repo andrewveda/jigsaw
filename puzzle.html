@@ -1,36 +1,34 @@
-<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no"/>
 <title>Puzzle Quest</title>
-<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=DM+Sans:wght@400;600;700&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=DM+Sans:wght@400;700;800&display=swap" rel="stylesheet"/>
 <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
-body{font-family:'DM Sans',sans-serif;background:#0a0a1a;color:#fff;min-height:100dvh;overflow:hidden;user-select:none}
+html,body{height:100%}
+body{font-family:'DM Sans',sans-serif;background:#0a0a1a;color:#fff;overflow:hidden;user-select:none}
 
+/* ── TOP NAV ── */
 .top-nav{display:flex;align-items:center;gap:8px;padding:0.55rem 0.75rem;background:#0a0a1a;border-bottom:1px solid #111130;flex-shrink:0}
-.nav-btn{display:flex;align-items:center;gap:5px;padding:5px 10px;background:#12122a;border:1px solid #1e1e45;border-radius:8px;color:#888;font-size:0.68rem;font-weight:600;cursor:pointer;white-space:nowrap;transition:all 0.15s;text-decoration:none;font-family:'DM Sans',sans-serif}
+.nav-btn{display:flex;align-items:center;gap:5px;padding:5px 10px;background:#12122a;border:1px solid #1e1e45;border-radius:8px;color:#888;font-size:0.68rem;font-weight:700;cursor:pointer;white-space:nowrap;transition:all 0.15s;text-decoration:none;font-family:'DM Sans',sans-serif}
 .nav-btn:active{background:#1e1e45;color:#fff}
 .nav-btn.prev-btn{padding:5px 8px}
 .puzzle-nav-info{flex:1;text-align:center;min-width:0}
 .puzzle-nav-title{font-size:0.65rem;font-weight:700;color:#ccc;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .puzzle-nav-author{font-size:0.55rem;color:#444;margin-top:1px}
 .nav-btn.next-btn{background:#1a1a3a;border-color:#2a2a5a;color:#00F5FF}
-.nav-btn.next-btn:active{background:#2a2a5a}
 .nav-btn.disabled-btn{opacity:0.25;pointer-events:none}
 
-.commentary{padding:0.5rem 3.5rem 0.5rem 0.9rem;font-size:0.8rem;font-weight:600;color:#FF2D78;min-height:36px;background:#0a0a1a;border-bottom:1px solid #111130;transition:opacity 0.25s;flex-shrink:0;line-height:1.35;text-align:center}
-
+/* ── PROGRESS ── */
 .prog-wrap{padding:0.35rem 0.9rem;background:#0a0a1a;border-bottom:1px solid #111130;flex-shrink:0;display:flex;align-items:center;gap:8px}
 .prog-track{flex:1;height:5px;background:#1e1e45;border-radius:3px;overflow:hidden}
-.prog-fill{height:100%;background:linear-gradient(90deg,#00F5FF,#39FF14);border-radius:3px;width:0%;transition:width 0.4s ease;box-shadow:0 0 6px rgba(57,255,20,0.4)}
+.prog-fill{height:100%;background:linear-gradient(90deg,#00F5FF,#39FF14);border-radius:3px;width:0%;transition:width 0.4s ease}
 .prog-label{font-size:0.6rem;color:#333;font-weight:700;white-space:nowrap}
 
+/* ── PUZZLE SCREEN ── */
 .puzzle-screen{display:none;flex-direction:column;height:100dvh;overflow:hidden}
-.mute-btn{position:absolute;top:10px;right:10px;z-index:20;width:36px;height:36px;border-radius:50%;background:rgba(13,13,34,0.85);border:1px solid #2a2a5a;font-size:1rem;cursor:pointer;color:#fff;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(4px);transition:border-color 0.2s,transform 0.12s}
-.mute-btn:active{transform:scale(0.92)}
 #loadingOverlay{position:absolute;inset:0;background:#0d0d22;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1rem;z-index:10}
 .spinner{width:40px;height:40px;border:3px solid #1e1e45;border-top-color:#00F5FF;border-radius:50%;animation:spin 0.8s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
@@ -40,31 +38,313 @@ body{font-family:'DM Sans',sans-serif;background:#0a0a1a;color:#fff;min-height:1
 @keyframes redPulse{0%{box-shadow:inset 0 0 60px rgba(255,0,50,0.85)}100%{box-shadow:inset 0 0 0 rgba(255,0,50,0)}}
 .flash-red{animation:redPulse 0.4s ease-out}
 
-#winScreen{display:none;flex-direction:column;align-items:center;justify-content:flex-start;min-height:100dvh;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:1.5rem 1.2rem 2.5rem;background:radial-gradient(ellipse at 50% 20%,#0d2a0d 0%,#0a0a1a 70%);text-align:center}
-.win-title{font-family:'Press Start 2P',monospace;font-size:0.9rem;line-height:2.2;color:#39FF14;text-shadow:0 0 20px rgba(57,255,20,0.5);margin-bottom:0.3rem}
-.win-player{font-size:0.85rem;color:#00F5FF;margin-bottom:0.2rem}
-.win-puzzle-name{font-size:0.72rem;color:#555;margin-bottom:1rem}
-.win-img{width:100%;max-width:280px;border-radius:12px;border:2px solid #39FF14;box-shadow:0 0 24px rgba(57,255,20,0.3);margin-bottom:1.2rem}
-.win-stats{display:grid;grid-template-columns:1fr 1fr;gap:0.7rem;width:100%;max-width:280px;margin-bottom:1.4rem}
-.win-stat{background:#12122a;border:1px solid #1e1e45;border-radius:12px;padding:0.8rem 0.5rem}
-.win-stat-val{font-family:'Press Start 2P',monospace;font-size:0.85rem;color:#FFE600;display:block}
-.win-stat-lbl{font-size:0.65rem;color:#555;margin-top:4px;display:block}
-.win-actions{display:flex;flex-direction:column;gap:0.7rem;width:100%;max-width:280px}
-.win-btn{padding:0.85rem 1.5rem;font-family:'Press Start 2P',monospace;font-size:0.62rem;letter-spacing:1px;border:none;border-radius:12px;cursor:pointer;transition:transform 0.12s}
-.win-btn:active{transform:scale(0.97)}
-.btn-next{background:#00F5FF;color:#000;box-shadow:0 0 18px rgba(0,245,255,0.3)}
-.btn-again{background:#1e1e45;color:#888;border:1px solid #2a2a5a}
-.btn-back{background:#12122a;color:#555;border:1px solid #1e1e45;font-size:0.55rem}
-.win-streak{font-size:0.65rem;color:#FFB327;margin-bottom:0.6rem}
-.cat-badge{display:inline-block;padding:3px 12px;border-radius:20px;font-size:0.6rem;font-weight:700;margin-bottom:1rem}
-.cat-quotes{background:#3a1a5a;color:#B57BFF}
-.cat-jokes{background:#3a2a00;color:#FFB327}
-.cat-comics{background:#002a3a;color:#00F5FF}
-.cat-thirukural{background:#3a0d0d;color:#FF6B6B}
+/* ══════════════════════════════════════
+   CHAT POPUP — WhatsApp style quick-reply bot
+══════════════════════════════════════ */
+@keyframes chatPopIn{
+  0%{opacity:0;transform:translateY(24px) scale(0.92)}
+  60%{opacity:1;transform:translateY(-4px) scale(1.015)}
+  100%{opacity:1;transform:translateY(0) scale(1)}
+}
+@keyframes chatPopOut{
+  0%{opacity:1;transform:translateY(0) scale(1)}
+  100%{opacity:0;transform:translateY(14px) scale(0.95)}
+}
+@keyframes botPulse{
+  0%,100%{transform:scale(1)}
+  50%{transform:scale(1.12)}
+}
+@keyframes btnIn{
+  from{opacity:0;transform:translateY(10px) scale(0.8)}
+  to{opacity:1;transform:translateY(0) scale(1)}
+}
+@keyframes btnPop{
+  0%{transform:scale(1)}
+  40%{transform:scale(0.82)}
+  100%{transform:scale(0)}
+}
+@keyframes replyGrow{
+  from{opacity:0;transform:translateX(10px) scale(0.85)}
+  to{opacity:1;transform:translateX(0) scale(1)}
+}
+@keyframes typingDot{
+  0%,60%,100%{transform:translateY(0);opacity:0.4}
+  30%{transform:translateY(-4px);opacity:1}
+}
+@keyframes sparkleSpin{
+  from{transform:rotate(0deg) scale(1)}
+  50%{transform:rotate(180deg) scale(1.3)}
+  to{transform:rotate(360deg) scale(1)}
+}
+
+.chat-pop{
+  position:absolute;
+  left:50%;bottom:14px;
+  transform:translateX(-50%);
+  width:min(86%,330px);
+  background:linear-gradient(165deg,#16162f,#0d0d22);
+  border:1px solid rgba(0,245,255,0.18);
+  border-radius:20px;
+  padding:0.85rem 0.9rem 0.95rem;
+  box-shadow:0 10px 40px rgba(0,0,0,0.55), 0 0 0 1px rgba(255,255,255,0.03) inset;
+  z-index:30;
+  display:none;
+  -webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);
+}
+.chat-pop.show{display:block;animation:chatPopIn 0.42s cubic-bezier(0.18,1.2,0.36,1) both}
+.chat-pop.hide{display:block;animation:chatPopOut 0.32s ease both}
+
+.chat-bot-row{display:flex;align-items:center;gap:8px;margin-bottom:8px}
+.chat-bot-avatar{
+  font-size:1.15rem;
+  display:inline-block;
+  animation:botPulse 1.8s ease-in-out infinite;
+}
+.chat-bot-name{font-size:0.62rem;font-weight:800;color:#39FF14;letter-spacing:0.4px}
+
+.chat-bubble-bot{
+  background:#1d1d40;
+  color:#fff;
+  font-size:0.86rem;
+  font-weight:700;
+  line-height:1.35;
+  padding:0.6rem 0.85rem;
+  border-radius:14px 14px 14px 4px;
+  margin-bottom:0.7rem;
+  display:inline-block;
+  max-width:100%;
+}
+
+.chat-replies{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:2px}
+.chat-reply-btn{
+  background:linear-gradient(135deg,#00F5FF,#39FF14);
+  color:#06140a;
+  border:none;
+  border-radius:18px;
+  padding:0.45rem 0.95rem;
+  font-size:0.78rem;
+  font-weight:800;
+  cursor:pointer;
+  white-space:nowrap;
+  animation:btnIn 0.35s ease both;
+  transition:transform 0.1s;
+  box-shadow:0 3px 10px rgba(0,245,255,0.25);
+}
+.chat-reply-btn:active{transform:scale(0.9)}
+.chat-reply-btn.popping{animation:btnPop 0.28s ease forwards;pointer-events:none}
+
+.chat-reply-row{display:flex;justify-content:flex-end;margin-top:6px}
+.chat-bubble-user{
+  background:linear-gradient(135deg,#FF2D78,#FFB327);
+  color:#1a0010;
+  font-size:0.84rem;
+  font-weight:800;
+  padding:0.55rem 0.85rem;
+  border-radius:14px 14px 4px 14px;
+  display:none;
+  animation:replyGrow 0.28s cubic-bezier(0.18,1.2,0.36,1) both;
+  max-width:90%;
+  text-align:right;
+}
+.chat-bubble-user.show{display:inline-block}
+.chat-you-label{font-size:0.55rem;color:#555;font-weight:700;text-align:right;margin-top:4px;letter-spacing:0.5px}
+
+.chat-sparkle{
+  position:absolute;top:-10px;right:-6px;
+  font-size:1rem;
+  animation:sparkleSpin 1.4s ease-in-out infinite;
+  pointer-events:none;
+}
+
+/* ══════════════════════════════════════
+   WIN SCREEN
+══════════════════════════════════════ */
+#winScreen{
+  display:none;
+  flex-direction:column;
+  align-items:center;
+  height:100dvh;
+  overflow-y:auto;
+  -webkit-overflow-scrolling:touch;
+  padding:0 0 3rem;
+  text-align:center;
+  position:relative;
+}
+
+.win-bg{
+  position:absolute;inset:0;z-index:0;
+  background:radial-gradient(ellipse at 50% 15%, var(--win-a,#0d2a0d) 0%, #0a0a1a 65%);
+  pointer-events:none;
+}
+
+.win-inner{position:relative;z-index:1;width:100%;max-width:360px;padding:0 1.2rem;margin:0 auto;display:flex;flex-direction:column;align-items:center}
+
+@keyframes winTitleIn{from{opacity:0;transform:translateY(-18px) scale(0.9)}to{opacity:1;transform:translateY(0) scale(1)}}
+@keyframes winFadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+
+.win-crown{font-size:2.6rem;margin-top:1.4rem;animation:winTitleIn 0.5s cubic-bezier(0.22,1,0.36,1) both}
+.win-title{
+  font-family:'Press Start 2P',monospace;
+  font-size:0.85rem;line-height:2;
+  color:var(--win-accent,#39FF14);
+  text-shadow:0 0 22px var(--win-glow,rgba(57,255,20,0.5));
+  margin-bottom:0.15rem;
+  animation:winTitleIn 0.55s 0.05s cubic-bezier(0.22,1,0.36,1) both;
+}
+.win-player{
+  font-size:0.8rem;font-weight:800;
+  color:var(--win-accent,#39FF14);
+  margin-bottom:0.1rem;
+  animation:winFadeUp 0.4s 0.15s ease both;
+}
+.win-dept{font-size:0.65rem;color:#444;margin-bottom:0.9rem;animation:winFadeUp 0.4s 0.2s ease both}
+
+.win-cat-badge{
+  display:inline-flex;align-items:center;gap:5px;
+  padding:4px 14px;border-radius:20px;
+  font-size:0.62rem;font-weight:800;letter-spacing:0.5px;
+  margin-bottom:1rem;
+  background:var(--win-badge-bg,#0d2a0d);
+  color:var(--win-accent,#39FF14);
+  border:1px solid var(--win-accent,#39FF14);
+  animation:winFadeUp 0.4s 0.25s ease both;
+}
+
+.win-img-wrap{
+  position:relative;width:100%;max-width:260px;
+  margin-bottom:0.9rem;
+  animation:winFadeUp 0.45s 0.3s ease both;
+}
+.win-img{
+  width:100%;border-radius:12px;display:block;
+  border:2px solid var(--win-accent,#39FF14);
+  box-shadow:0 0 28px var(--win-glow,rgba(57,255,20,0.35));
+}
+.win-img-actions{
+  position:absolute;bottom:8px;right:8px;
+  display:flex;gap:6px;
+}
+.img-action-btn{
+  width:36px;height:36px;border-radius:50%;
+  background:rgba(10,10,26,0.82);
+  border:1px solid rgba(255,255,255,0.15);
+  color:#fff;font-size:1rem;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  transition:transform 0.12s,background 0.15s;
+  -webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px);
+}
+.img-action-btn:active{transform:scale(0.88)}
+.img-action-btn.share-btn{background:rgba(0,245,255,0.18);border-color:rgba(0,245,255,0.4);color:#00F5FF}
+.img-action-btn.dl-btn{background:rgba(57,255,20,0.15);border-color:rgba(57,255,20,0.4);color:#39FF14}
+.copy-toast{
+  position:fixed;bottom:24px;left:50%;transform:translateX(-50%);
+  background:#12122a;border:1px solid #2a2a5a;border-radius:10px;
+  padding:8px 18px;font-size:0.75rem;font-weight:700;color:#00F5FF;
+  opacity:0;transition:opacity 0.2s;pointer-events:none;z-index:100;white-space:nowrap;
+}
+.copy-toast.show{opacity:1}
+
+.win-stats{
+  display:grid;grid-template-columns:1fr 1fr;
+  gap:8px;width:100%;
+  margin-bottom:0.85rem;
+  animation:winFadeUp 0.4s 0.38s ease both;
+}
+.win-stat{
+  background:#0d0d22;border:1px solid #1a1a3a;
+  border-radius:12px;padding:0.75rem 0.5rem;
+  position:relative;overflow:hidden;
+}
+.win-stat::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:2px;
+  background:var(--win-accent,#39FF14);opacity:0.5;
+}
+.win-stat-val{font-family:'Press Start 2P',monospace;font-size:0.8rem;color:#FFE600;display:block;margin-bottom:3px}
+.win-stat-lbl{font-size:0.58rem;color:#555;font-weight:700;letter-spacing:0.5px;text-transform:uppercase}
+
+.best-badge{
+  display:inline-flex;align-items:center;gap:4px;
+  font-size:0.55rem;font-weight:800;color:#FFB327;
+  background:rgba(255,179,39,0.1);border:1px solid rgba(255,179,39,0.25);
+  border-radius:20px;padding:2px 7px;margin-top:3px;
+}
+
+.win-quest-bar{
+  width:100%;background:#0d0d22;border:1px solid #1a1a3a;
+  border-radius:12px;padding:0.7rem 0.9rem;
+  margin-bottom:1rem;
+  animation:winFadeUp 0.4s 0.44s ease both;
+}
+.win-quest-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
+.win-quest-label{font-size:0.6rem;font-weight:800;color:#444;letter-spacing:1.5px;text-transform:uppercase}
+.win-quest-val{font-size:0.68rem;font-weight:800;color:var(--win-accent,#39FF14)}
+.win-bar-track{height:6px;background:#1a1a3a;border-radius:3px;overflow:hidden}
+.win-bar-fill{height:100%;border-radius:3px;transition:width 0.8s 0.6s ease;background:linear-gradient(90deg,var(--win-accent,#39FF14),#FFE600)}
+
+.win-actions{
+  display:flex;flex-direction:column;gap:0.65rem;width:100%;
+  animation:winFadeUp 0.4s 0.5s ease both;
+}
+
+.btn-next{
+  width:100%;padding:1.05rem 1.5rem;
+  font-family:'Press Start 2P',monospace;font-size:0.72rem;letter-spacing:1.5px;
+  background:var(--win-accent,#39FF14);color:#000;
+  border:none;border-radius:14px;cursor:pointer;
+  font-weight:700;
+  box-shadow:0 0 28px var(--win-glow,rgba(57,255,20,0.5));
+  animation:winFadeUp 0.4s 0.5s ease both, nextPulse 2s 1.2s ease-in-out infinite;
+  transition:transform 0.12s,box-shadow 0.12s;
+}
+.btn-next:active{transform:scale(0.97)}
+@keyframes nextPulse{
+  0%,100%{box-shadow:0 0 28px var(--win-glow,rgba(57,255,20,0.5))}
+  50%{box-shadow:0 0 48px var(--win-glow,rgba(57,255,20,0.85)),0 0 80px var(--win-glow,rgba(57,255,20,0.3))}
+}
+
+.next-teaser{
+  width:100%;background:#0d0d22;
+  border:1px solid rgba(255,255,255,0.07);
+  border-left:3px solid var(--win-accent,#39FF14);
+  border-radius:10px;padding:0.65rem 0.9rem;
+  display:flex;align-items:center;gap:10px;
+  cursor:pointer;transition:background 0.15s;
+  text-align:left;
+  animation:winFadeUp 0.4s 0.56s ease both;
+}
+.next-teaser:active{background:#12122a}
+.next-teaser-icon{font-size:1.3rem;flex-shrink:0}
+.next-teaser-body{flex:1;min-width:0}
+.next-teaser-label{font-size:0.55rem;font-weight:800;color:#444;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:2px}
+.next-teaser-title{font-size:0.82rem;font-weight:800;color:#ddd;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.next-teaser-author{font-size:0.62rem;color:#555}
+.next-teaser-arrow{font-size:1.1rem;color:var(--win-accent,#39FF14);flex-shrink:0}
+
+.win-secondary{display:flex;gap:0.6rem;width:100%}
+.btn-again,.btn-back{
+  flex:1;padding:0.8rem 0.5rem;
+  font-family:'Press Start 2P',monospace;font-size:0.52rem;letter-spacing:0.5px;
+  border-radius:12px;cursor:pointer;transition:transform 0.12s,background 0.12s;
+  text-decoration:none;display:flex;align-items:center;justify-content:center;
+}
+.btn-again{background:#12122a;color:#888;border:1px solid #1e1e45}
+.btn-again:active{background:#1e1e45;transform:scale(0.97)}
+.btn-back{background:#0d0d22;color:#555;border:1px solid #111130}
+.btn-back:active{background:#12122a;transform:scale(0.97)}
+
+.win-all-done{
+  width:100%;background:linear-gradient(135deg,rgba(255,230,0,0.08),rgba(57,255,20,0.08));
+  border:1px solid rgba(255,230,0,0.2);border-radius:14px;
+  padding:1rem;text-align:center;
+  animation:winFadeUp 0.4s 0.5s ease both;
+}
+.win-all-done-title{font-family:'Press Start 2P',monospace;font-size:0.7rem;color:#FFE600;margin-bottom:0.4rem;line-height:1.8}
+.win-all-done-sub{font-size:0.75rem;color:#666;line-height:1.5}
 </style>
 </head>
 <body>
 
+<!-- PUZZLE SCREEN -->
 <div id="puzzleScreen" class="puzzle-screen">
   <div class="top-nav">
     <a id="backBtn" href="directory.html" class="nav-btn">← Back</a>
@@ -75,83 +355,146 @@ body{font-family:'DM Sans',sans-serif;background:#0a0a1a;color:#fff;min-height:1
     <button id="prevPuzzleBtn" class="nav-btn prev-btn" onclick="goToPrev()">‹</button>
     <button id="nextPuzzleBtn" class="nav-btn next-btn" onclick="goToNext()">Next ›</button>
   </div>
-  <div class="commentary" id="commentary">Loading…</div>
   <div class="prog-wrap">
     <div class="prog-track"><div class="prog-fill" id="progFill"></div></div>
     <div class="prog-label" id="progLabel">0 / 0</div>
   </div>
   <div class="puzzle-area" id="puzzleArea">
-    <button class="mute-btn" id="muteBtn" onclick="toggleMute()">🔊</button>
     <div id="loadingOverlay"><div class="spinner"></div><div class="loading-text">LOADING…</div></div>
     <canvas id="puzzleCanvas"></canvas>
+
+    <!-- CHAT POPUP -->
+    <div class="chat-pop" id="chatPop">
+      <span class="chat-sparkle" id="chatSparkle">✨</span>
+      <div class="chat-bot-row">
+        <span class="chat-bot-avatar">🤖</span>
+        <span class="chat-bot-name">Puzzle Bot</span>
+      </div>
+      <div class="chat-bubble-bot" id="chatBotMsg"></div>
+      <div class="chat-replies" id="chatReplies"></div>
+      <div class="chat-reply-row">
+        <div class="chat-bubble-user" id="chatUserBubble"></div>
+      </div>
+      <div class="chat-you-label" id="chatYouLabel" style="display:none">You</div>
+    </div>
   </div>
 </div>
 
+<!-- WIN SCREEN -->
 <div id="winScreen">
-  <div class="win-title">PUZZLE<br>COMPLETE!</div>
-  <div class="win-player" id="winPlayer"></div>
-  <div class="win-puzzle-name" id="winPuzzleName"></div>
-  <div id="winCatBadge" class="cat-badge"></div>
-  <img id="winImg" class="win-img" alt="Solved puzzle"/>
-  <div class="win-stats">
-    <div class="win-stat"><span class="win-stat-val" id="wTime">-</span><span class="win-stat-lbl">Time</span></div>
-    <div class="win-stat"><span class="win-stat-val" id="wMoves">-</span><span class="win-stat-lbl">Moves</span></div>
-  </div>
-  <div class="win-streak" id="winStreak"></div>
-  <div class="win-actions">
-    <button class="win-btn btn-next" id="nextPuzzleBtnWin" onclick="goToNext()">▶ NEXT PUZZLE</button>
-    <button class="win-btn btn-again" onclick="playAgain()">↺ PLAY AGAIN</button>
-    <a class="win-btn btn-back" id="dirBtnWin" href="directory.html">← BACK TO DIRECTORY</a>
+  <div class="win-bg" id="winBg"></div>
+  <div class="win-inner">
+    <div class="win-crown" id="winCrown">🏆</div>
+    <div class="win-title" id="winTitle">PUZZLE<br>COMPLETE!</div>
+    <div class="win-player" id="winPlayer"></div>
+    <div class="win-dept" id="winDept"></div>
+    <div class="win-cat-badge" id="winCatBadge"></div>
+
+    <div class="win-img-wrap">
+      <img id="winImg" class="win-img" alt=""/>
+      <div class="win-img-actions">
+        <button class="img-action-btn share-btn" onclick="shareImage()" title="Share">⬆</button>
+        <button class="img-action-btn dl-btn"    onclick="downloadImage()" title="Download">⬇</button>
+      </div>
+    </div>
+
+    <div class="win-stats">
+      <div class="win-stat">
+        <span class="win-stat-val" id="wTime">-</span>
+        <span class="win-stat-lbl">Time</span>
+        <div class="best-badge" id="timeBest" style="display:none">⚡ Best!</div>
+      </div>
+      <div class="win-stat">
+        <span class="win-stat-val" id="wMoves">-</span>
+        <span class="win-stat-lbl">Moves</span>
+        <div class="best-badge" id="movesBest" style="display:none">⚡ Best!</div>
+      </div>
+      <div class="win-stat">
+        <span class="win-stat-val" id="wDiff">-</span>
+        <span class="win-stat-lbl">Difficulty</span>
+      </div>
+      <div class="win-stat">
+        <span class="win-stat-val" id="wPieces">-</span>
+        <span class="win-stat-lbl">Pieces</span>
+      </div>
+    </div>
+
+    <div class="win-quest-bar">
+      <div class="win-quest-row">
+        <span class="win-quest-label">👑 Quest progress</span>
+        <span class="win-quest-val" id="wQuestVal">0 / 0</span>
+      </div>
+      <div class="win-bar-track"><div class="win-bar-fill" id="wQuestFill" style="width:0%"></div></div>
+    </div>
+
+    <div class="win-actions" id="winActions"></div>
   </div>
 </div>
+
+<div class="copy-toast" id="copyToast">Link copied!</div>
 
 <script src="puzzles.js"></script>
 <script>
 /* ═══════════════════════════════════════════════════
-   CONFIG — read puzzle by hash id, look up in PUZZLES
-   FIX: no long URL params; everything from puzzles.js
+   CONFIG
 ═══════════════════════════════════════════════════ */
-const PUZZLE_ID   = location.hash.slice(1) || (PUZZLES[0] && PUZZLES[0].id);
-const _puz        = PUZZLES.find(p => p.id === PUZZLE_ID) || PUZZLES[0];
-
-const IMAGE_URL   = _puz.imageUrl;
-const COLS        = _puz.cols;
-const ROWS        = _puz.rows;
+const PUZZLE_ID     = location.hash.slice(1) || (PUZZLES[0] && PUZZLES[0].id);
+const _puz          = PUZZLES.find(p => p.id === PUZZLE_ID) || PUZZLES[0];
+const IMAGE_URL     = _puz.imageUrl;
+const COLS          = _puz.cols;
+const ROWS          = _puz.rows;
 const PUZZLE_TITLE  = _puz.title;
 const PUZZLE_AUTHOR = _puz.author;
 const PUZZLE_CAT    = _puz.category;
 const PUZZLE_DIFF   = _puz.difficulty;
-/* ═══════════════════════════════════════════════════
-   GATE — block direct access if player hasn't registered.
-   Redirect to directory, which stores the intended puzzle
-   in sessionStorage so it can bounce back after sign-in.
-═══════════════════════════════════════════════════ */
+
+/* ── GATE ── */
 (function gate() {
   const name = localStorage.getItem("pq_name");
   const dept = localStorage.getItem("pq_dept");
   if (!name || !dept) {
-    /* Remember where they were trying to go */
     sessionStorage.setItem("pq_redirect", location.hash || "");
     location.replace("directory.html");
   }
 }());
 
-const PLAYER_NAME   = localStorage.getItem("pq_name");
-const PLAYER_DEPT   = localStorage.getItem("pq_dept");
+const PLAYER_NAME = localStorage.getItem("pq_name");
+const PLAYER_DEPT = localStorage.getItem("pq_dept");
 
-const _idx  = PUZZLES.findIndex(p => p.id === PUZZLE_ID);
-const PREV_ID = _idx > 0               ? PUZZLES[_idx - 1].id : "";
-const NEXT_ID = _idx < PUZZLES.length-1 ? PUZZLES[_idx + 1].id : "";
+const _idx    = PUZZLES.findIndex(p => p.id === PUZZLE_ID);
+const PREV_ID = _idx > 0                ? PUZZLES[_idx-1].id : "";
+const NEXT_ID = _idx < PUZZLES.length-1 ? PUZZLES[_idx+1].id : "";
+const NEXT_PUZ = NEXT_ID ? PUZZLES.find(p => p.id === NEXT_ID) : null;
 
 const SUPABASE_URL = "https://yellow-lab-4999.andrewveda.workers.dev/functions/v1/logQuest";
 const TOTAL = COLS * ROWS;
 
+/* ── Category theme tokens ── */
+const CAT_THEME = {
+  quotes:     { a:"#1a0a3a", accent:"#B57BFF", glow:"rgba(181,123,255,0.5)", badge:"rgba(181,123,255,0.1)", icon:"💬", label:"Quotes"      },
+  jokes:      { a:"#1a1400", accent:"#FFD700", glow:"rgba(255,215,0,0.5)",   badge:"rgba(255,215,0,0.1)",   icon:"😄", label:"Jokes"       },
+  comics:     { a:"#00141a", accent:"#00F5FF", glow:"rgba(0,245,255,0.5)",   badge:"rgba(0,245,255,0.1)",   icon:"🎨", label:"Comics"      },
+  thirukural: { a:"#1a0014", accent:"#FF6B6B", glow:"rgba(255,107,107,0.5)", badge:"rgba(255,107,107,0.1)", icon:"📖", label:"Thirukkural" },
+};
+const THEME = CAT_THEME[PUZZLE_CAT] || CAT_THEME.quotes;
+
 /* ═══════════════════════════════
-   PROGRESS
+   PROGRESS / BEST SCORES
 ═══════════════════════════════ */
-function getProgress() { try { return JSON.parse(localStorage.getItem("pq_progress")||"{}"); } catch(e) { return {}; } }
+function getProgress()  { try { return JSON.parse(localStorage.getItem("pq_progress")||"{}"); } catch(e){ return {}; } }
 function markSolved(id) { const p=getProgress(); p[id]=true; localStorage.setItem("pq_progress",JSON.stringify(p)); }
-function getSolvedCount() { const p=getProgress(); return PUZZLES.filter(x=>p[x.id]).length; }
+function getSolvedCount(){ const p=getProgress(); return PUZZLES.filter(x=>p[x.id]).length; }
+
+function getBest(id)    { try { return JSON.parse(localStorage.getItem("pq_best_"+id)||"null"); } catch(e){ return null; } }
+function saveBest(id, secs, mv) {
+  const prev = getBest(id);
+  const isNewTime  = !prev || secs  < prev.secs;
+  const isNewMoves = !prev || mv    < prev.moves;
+  if (!prev || secs < prev.secs || mv < prev.moves) {
+    localStorage.setItem("pq_best_"+id, JSON.stringify({secs: Math.min(secs, prev?.secs??secs), moves: Math.min(mv, prev?.moves??mv)}));
+  }
+  return { newTime: isNewTime, newMoves: isNewMoves };
+}
 
 /* ═══════════════════════════════
    NAVIGATION
@@ -160,25 +503,12 @@ function goToNext() { if (NEXT_ID) location.href = "puzzle.html#" + NEXT_ID; }
 function goToPrev() { if (PREV_ID) location.href = "puzzle.html#" + PREV_ID; }
 
 function setupNav() {
-  document.getElementById("navTitle").textContent   = PUZZLE_TITLE;
-  document.getElementById("navAuthor").textContent  = PUZZLE_AUTHOR;
+  document.getElementById("navTitle").textContent  = PUZZLE_TITLE;
+  document.getElementById("navAuthor").textContent = PUZZLE_AUTHOR;
   document.title = PUZZLE_TITLE + " · Puzzle Quest";
-
-  const dirHref = "directory.html?solved=" + PUZZLE_ID;
-  document.getElementById("backBtn").href   = dirHref;
-  document.getElementById("dirBtnWin").href = dirHref;
-
+  document.getElementById("backBtn").href = "directory.html";
   if (!PREV_ID) document.getElementById("prevPuzzleBtn").classList.add("disabled-btn");
-  if (!NEXT_ID) {
-    document.getElementById("nextPuzzleBtn").classList.add("disabled-btn");
-    document.getElementById("nextPuzzleBtnWin").style.display = "none";
-  }
-
-  const catColors = {quotes:"cat-quotes",jokes:"cat-jokes",comics:"cat-comics",thirukural:"cat-thirukural"};
-  const catLabels = {quotes:"💬 Quotes",jokes:"😄 Jokes",comics:"🎨 Comics",thirukural:"📖 Thirukkural"};
-  const badge = document.getElementById("winCatBadge");
-  badge.className  = "cat-badge " + (catColors[PUZZLE_CAT] || "");
-  badge.textContent = catLabels[PUZZLE_CAT] || PUZZLE_CAT;
+  if (!NEXT_ID) document.getElementById("nextPuzzleBtn").classList.add("disabled-btn");
 }
 
 /* ═══════════════════════════════
@@ -188,458 +518,519 @@ let canvas, ctx;
 let img = null;
 let cw, ch, pw, ph, boardX, boardY;
 let pieces = [], selectedPiece = null;
-let isDragging = false, dragAnchor = null;
+let isDragging=false, dragAnchor=null;
 let startPointerX=0, startPointerY=0, currentPointerX=0, currentPointerY=0;
 const DRAG_THRESHOLD = 7;
-let placed=0, moves=0, startTime=null, isMuted=false;
+let placed=0, moves=0, startTime=null;
 
 /* ═══════════════════════════════
-   SPEECH
+   CHAT POPUP SYSTEM 🤖💬
 ═══════════════════════════════ */
-const synth = window.speechSynthesis;
-let speakTimeout = null;
-function speak(txt) {
-  if (isMuted || !synth) return;
-  clearTimeout(speakTimeout);
-  speakTimeout = setTimeout(() => {
-    synth.cancel();
-    const u = new SpeechSynthesisUtterance(txt);
-    u.rate=1.05; u.pitch=1.1; synth.speak(u);
-  }, 80);
-}
-function toggleMute() {
-  isMuted = !isMuted;
-  document.getElementById("muteBtn").textContent = isMuted ? "🔇" : "🔊";
-  if (isMuted) { clearTimeout(speakTimeout); synth.cancel(); }
-}
-
-/* ═══════════════════════════════
-   COMMENTARY
-═══════════════════════════════ */
-const correctLines = [
-  ()=>`Yes! Perfect match! 🦅`,
-  ()=>`Snap! That piece is locked! 🔥`,
-  n =>`Found its home! Keep moving ${n}! 🎯`,
-  ()=>`Absolute lock! Progressing! ⚡`,
+const CHAT_CONVOS = [
+  { bot:"Nice! You've got one piece right! 🧩", reply:["Yes","I","Love","This!"] },
+  { bot:"That was a tricky one!", reply:["It","Really","Was! 😂"] },
+  { bot:"You're getting good at this.", reply:["I","Know. 😎"] },
+  { bot:"Halfway there!", reply:["Let's","Keep","Going! 🚀"] },
+  { bot:"That piece almost fooled you.", reply:["Not","Anymore! 😁"] },
+  { bot:"Ready for another?", reply:["Bring","It","On! 💪"] },
+  { bot:"Ready for another?", reply:["I'm","Scared. 😅"] },
+  { bot:"That clicked perfectly!", reply:["So","Satisfying! ✨"] },
+  { bot:"You're on a roll!", reply:["Don't","Jinx","Me! 😂"] },
+  { bot:"Only a few left now.", reply:["I","Can","Do","This! 💪"] },
+  { bot:"Oops... almost!", reply:["I'll","Get","It. 😄"] },
+  { bot:"Great recovery!", reply:["Thanks! 😊"] },
+  { bot:"You're flying through this!", reply:["Feeling","Lucky","Today! 🍀"] },
+  { bot:"One more piece locked!", reply:["Awesome! 🎉"] },
+  { bot:"Look at you go! 🔥", reply:["I","Got","Skills! 😏"] },
+  { bot:"Is that... skill or luck? 🤔", reply:["Both,","Honestly. 😂"] },
+  { bot:"My circuits are impressed.", reply:["As","They","Should","Be! 🤖"] },
+  { bot:"Beep boop, nice move!", reply:["Boop","Back! 🤖"] },
+  { bot:"Plot twist: you're good at this.", reply:["Shocking,","I","Know! 😄"] },
+  { bot:"Are you even trying? 😏", reply:["Barely! 😎"] },
+  { bot:"This puzzle stood no chance.", reply:["Never","Did! 🏆"] },
+  { bot:"Pieces are scared of you now.", reply:["Good. 😈"] },
 ];
-const milestones = {
-  25: n=>`${n} locked 25%! 🎨`,
-  50: ()=>`Half the puzzle locked! 💪`,
-  75: ()=>`75% locked! Almost home! 🏁`,
-};
-function setCommentary(txt) {
-  const el = document.getElementById("commentary");
-  el.style.opacity = 0;
-  setTimeout(() => { el.textContent = txt; el.style.opacity = 1; }, 180);
-  speak(txt);
+
+let CHAT_QUEUE = [];
+function refillChatQueue(){
+  CHAT_QUEUE = CHAT_CONVOS.map((_,i)=>i);
+  for(let i=CHAT_QUEUE.length-1;i>0;i--){
+    const j=Math.floor(Math.random()*(i+1));
+    [CHAT_QUEUE[i],CHAT_QUEUE[j]]=[CHAT_QUEUE[j],CHAT_QUEUE[i]];
+  }
+}
+function nextChat(){
+  if(!CHAT_QUEUE.length) refillChatQueue();
+  return CHAT_CONVOS[CHAT_QUEUE.pop()];
+}
+
+let chatActive=false, locksSinceChat=0;
+function maybeShowChat(){
+  locksSinceChat++;
+  if(chatActive) return;
+  const everyThird = locksSinceChat>=3;
+  const randomRoll = Math.random() < 0.35; /* 35% chance */
+  if(everyThird || randomRoll){
+    locksSinceChat=0;
+    showChatPopup(nextChat());
+  }
+}
+
+function showChatPopup(convo){
+  chatActive=true;
+  const pop=document.getElementById("chatPop");
+  const botMsg=document.getElementById("chatBotMsg");
+  const repliesWrap=document.getElementById("chatReplies");
+  const userBubble=document.getElementById("chatUserBubble");
+  const youLabel=document.getElementById("chatYouLabel");
+
+  botMsg.textContent=convo.bot;
+  repliesWrap.innerHTML="";
+  userBubble.textContent="";
+  userBubble.classList.remove("show");
+  youLabel.style.display="none";
+
+  convo.reply.forEach((word,i)=>{
+    const b=document.createElement("button");
+    b.className="chat-reply-btn";
+    b.textContent=word;
+    b.style.animationDelay=(i*0.06)+"s";
+    b.onclick=()=>onChatTap(b,word,convo,i===convo.reply.length-1);
+    repliesWrap.appendChild(b);
+  });
+
+  pop.classList.remove("hide");
+  pop.classList.add("show");
+
+  let builtSoFar="";
+  pop._builtSoFar=builtSoFar;
+}
+
+function onChatTap(btnEl,word,convo,isLast){
+  if(btnEl.classList.contains("popping")) return;
+  btnEl.classList.add("popping");
+
+  const userBubble=document.getElementById("chatUserBubble");
+  const youLabel=document.getElementById("chatYouLabel");
+  const pop=document.getElementById("chatPop");
+
+  pop._builtSoFar = pop._builtSoFar ? (pop._builtSoFar+" "+word) : word;
+  userBubble.textContent=pop._builtSoFar;
+  userBubble.classList.remove("show");
+  void userBubble.offsetWidth;
+  userBubble.classList.add("show");
+  youLabel.style.display="block";
+
+  setTimeout(()=>{ btnEl.remove(); },260);
+
+  if(isLast){
+    setTimeout(()=>{ hideChatPopup(); },1000);
+  }
+}
+
+function hideChatPopup(){
+  const pop=document.getElementById("chatPop");
+  pop.classList.remove("show");
+  pop.classList.add("hide");
+  setTimeout(()=>{
+    pop.classList.remove("hide");
+    pop.style.display="none";
+    pop.style.display="";
+    chatActive=false;
+  },340);
 }
 
 /* ═══════════════════════════════
-   TIMER — FIX 7: no dummy interval
+   TIMER
 ═══════════════════════════════ */
-function startTimer() { startTime = Date.now(); }
-function elapsed()    { return startTime ? Math.floor((Date.now()-startTime)/1000) : 0; }
+function startTimer(){ startTime=Date.now(); }
+function elapsed(){ return startTime ? Math.floor((Date.now()-startTime)/1000) : 0; }
 
 /* ═══════════════════════════════
    DOM READY
 ═══════════════════════════════ */
-document.addEventListener("DOMContentLoaded", () => {
-  canvas = document.getElementById("puzzleCanvas");
-  ctx    = canvas.getContext("2d");
-  canvas.addEventListener("mousedown",  onDown, {passive:false});
-  canvas.addEventListener("mousemove",  onMove, {passive:false});
-  canvas.addEventListener("mouseup",    onUp,   {passive:false});
-  canvas.addEventListener("mouseleave", onUp,   {passive:false});
-  canvas.addEventListener("touchstart", onDown, {passive:false});
-  canvas.addEventListener("touchmove",  onMove, {passive:false});
-  canvas.addEventListener("touchend",   onUp,   {passive:false});
-  canvas.addEventListener("click", e => {
-    if (!selectedPiece) return;
-    const {x,y} = getPos(e);
-    if (!hitPiece(x,y)) { selectedPiece=null; drawAll(); }
-  }, {passive:false});
+document.addEventListener("DOMContentLoaded",()=>{
+  canvas=document.getElementById("puzzleCanvas");
+  ctx=canvas.getContext("2d");
+  canvas.addEventListener("mousedown",  onDown,{passive:false});
+  canvas.addEventListener("mousemove",  onMove,{passive:false});
+  canvas.addEventListener("mouseup",    onUp,  {passive:false});
+  canvas.addEventListener("mouseleave", onUp,  {passive:false});
+  canvas.addEventListener("touchstart", onDown,{passive:false});
+  canvas.addEventListener("touchmove",  onMove,{passive:false});
+  canvas.addEventListener("touchend",   onUp,  {passive:false});
+  canvas.addEventListener("click",e=>{
+    if(!selectedPiece)return;
+    const {x,y}=getPos(e);
+    if(!hitPiece(x,y)){selectedPiece=null;drawAll();}
+  },{passive:false});
 
-  document.getElementById("puzzleScreen").style.display = "flex";
+  document.getElementById("puzzleScreen").style.display="flex";
   setupNav();
+  refillChatQueue();
   initPuzzle();
 });
 
 /* ═══════════════════════════════
-   PUZZLE INIT
+   INIT
 ═══════════════════════════════ */
 function initPuzzle() {
-  pieces=[]; selectedPiece=null; isDragging=false; dragAnchor=null;
-  placed=0; moves=0; startTime=null;
-  document.getElementById("progFill").style.width = "0%";
-  document.getElementById("progLabel").textContent = `0 / ${TOTAL}`;
-  document.getElementById("loadingOverlay").style.display = "flex";
-
-  /* FIX 6: don't null img on play-again — reuse the already-loaded image */
-  if (img && img.complete && img.naturalWidth > 0) { buildPuzzle(); return; }
-  img = new Image();
-  img.crossOrigin = "anonymous";
-  img.onload  = buildPuzzle;
-  img.onerror = () => setCommentary("⚠️ Image failed to load.");
-  img.src = IMAGE_URL;
+  pieces=[];selectedPiece=null;isDragging=false;dragAnchor=null;
+  placed=0;moves=0;startTime=null;locksSinceChat=0;
+  document.getElementById("progFill").style.width="0%";
+  document.getElementById("progLabel").textContent=`0 / ${TOTAL}`;
+  document.getElementById("loadingOverlay").style.display="flex";
+  if(img&&img.complete&&img.naturalWidth>0){buildPuzzle();return;}
+  img=new Image();img.crossOrigin="anonymous";
+  img.onload=buildPuzzle;
+  img.onerror=()=>console.warn("⚠️ Image failed to load:",IMAGE_URL);
+  img.src=IMAGE_URL;
 }
 
 /* ═══════════════════════════════
-   BUILD PIECES & SHUFFLE
-   FIX 1: shuffle until ZERO pieces start in correct position
+   BUILD — no pre-locked pieces
 ═══════════════════════════════ */
 function buildPuzzle() {
-  const area = canvas.parentElement;
-  const dpr  = window.devicePixelRatio || 1;
-  cw = area.clientWidth; ch = area.clientHeight;
-  canvas.width  = cw * dpr; canvas.height = ch * dpr;
-  canvas.style.width = cw+"px"; canvas.style.height = ch+"px";
-  ctx = canvas.getContext("2d"); ctx.scale(dpr, dpr);
+  const area=canvas.parentElement;
+  const dpr=window.devicePixelRatio||1;
+  cw=area.clientWidth;ch=area.clientHeight;
+  canvas.width=cw*dpr;canvas.height=ch*dpr;
+  canvas.style.width=cw+"px";canvas.style.height=ch+"px";
+  ctx=canvas.getContext("2d");ctx.scale(dpr,dpr);
 
-  const pad=10, imgAR=img.naturalWidth/img.naturalHeight;
+  const pad=10,imgAR=img.naturalWidth/img.naturalHeight;
   const boardAR=(COLS/ROWS)*imgAR;
-  const maxW=cw-pad*2, maxH=ch-pad*2;
-  let boardW, boardH;
-  if (maxW/maxH > boardAR) { boardH=maxH; boardW=Math.floor(boardH*boardAR); }
-  else                     { boardW=maxW; boardH=Math.floor(boardW/boardAR); }
-  pw=Math.floor(boardW/COLS); ph=Math.floor(boardH/ROWS);
-  boardX=Math.floor((cw-pw*COLS)/2); boardY=Math.floor((ch-ph*ROWS)/2);
+  const maxW=cw-pad*2,maxH=ch-pad*2;
+  let boardW,boardH;
+  if(maxW/maxH>boardAR){boardH=maxH;boardW=Math.floor(boardH*boardAR);}
+  else{boardW=maxW;boardH=Math.floor(boardW/boardAR);}
+  pw=Math.floor(boardW/COLS);ph=Math.floor(boardH/ROWS);
+  boardX=Math.floor((cw-pw*COLS)/2);boardY=Math.floor((ch-ph*ROWS)/2);
 
-  /* FIX 1: repeat shuffle until NO piece is in its correct grid position */
   let slots;
   do {
-    slots = Array.from({length:TOTAL}, (_,i) => ({r:Math.floor(i/COLS), c:i%COLS}));
-    slots.sort(() => Math.random()-0.5);
-  } while (slots.some((s,i) => s.r===Math.floor(i/COLS) && s.c===i%COLS));
+    slots=Array.from({length:TOTAL},(_,i)=>({r:Math.floor(i/COLS),c:i%COLS}));
+    slots.sort(()=>Math.random()-0.5);
+  } while(slots.some((s,i)=>s.r===Math.floor(i/COLS)&&s.c===i%COLS));
 
-  pieces = [];
-  let idx = 0;
-  for (let r=0; r<ROWS; r++) {
-    for (let c=0; c<COLS; c++) {
-      const slot = slots[idx++];
-      /* locked:false guaranteed — shuffle ensures no piece starts correct */
-      pieces.push({id:pieces.length, tr:r, tc:c, row:slot.r, col:slot.c, locked:false});
-    }
+  pieces=[];let idx=0;
+  for(let r=0;r<ROWS;r++) for(let c=0;c<COLS;c++){
+    const slot=slots[idx++];
+    pieces.push({id:pieces.length,tr:r,tc:c,row:slot.r,col:slot.c,locked:false});
   }
-  placed = 0;
-  updateProgress();
+  placed=0;updateProgress();
+  document.getElementById("loadingOverlay").style.display="none";
+  drawAll();startTimer();
+}
 
-  document.getElementById("loadingOverlay").style.display = "none";
-  drawAll();
-  startTimer();
-  setTimeout(() => setCommentary(`${PUZZLE_TITLE} — drag or tap to solve, ${PLAYER_NAME}! 🧩`), 400);
+function getCluster(p){return[p];}
+
+function triggerRedFlash(){
+  const a=document.getElementById("puzzleArea");
+  a.classList.remove("flash-red");void a.offsetWidth;a.classList.add("flash-red");
 }
 
 /* ═══════════════════════════════
-   CLUSTER — single piece only
+   DRAW
 ═══════════════════════════════ */
-function getCluster(p) { return [p]; }
-
-/* ═══════════════════════════════
-   RED FLASH
-═══════════════════════════════ */
-function triggerRedFlash() {
-  const a = document.getElementById("puzzleArea");
-  a.classList.remove("flash-red"); void a.offsetWidth; a.classList.add("flash-red");
+let glowPiece=null,glowTimer=null;
+function showGlow(p){
+  clearTimeout(glowTimer);glowPiece=p;drawAll();
+  glowTimer=setTimeout(()=>{glowPiece=null;drawAll();},600);
 }
 
-/* ═══════════════════════════════
-   DRAWING
-═══════════════════════════════ */
-function drawAll() {
-  if (!canvas||!ctx) return;
+function drawAll(){
+  if(!canvas||!ctx)return;
   ctx.clearRect(0,0,cw,ch);
-  ctx.strokeStyle="rgba(0,245,255,0.12)"; ctx.lineWidth=1.5;
+  ctx.strokeStyle="rgba(0,245,255,0.12)";ctx.lineWidth=1.5;
   ctx.strokeRect(boardX,boardY,pw*COLS,ph*ROWS);
-
-  const draggingCluster = (isDragging&&dragAnchor) ? getCluster(dragAnchor) : [];
-  const draggingIds     = new Set(draggingCluster.map(p=>p.id));
-  const tapClusterIds   = new Set();
-  if (!isDragging && selectedPiece) getCluster(selectedPiece).forEach(p=>tapClusterIds.add(p.id));
-
-  for (const p of pieces) if (!draggingIds.has(p.id)) drawPiece(p,0,0,false,tapClusterIds.has(p.id));
-  if (draggingCluster.length) {
-    const dx=currentPointerX-startPointerX, dy=currentPointerY-startPointerY;
-    for (const p of draggingCluster) drawPiece(p,dx,dy,true,false);
-  }
+  const dc=(isDragging&&dragAnchor)?getCluster(dragAnchor):[];
+  const dIds=new Set(dc.map(p=>p.id));
+  const tIds=new Set();
+  if(!isDragging&&selectedPiece)getCluster(selectedPiece).forEach(p=>tIds.add(p.id));
+  for(const p of pieces)if(!dIds.has(p.id))drawPiece(p,0,0,false,tIds.has(p.id),glowPiece&&p.id===glowPiece.id);
+  if(dc.length){const dx=currentPointerX-startPointerX,dy=currentPointerY-startPointerY;for(const p of dc)drawPiece(p,dx,dy,true,false,false);}
 }
 
-function drawPiece(p, offsetX, offsetY, isDragged, isTapSelected) {
-  const x=boardX+p.col*pw+offsetX, y=boardY+p.row*ph+offsetY;
-  ctx.save(); roundRect(ctx,x,y,pw,ph,4); ctx.clip();
-  ctx.drawImage(img,
-    p.tc*(img.naturalWidth/COLS), p.tr*(img.naturalHeight/ROWS),
-    img.naturalWidth/COLS, img.naturalHeight/ROWS,
-    x, y, pw, ph);
-
-  if (p.locked && isTapSelected) {
-    ctx.restore(); ctx.save();
-    ctx.shadowColor="#39FF14"; ctx.shadowBlur=18;
-    roundRect(ctx,x,y,pw,ph,4);
-    ctx.strokeStyle="rgba(57,255,20,0.9)"; ctx.lineWidth=3; ctx.stroke();
-  } else if (!p.locked && (isDragged||isTapSelected)) {
-    ctx.strokeStyle="#FFE600"; ctx.lineWidth=3; ctx.stroke();
-    ctx.fillStyle="rgba(255,230,0,0.15)"; ctx.fillRect(x,y,pw,ph);
-  } else if (!p.locked) {
-    ctx.strokeStyle="rgba(255,255,255,0.1)"; ctx.lineWidth=1; ctx.stroke();
+function drawPiece(p,ox,oy,isDragged,isTap,isGlow){
+  const x=boardX+p.col*pw+ox,y=boardY+p.row*ph+oy;
+  ctx.save();roundRect(ctx,x,y,pw,ph,4);ctx.clip();
+  ctx.drawImage(img,p.tc*(img.naturalWidth/COLS),p.tr*(img.naturalHeight/ROWS),img.naturalWidth/COLS,img.naturalHeight/ROWS,x,y,pw,ph);
+  if(p.locked&&isGlow){
+    ctx.restore();ctx.save();ctx.shadowColor="#39FF14";ctx.shadowBlur=18;
+    roundRect(ctx,x,y,pw,ph,4);ctx.strokeStyle="rgba(57,255,20,0.9)";ctx.lineWidth=3;ctx.stroke();
+  }else if(!p.locked&&(isDragged||isTap)){
+    ctx.strokeStyle="#FFE600";ctx.lineWidth=3;ctx.stroke();
+    ctx.fillStyle="rgba(255,230,0,0.15)";ctx.fillRect(x,y,pw,ph);
+  }else if(!p.locked){
+    ctx.strokeStyle="rgba(255,255,255,0.1)";ctx.lineWidth=1;ctx.stroke();
   }
   ctx.restore();
 }
 
-function roundRect(ctx,x,y,w,h,r) {
+function roundRect(ctx,x,y,w,h,r){
   ctx.beginPath();
-  ctx.moveTo(x+r,y); ctx.lineTo(x+w-r,y); ctx.quadraticCurveTo(x+w,y,x+w,y+r);
-  ctx.lineTo(x+w,y+h-r); ctx.quadraticCurveTo(x+w,y+h,x+w-r,y+h);
-  ctx.lineTo(x+r,y+h); ctx.quadraticCurveTo(x,y+h,x,y+h-r);
-  ctx.lineTo(x,y+r); ctx.quadraticCurveTo(x,y,x+r,y); ctx.closePath();
+  ctx.moveTo(x+r,y);ctx.lineTo(x+w-r,y);ctx.quadraticCurveTo(x+w,y,x+w,y+r);
+  ctx.lineTo(x+w,y+h-r);ctx.quadraticCurveTo(x+w,y+h,x+w-r,y+h);
+  ctx.lineTo(x+r,y+h);ctx.quadraticCurveTo(x,y+h,x,y+h-r);
+  ctx.lineTo(x,y+r);ctx.quadraticCurveTo(x,y,x+r,y);ctx.closePath();
 }
 
-/* ═══════════════════════════════════════════════════════════════
-   EXECUTE MOVE
-   FIX 2: displaced piece landing position validated for all deltas
-   FIX 3: full collision check across cluster + all displaced landings
-   FIX 4: placed = placed + newLocks (no redundant full-array filter)
-═══════════════════════════════════════════════════════════════ */
-function executeClusterMove(anchor, deltaR, deltaC) {
-  if (deltaR===0 && deltaC===0) return false;
-
-  const cluster    = getCluster(anchor);
-  const clusterIds = new Set(cluster.map(p=>p.id));
-
-  /* --- PASS 1: collect displaced pieces and their intended new positions --- */
-  const displacedMap = new Map();
-  for (const cp of cluster) {
-    const tr=cp.row+deltaR, tc=cp.col+deltaC;
-    const occ = pieces.find(p=>p.row===tr&&p.col===tc&&!clusterIds.has(p.id));
-    if (occ && !displacedMap.has(occ.id)) {
-      /* displaced piece goes back to where the cluster piece came from */
-      displacedMap.set(occ.id, {
-        piece: occ,
-        toR: cp.row,   /* FIX 2: always the cluster piece's original cell */
-        toC: cp.col
-      });
-    }
+/* ═══════════════════════════════
+   MOVE
+═══════════════════════════════ */
+function executeClusterMove(anchor,deltaR,deltaC){
+  if(deltaR===0&&deltaC===0)return false;
+  const cluster=getCluster(anchor),clusterIds=new Set(cluster.map(p=>p.id));
+  const displacedMap=new Map();
+  for(const cp of cluster){
+    const tr=cp.row+deltaR,tc=cp.col+deltaC;
+    const occ=pieces.find(p=>p.row===tr&&p.col===tc&&!clusterIds.has(p.id));
+    if(occ&&!displacedMap.has(occ.id))displacedMap.set(occ.id,{piece:occ,toR:cp.row,toC:cp.col});
   }
-
-  /* --- PASS 2: build complete final-position map for ALL moving pieces --- */
-  /* cluster destinations */
-  const finalPositions = new Map();
-  for (const cp of cluster) {
-    finalPositions.set(cp.id, {r: cp.row+deltaR, c: cp.col+deltaC});
+  const finalPositions=new Map();
+  for(const cp of cluster)finalPositions.set(cp.id,{r:cp.row+deltaR,c:cp.col+deltaC});
+  for(const[id,{toR,toC}]of displacedMap)finalPositions.set(id,{r:toR,c:toC});
+  for(const[id,{r,c}]of finalPositions){
+    if(r<0||r>=ROWS||c<0||c>=COLS){triggerRedFlash();return false;}
+    const occ=pieces.find(p=>p.row===r&&p.col===c);
+    if(occ&&occ.locked&&!finalPositions.has(occ.id)){triggerRedFlash();return false;}
+    for(const[id2,pos2]of finalPositions)if(id2!==id&&pos2.r===r&&pos2.c===c){triggerRedFlash();return false;}
   }
-  /* displaced destinations */
-  for (const [id,{toR,toC}] of displacedMap) {
-    finalPositions.set(id, {r:toR, c:toC});
-  }
-
-  /* --- PASS 3: validate ALL final positions --- */
-  for (const [id,{r,c}] of finalPositions) {
-    /* bounds check */
-    if (r<0||r>=ROWS||c<0||c>=COLS) { triggerRedFlash(); return false; }
-
-    /* FIX 3: check for landing on a locked piece */
-    const occ = pieces.find(p=>p.row===r&&p.col===c);
-    if (occ && occ.locked && !finalPositions.has(occ.id)) { triggerRedFlash(); return false; }
-
-    /* FIX 3: check for two moving pieces landing on the same cell */
-    for (const [id2,pos2] of finalPositions) {
-      if (id2!==id && pos2.r===r && pos2.c===c) { triggerRedFlash(); return false; }
-    }
-  }
-
-  /* --- COMMIT --- */
   moves++;
-  for (const cp of cluster) { cp.row+=deltaR; cp.col+=deltaC; }
-  for (const [,{piece:dp,toR,toC}] of displacedMap) { dp.row=toR; dp.col=toC; }
-
-  /* --- LOCK CHECK — FIX 4: increment placed directly, no full rescan --- */
-  let newLocks = 0;
-  for (const p of pieces) {
-    if (!p.locked && p.row===p.tr && p.col===p.tc) { p.locked=true; newLocks++; }
-  }
-  placed += newLocks;
-  updateProgress();
-
-  if (newLocks > 0) {
+  for(const cp of cluster){cp.row+=deltaR;cp.col+=deltaC;}
+  for(const[,{piece:dp,toR,toC}]of displacedMap){dp.row=toR;dp.col=toC;}
+  let newLocks=0;
+  for(const p of pieces)if(!p.locked&&p.row===p.tr&&p.col===p.tc){p.locked=true;newLocks++;}
+  placed+=newLocks;updateProgress();
+  if(newLocks>0){
     confetti({particleCount:25,spread:45,origin:{y:0.5},colors:["#FFE600","#00F5FF","#39FF14"]});
-    const pct     = Math.round(placed/TOTAL*100);
-    const prevPct = Math.round((placed-newLocks)/TOTAL*100);
-    const milestone = [25,50,75].find(m => prevPct<m && pct>=m);
-    const msg = milestone
-      ? milestones[milestone](PLAYER_NAME)
-      : correctLines[Math.floor(Math.random()*correctLines.length)](PLAYER_NAME);
-    setCommentary(msg);
-    if (placed===TOTAL) setTimeout(showWin, 700);
+    maybeShowChat();
+    if(placed===TOTAL)setTimeout(showWin,700);
   }
   return true;
 }
 
-/* ═══════════════════════════════════════════════════════════════
+/* ═══════════════════════════════
    POINTER HANDLERS
-   FIX 5: locked-piece tap uses a separate glowPiece variable,
-           never touches selectedPiece — prevents bleed-through
-═══════════════════════════════════════════════════════════════ */
-function getPos(e) {
-  const rect  = canvas.getBoundingClientRect();
-  const scaleX=cw/rect.width, scaleY=ch/rect.height;
-  const src   = (e.touches&&e.touches.length) ? e.touches[0] : e;
-  return {x:(src.clientX-rect.left)*scaleX, y:(src.clientY-rect.top)*scaleY};
+═══════════════════════════════ */
+function getPos(e){
+  const rect=canvas.getBoundingClientRect();
+  const scaleX=cw/rect.width,scaleY=ch/rect.height;
+  const src=(e.touches&&e.touches.length)?e.touches[0]:e;
+  return{x:(src.clientX-rect.left)*scaleX,y:(src.clientY-rect.top)*scaleY};
 }
-
-function hitPiece(x,y) {
-  const col=Math.floor((x-boardX)/pw), row=Math.floor((y-boardY)/ph);
-  if (row<0||row>=ROWS||col<0||col>=COLS) return null;
+function hitPiece(x,y){
+  const col=Math.floor((x-boardX)/pw),row=Math.floor((y-boardY)/ph);
+  if(row<0||row>=ROWS||col<0||col>=COLS)return null;
   return pieces.find(p=>p.row===row&&p.col===col)||null;
 }
-
-let glowPiece = null;   /* FIX 5: separate state for locked-piece confirmation glow */
-let glowTimer = null;
-
-function showGlow(p) {
-  clearTimeout(glowTimer);
-  glowPiece = p;
-  drawAll();
-  glowTimer = setTimeout(() => { glowPiece=null; drawAll(); }, 600);
-}
-
-function drawAll() {
-  if (!canvas||!ctx) return;
-  ctx.clearRect(0,0,cw,ch);
-  ctx.strokeStyle="rgba(0,245,255,0.12)"; ctx.lineWidth=1.5;
-  ctx.strokeRect(boardX,boardY,pw*COLS,ph*ROWS);
-
-  const draggingCluster = (isDragging&&dragAnchor) ? getCluster(dragAnchor) : [];
-  const draggingIds     = new Set(draggingCluster.map(p=>p.id));
-
-  /* tap-selected cluster (unlocked pieces only) */
-  const tapClusterIds = new Set();
-  if (!isDragging && selectedPiece) getCluster(selectedPiece).forEach(p=>tapClusterIds.add(p.id));
-
-  for (const p of pieces) {
-    if (!draggingIds.has(p.id)) {
-      /* FIX 5: glow uses glowPiece, completely separate from selectedPiece */
-      const isGlow = glowPiece && p.id===glowPiece.id;
-      drawPiece(p, 0, 0, false, tapClusterIds.has(p.id), isGlow);
-    }
-  }
-  if (draggingCluster.length) {
-    const dx=currentPointerX-startPointerX, dy=currentPointerY-startPointerY;
-    for (const p of draggingCluster) drawPiece(p,dx,dy,true,false,false);
-  }
-}
-
-function drawPiece(p, offsetX, offsetY, isDragged, isTapSelected, isGlow) {
-  const x=boardX+p.col*pw+offsetX, y=boardY+p.row*ph+offsetY;
-  ctx.save(); roundRect(ctx,x,y,pw,ph,4); ctx.clip();
-  ctx.drawImage(img,
-    p.tc*(img.naturalWidth/COLS), p.tr*(img.naturalHeight/ROWS),
-    img.naturalWidth/COLS, img.naturalHeight/ROWS,
-    x, y, pw, ph);
-
-  /* FIX 5: locked glow drawn via isGlow, never via isTapSelected */
-  if (p.locked && isGlow) {
-    ctx.restore(); ctx.save();
-    ctx.shadowColor="#39FF14"; ctx.shadowBlur=18;
-    roundRect(ctx,x,y,pw,ph,4);
-    ctx.strokeStyle="rgba(57,255,20,0.9)"; ctx.lineWidth=3; ctx.stroke();
-  } else if (!p.locked && (isDragged||isTapSelected)) {
-    ctx.strokeStyle="#FFE600"; ctx.lineWidth=3; ctx.stroke();
-    ctx.fillStyle="rgba(255,230,0,0.15)"; ctx.fillRect(x,y,pw,ph);
-  } else if (!p.locked) {
-    ctx.strokeStyle="rgba(255,255,255,0.1)"; ctx.lineWidth=1; ctx.stroke();
-  }
-  ctx.restore();
-}
-
-function onDown(e) {
+function onDown(e){
   e.preventDefault();
-  const {x,y}=getPos(e), p=hitPiece(x,y);
-  if (!p) return;
-  /* FIX 5: locked tap → separate glow path, selectedPiece untouched */
-  if (p.locked) { showGlow(p); return; }
-  dragAnchor=p; startPointerX=x; startPointerY=y; currentPointerX=x; currentPointerY=y; isDragging=false;
+  const{x,y}=getPos(e),p=hitPiece(x,y);
+  if(!p)return;
+  if(p.locked){showGlow(p);return;}
+  dragAnchor=p;startPointerX=x;startPointerY=y;currentPointerX=x;currentPointerY=y;isDragging=false;
 }
-
-function onMove(e) {
-  if (!dragAnchor) return; e.preventDefault();
-  const {x,y}=getPos(e); currentPointerX=x; currentPointerY=y;
-  if (!isDragging && Math.hypot(x-startPointerX,y-startPointerY)>DRAG_THRESHOLD) {
-    isDragging=true; selectedPiece=null;
-  }
-  if (isDragging) drawAll();
+function onMove(e){
+  if(!dragAnchor)return;e.preventDefault();
+  const{x,y}=getPos(e);currentPointerX=x;currentPointerY=y;
+  if(!isDragging&&Math.hypot(x-startPointerX,y-startPointerY)>DRAG_THRESHOLD){isDragging=true;selectedPiece=null;}
+  if(isDragging)drawAll();
 }
-
-function onUp(e) {
-  if (!dragAnchor) return; e.preventDefault();
-  if (isDragging) {
+function onUp(e){
+  if(!dragAnchor)return;e.preventDefault();
+  if(isDragging){
     const deltaCol=Math.round((currentPointerX-startPointerX)/pw);
     const deltaRow=Math.round((currentPointerY-startPointerY)/ph);
-    if (deltaCol!==0||deltaRow!==0) executeClusterMove(dragAnchor,deltaRow,deltaCol);
-    isDragging=false; dragAnchor=null; drawAll(); return;
+    if(deltaCol!==0||deltaRow!==0)executeClusterMove(dragAnchor,deltaRow,deltaCol);
+    isDragging=false;dragAnchor=null;drawAll();return;
   }
+  const p=dragAnchor;dragAnchor=null;
+  if(!selectedPiece){selectedPiece=p;drawAll();return;}
+  if(selectedPiece.id===p.id){selectedPiece=null;drawAll();return;}
+  if(getCluster(selectedPiece).some(cp=>cp.id===p.id)){selectedPiece=p;drawAll();return;}
+  const deltaR=p.row-selectedPiece.row,deltaC=p.col-selectedPiece.col;
+  executeClusterMove(selectedPiece,deltaR,deltaC);
+  selectedPiece=null;drawAll();
+}
 
-  /* TAP path */
-  const p=dragAnchor; dragAnchor=null;
-  if (!selectedPiece) { selectedPiece=p; drawAll(); return; }
-  if (selectedPiece.id===p.id) { selectedPiece=null; drawAll(); return; }
-  if (getCluster(selectedPiece).some(cp=>cp.id===p.id)) { selectedPiece=p; drawAll(); return; }
-  const deltaR=p.row-selectedPiece.row, deltaC=p.col-selectedPiece.col;
-  executeClusterMove(selectedPiece, deltaR, deltaC);
-  selectedPiece=null; drawAll();
+function updateProgress(){
+  document.getElementById("progFill").style.width=Math.round(placed/TOTAL*100)+"%";
+  document.getElementById("progLabel").textContent=`${placed} / ${TOTAL}`;
 }
 
 /* ═══════════════════════════════
-   PROGRESS
+   WIN SCREEN
 ═══════════════════════════════ */
-function updateProgress() {
-  document.getElementById("progFill").style.width = Math.round(placed/TOTAL*100)+"%";
-  document.getElementById("progLabel").textContent = `${placed} / ${TOTAL}`;
-}
-
-/* ═══════════════════════════════
-   WIN
-═══════════════════════════════ */
-function showWin() {
+function showWin(){
+  hideChatPopup();
   markSolved(PUZZLE_ID);
-  const s=elapsed(), m=Math.floor(s/60), sec=s%60;
+  const s=elapsed(),m=Math.floor(s/60),sec=s%60;
   const timeStr=`${m}:${sec.toString().padStart(2,"0")}`;
 
-  const end=Date.now()+3000;
+  const bests=saveBest(PUZZLE_ID,s,moves);
+  if(bests.newTime)  document.getElementById("timeBest").style.display="inline-flex";
+  if(bests.newMoves) document.getElementById("movesBest").style.display="inline-flex";
+
+  let confettiRunning=true;
+  const confettiEnd=Date.now()+3000;
   (function frame(){
-    confetti({particleCount:6,angle:60, spread:55,origin:{x:0},colors:["#FFE600","#00F5FF","#39FF14","#FF2D78"]});
-    confetti({particleCount:6,angle:120,spread:55,origin:{x:1},colors:["#FFE600","#00F5FF","#39FF14","#FF2D78"]});
-    if (Date.now()<end) requestAnimationFrame(frame);
+    if(!confettiRunning)return;
+    confetti({particleCount:5,angle:60, spread:55,origin:{x:0},colors:["#FFE600","#00F5FF","#39FF14","#FF2D78"]});
+    confetti({particleCount:5,angle:120,spread:55,origin:{x:1},colors:["#FFE600","#00F5FF","#39FF14","#FF2D78"]});
+    if(Date.now()<confettiEnd)requestAnimationFrame(frame);
+    else confettiRunning=false;
   }());
 
+  document.body.style.overflow="hidden";
   document.getElementById("puzzleScreen").style.display="none";
-  document.getElementById("winScreen").style.display="flex";
-  document.getElementById("winPlayer").textContent=`${PLAYER_NAME} · ${PLAYER_DEPT}`;
-  document.getElementById("winPuzzleName").textContent=`"${PUZZLE_TITLE}"`;
+
+  const ws=document.getElementById("winScreen");
+  ws.style.setProperty("--win-a",     THEME.a);
+  ws.style.setProperty("--win-accent",THEME.accent);
+  ws.style.setProperty("--win-glow",  THEME.glow);
+  ws.style.setProperty("--win-badge-bg",THEME.badge);
+  ws.style.display="flex";
+  ws.scrollTop=0;
+
+  const crowns={quotes:"💬",jokes:"😂",comics:"🎨",thirukural:"📿"};
+  document.getElementById("winCrown").textContent=crowns[PUZZLE_CAT]||"🏆";
+
+  document.getElementById("winPlayer").textContent=PLAYER_NAME;
+  document.getElementById("winDept").textContent=PLAYER_DEPT;
+
+  const badge=document.getElementById("winCatBadge");
+  badge.textContent=`${THEME.icon} ${THEME.label}`;
+
+  const winImg=document.getElementById("winImg");
+  winImg.alt=`${PUZZLE_TITLE} — solved`;
+  winImg.src=img.src;
+
   document.getElementById("wTime").textContent=timeStr;
   document.getElementById("wMoves").textContent=moves;
-  document.getElementById("winImg").src=img.src;
-  document.getElementById("winStreak").textContent=`🏆 ${getSolvedCount()} of ${PUZZLES.length} puzzles solved`;
+  document.getElementById("wDiff").textContent=PUZZLE_DIFF;
+  document.getElementById("wPieces").textContent=TOTAL;
 
-  setCommentary(NEXT_ID
-    ? `Nailed it, ${PLAYER_NAME}! Tap Next Puzzle to keep going! 🚀`
-    : `Amazing, ${PLAYER_NAME}! That's the last one! You're done! 🎉`);
+  const solved=getSolvedCount(),total=PUZZLES.length;
+  document.getElementById("wQuestVal").textContent=`${solved} / ${total}`;
+  document.getElementById("wQuestFill").style.width=(solved/total*100)+"%";
+
+  buildWinActions();
 
   sendToSupabase({student_name:PLAYER_NAME,department:PLAYER_DEPT,time_spent:s,moves,quest_id:"Jigsaw-"+PUZZLE_ID});
 }
 
-async function sendToSupabase(payload) {
-  try { await fetch(SUPABASE_URL,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(payload)}); }
-  catch(e) { console.warn("Supabase log dropped:",e); }
+function buildWinActions(){
+  const container=document.getElementById("winActions");
+  container.innerHTML="";
+
+  if(NEXT_ID && NEXT_PUZ){
+    const btnNext=document.createElement("button");
+    btnNext.className="btn-next";
+    btnNext.innerHTML=`▶ NEXT PUZZLE`;
+    btnNext.onclick=goToNext;
+    container.appendChild(btnNext);
+
+    const catMeta={quotes:{icon:"💬"},jokes:{icon:"😄"},comics:{icon:"🎨"},thirukural:{icon:"📖"}};
+    const nextIcon=(catMeta[NEXT_PUZ.category]||{icon:"🧩"}).icon;
+    const teaser=document.createElement("div");
+    teaser.className="next-teaser";
+    teaser.onclick=goToNext;
+    teaser.innerHTML=`
+      <div class="next-teaser-icon">${nextIcon}</div>
+      <div class="next-teaser-body">
+        <div class="next-teaser-label">Up next</div>
+        <div class="next-teaser-title">${NEXT_PUZ.title}</div>
+        <div class="next-teaser-author">${NEXT_PUZ.author}</div>
+      </div>
+      <div class="next-teaser-arrow">›</div>`;
+    container.appendChild(teaser);
+  } else {
+    const done=document.createElement("div");
+    done.className="win-all-done";
+    done.innerHTML=`<div class="win-all-done-title">ALL PUZZLES<br>COMPLETE! 🎉</div>
+      <div class="win-all-done-sub">You've solved every puzzle in the quest.<br>Legendary!</div>`;
+    container.appendChild(done);
+  }
+
+  const row=document.createElement("div");
+  row.className="win-secondary";
+  const btnAgain=document.createElement("button");
+  btnAgain.className="btn-again";btnAgain.textContent="↺ AGAIN";btnAgain.onclick=playAgain;
+  const btnBack=document.createElement("a");
+  btnBack.className="btn-back";btnBack.textContent="← MENU";btnBack.href="directory.html";
+  row.appendChild(btnAgain);row.appendChild(btnBack);
+  container.appendChild(row);
 }
 
-/* FIX 6: playAgain does NOT null img — reuses the already-loaded image */
-function playAgain() {
+/* ═══════════════════════════════
+   SHARE & DOWNLOAD
+═══════════════════════════════ */
+function getShareText(){
+  return `I just solved "${PUZZLE_TITLE}" on Puzzle Quest in ${document.getElementById("wMoves").textContent} moves! 🧩`;
+}
+function getPuzzleUrl(){
+  return location.origin+location.pathname+"#"+PUZZLE_ID;
+}
+
+async function shareImage(){
+  const shareText=getShareText();
+  const url=getPuzzleUrl();
+  if(navigator.share){
+    try{
+      const response=await fetch(img.src);
+      const blob=await response.blob();
+      const file=new File([blob],"puzzle.jpg",{type:blob.type});
+      if(navigator.canShare&&navigator.canShare({files:[file]})){
+        await navigator.share({title:"Puzzle Quest",text:shareText,files:[file],url});
+      } else {
+        await navigator.share({title:"Puzzle Quest",text:shareText,url});
+      }
+    } catch(e){
+      if(e.name!=="AbortError") copyLink();
+    }
+  } else {
+    copyLink();
+  }
+}
+
+function downloadImage(){
+  const a=document.createElement("a");
+  a.href=img.src;
+  a.download=PUZZLE_TITLE.replace(/\s+/g,"_")+".jpg";
+  a.target="_blank";
+  a.click();
+}
+
+function copyLink(){
+  const url=getPuzzleUrl();
+  if(navigator.clipboard){
+    navigator.clipboard.writeText(url).then(()=>showToast("Link copied!")).catch(()=>showToast("Copy: "+url));
+  } else {
+    showToast("Link copied!");
+  }
+}
+
+function showToast(msg){
+  const t=document.getElementById("copyToast");
+  t.textContent=msg;t.classList.add("show");
+  setTimeout(()=>t.classList.remove("show"),2200);
+}
+
+async function sendToSupabase(payload){
+  try{await fetch(SUPABASE_URL,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(payload)});}
+  catch(e){console.warn("Supabase dropped:",e);}
+}
+
+function playAgain(){
   document.getElementById("winScreen").style.display="none";
   document.getElementById("puzzleScreen").style.display="flex";
   initPuzzle();
 }
 
-window.addEventListener("resize", () => {
-  if (document.getElementById("puzzleScreen").style.display==="flex" && img?.complete) buildPuzzle();
+window.addEventListener("resize",()=>{
+  if(document.getElementById("puzzleScreen").style.display==="flex"&&img?.complete)buildPuzzle();
 });
 </script>
 </body>
