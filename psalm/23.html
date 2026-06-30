@@ -753,7 +753,7 @@ function showVerseWin(){
     ? `Magnificent, ${playerName}! You've completed all six verses of Psalm 23! Hallelujah!`
     : `Wonderful, ${playerName}! Verse ${v.num} revealed! Onward to verse ${v.num+1}!`);
 
-  sendToSupabase({student_name:playerName,department:playerDept,time_spent:s,moves,quest_id:"Psalm1-v"+v.num});
+  sendToSupabase({student_name:playerName,department:playerDept,time_spent:s,moves,quest_id:"Psalm23-v"+v.num});
 }
 
 function buildVerseWinActions(){
