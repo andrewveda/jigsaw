@@ -993,7 +993,7 @@ async function shareCurrentVerse(){
     try{
       const resp=await fetch(img.src);
       const blob=await resp.blob();
-      const file=new File([blob],`psalm1_v${v.num}.png`,{type:blob.type});
+      const file=new File([blob],`psalm23_v${v.num}.png`,{type:blob.type});
       if(navigator.canShare&&navigator.canShare({files:[file]})){
         await navigator.share({title:"Psalm 23 Puzzle",text,files:[file]});
       }else{await navigator.share({title:"Psalm 23 Puzzle",text,url:location.href});}
@@ -1003,7 +1003,7 @@ async function shareCurrentVerse(){
 
 async function downloadCurrentVerse() {
   const v = currentVerse();
-  await downloadImage(img.src, `Psalm1-Verse-${v.num}.png`);
+  await downloadImage(img.src, `Psalm23-Verse-${v.num}.png`);
 }
 async function shareCurrentVerseFromWin(){
   const v=currentVerse();
@@ -1013,7 +1013,7 @@ async function shareCurrentVerseFromWin(){
     try{
       const resp=await fetch(vwImg.src);
       const blob=await resp.blob();
-      const file=new File([blob],`psalm1_v${v.num}.png`,{type:blob.type});
+      const file=new File([blob],`psalm23_v${v.num}.png`,{type:blob.type});
       if(navigator.canShare&&navigator.canShare({files:[file]})){
         await navigator.share({title:"Psalm 23",text,files:[file]});
       }else{await navigator.share({title:"Psalm 23",text,url:location.href});}
@@ -1025,7 +1025,7 @@ function shareCurrentVerseWin(){shareCurrentVerseFromWin();}
 async function downloadCurrentVerseWin() {
   const v = currentVerse();
   const imageUrl = document.getElementById("vwImg").src;
-  await downloadImage(imageUrl, `Psalm1-Verse-${v.num}.png`);
+  await downloadImage(imageUrl, `Psalm23-Verse-${v.num}.png`);
 }
 // remap win screen buttons
 document.addEventListener("DOMContentLoaded",()=>{
@@ -1053,7 +1053,7 @@ async function shareGeneral(){
 
 function downloadCurrentVerseFromFinale(){
   const v=VERSES[0];
-  const a=document.createElement("a");a.href=v.imageUrl;a.download="psalm1_complete.png";a.target="_blank";a.click();
+  const a=document.createElement("a");a.href=v.imageUrl;a.download="psalm23_complete.png";a.target="_blank";a.click();
 }
 
 function copyPuzzleLink(){
