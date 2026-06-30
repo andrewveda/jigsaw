@@ -516,13 +516,14 @@ const CHAT_LINES = [
   { bot:"You stayed kind to that piece!", reply:["Aww","Thanks! 💛"] },
   { bot:"Joy looks good on you!", reply:["I'm","So","Happy! 😄"] },
   { bot:"Brave move, soldier of faith!", reply:["I","Am","Brave! 🛡️"] },
-  { bot:"Grateful for this puzzle?", reply:["Always","Grateful! 🙏"] },
+  { bot:"Are you feeling Grateful?", reply:["Always","Grateful! 🙏"] },
   { bot:"Hope is rising piece by piece!", reply:["Hope","Wins! 🌅"] },
   { bot:"Like a tree by the water! 🌳", reply:["Growing","Strong! 💪"] },
   { bot:"Blessed are the persistent!", reply:["I'll","Never","Give","Up! 🔥"] },
 ];
 
 let chatBusy=false;
+   let builtReply = "";
 
 function maybeShowChat(){
   if(chatBusy)return;
@@ -548,34 +549,41 @@ function showChatPopup(){
   replyBubble.classList.remove("visible");
   repliesWrap.innerHTML="";
 
+   builtReply = "";
   let buttons=[];
   convo.reply.forEach(word=>{
     const b=document.createElement("button");
     b.className="chat-quick-btn";
     b.textContent=word;
-    b.onclick=()=>handleChatTap(word,b,buttons,convo.reply.length);
-    repliesWrap.appendChild(b);
+  b.onclick = () => handleChatTap(word, b, buttons);
+     repliesWrap.appendChild(b);
     buttons.push(b);
   });
 
   popup.classList.add("show");
 
-  let tappedWords=[];
-  function handleChatTap(word,btn,allBtns,total){
-    if(btn.classList.contains("tapped"))return;
-    btn.classList.add("tapped");
-    tappedWords.push(word);
-    replyBubble.textContent=tappedWords.join(" ");
-    replyBubble.classList.add("visible");
-    if(tappedWords.length>=total){
-      setTimeout(()=>{
-        popup.classList.remove("show");
-        chatBusy=false;
-      },1000);
-    }
-  }
 
-  // safety: if the player ignores the popup, auto-dismiss after a while
+function handleChatTap(word, btn, buttons) {
+    if (btn.classList.contains("tapped")) return;
+
+    btn.classList.add("tapped");
+
+    builtReply = builtReply
+        ? builtReply + " " + word
+        : word;
+
+    replyBubble.textContent = builtReply;
+    replyBubble.classList.add("visible");
+
+    setTimeout(() => btn.remove(), 220);
+
+    if (buttons.every(b => b.classList.contains("tapped"))) {
+        setTimeout(() => {
+            popup.classList.remove("show");
+            chatBusy = false;
+        }, 900);
+    }
+}
   clearTimeout(showChatPopup._timeout);
   showChatPopup._timeout=setTimeout(()=>{
     if(popup.classList.contains("show")){
