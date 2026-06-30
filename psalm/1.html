@@ -413,17 +413,24 @@ function markVerseSolved(id){ const s=getSolvedVerses(); if(!s.includes(id)){s.p
    ENTRY
 ═══════════════════════════════ */
 function enterPsalm(){
-  const n=document.getElementById("nameInput").value.trim();
-  
- playerName = n;
-playerDept = "Friends & Family";
+  const n = document.getElementById("nameInput").value.trim();
 
-localStorage.setItem("ps1_name", n);
-localStorage.setItem("ps1_dept", playerDept);
-  
-   document.getElementById("entryScreen").style.display="none";
+  if (!n) {
+    alert("Please enter your name!");
+    return;
+  }
+
+  playerName = n;
+  playerDept = "Friends & Family";
+
+  localStorage.setItem("ps1_name", n);
+  localStorage.setItem("ps1_dept", playerDept);
+
+  document.getElementById("entryScreen").style.display="none";
   document.getElementById("puzzleScreen").style.display="flex";
-  currentVerseIdx=0; totalTime=0; totalMoves=0;
+  currentVerseIdx=0;
+  totalTime=0;
+  totalMoves=0;
   buildDots();
   initPuzzle();
 }
