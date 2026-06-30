@@ -1,0 +1,1073 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no"/>
+<title>Psalm 23 — Puzzle Quest</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700;900&family=Press+Start+2P&family=DM+Sans:wght@400;700;800&display=swap" rel="stylesheet"/>
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{height:100%}
+body{font-family:'DM Sans',sans-serif;background:#0a0008;color:#fff;overflow:hidden;user-select:none}
+
+/* ══════════════════════════════
+   ENTRY / NAME SCREEN
+══════════════════════════════ */
+#entryScreen{
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  min-height:100dvh;padding:2rem 1.4rem;
+  background:#0a0008;position:relative;overflow:hidden;
+}
+.entry-glow{position:absolute;width:340px;height:340px;border-radius:50%;background:radial-gradient(circle,rgba(255,215,0,0.12) 0%,transparent 70%);top:-80px;left:50%;transform:translateX(-50%);pointer-events:none}
+.entry-glow2{position:absolute;width:260px;height:260px;border-radius:50%;background:radial-gradient(circle,rgba(180,100,255,0.12) 0%,transparent 70%);bottom:30px;right:-60px;pointer-events:none}
+.entry-cross{font-size:3rem;text-align:center;margin-bottom:0.5rem;animation:float 3.5s ease-in-out infinite}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-9px)}}
+.entry-title{font-family:'Cinzel',serif;font-size:1.9rem;font-weight:900;text-align:center;line-height:1.1;letter-spacing:-0.5px;margin-bottom:0.2rem;background:linear-gradient(135deg,#FFD700,#FFA0C0,#C084FC);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.entry-sub{font-size:0.7rem;color:#6a3a8a;text-align:center;letter-spacing:3px;text-transform:uppercase;font-weight:800;margin-bottom:0.25rem}
+.entry-verse{font-size:0.78rem;color:#4a2a6a;text-align:center;font-style:italic;line-height:1.6;margin-bottom:1.8rem;max-width:280px}
+.form-card{width:100%;max-width:340px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,215,0,0.15);border-radius:20px;padding:1.6rem 1.4rem;display:flex;flex-direction:column;gap:1rem;backdrop-filter:blur(10px)}
+.field-label{font-size:0.62rem;font-weight:800;color:#C084FC;letter-spacing:2px;text-transform:uppercase;margin-bottom:0.3rem;display:block}
+.form-card input,.form-card select{width:100%;padding:0.85rem 1rem;background:rgba(0,0,0,0.4);border:1px solid rgba(192,132,252,0.25);border-radius:10px;font-size:0.95rem;color:#fff;outline:none;font-family:'DM Sans',sans-serif;-webkit-appearance:none;appearance:none;transition:border-color 0.15s}
+.form-card input:focus,.form-card select:focus{border-color:#C084FC;box-shadow:0 0 0 2px rgba(192,132,252,0.12)}
+.form-card input::placeholder{color:#3a2050}
+.form-card select option{background:#120820}
+.start-btn{width:100%;padding:1rem;font-family:'Cinzel',serif;font-size:0.95rem;font-weight:900;letter-spacing:2px;background:linear-gradient(135deg,#FFD700,#FFA040);color:#000;border:none;border-radius:12px;cursor:pointer;transition:transform 0.12s,opacity 0.12s;box-shadow:0 0 24px rgba(255,215,0,0.3)}
+.start-btn:active{transform:scale(0.97);opacity:0.9}
+
+/* ══════════════════════════════
+   PUZZLE SCREEN
+══════════════════════════════ */
+#puzzleScreen{display:none;flex-direction:column;height:100dvh;overflow:hidden}
+
+.top-nav{display:flex;align-items:center;gap:7px;padding:0.5rem 0.7rem;background:#0a0008;border-bottom:1px solid rgba(255,215,0,0.1);flex-shrink:0}
+.nav-btn{display:flex;align-items:center;gap:5px;padding:5px 9px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:8px;color:#666;font-size:0.65rem;font-weight:700;cursor:pointer;white-space:nowrap;transition:all 0.15s;text-decoration:none;font-family:'DM Sans',sans-serif}
+.nav-btn:active{background:rgba(255,255,255,0.1);color:#fff}
+.nav-btn.disabled-btn{opacity:0.2;pointer-events:none}
+.nav-btn.next-btn{background:rgba(255,215,0,0.1);border-color:rgba(255,215,0,0.35);color:#FFD700}
+.puzzle-nav-info{flex:1;text-align:center;min-width:0}
+.puzzle-nav-title{font-family:'Cinzel',serif;font-size:0.7rem;font-weight:700;color:#ddd;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.puzzle-nav-sub{font-size:0.52rem;color:#4a2a6a;margin-top:1px;letter-spacing:1px;text-transform:uppercase}
+
+/* verse number dots */
+.verse-dots{display:flex;gap:5px;align-items:center;padding:0.3rem 0.9rem;background:#0a0008;border-bottom:1px solid rgba(255,215,0,0.08);flex-shrink:0;justify-content:center}
+.vdot{width:8px;height:8px;border-radius:50%;background:#1a0a2a;border:1px solid rgba(255,215,0,0.2);transition:all 0.3s}
+.vdot.done{background:#FFD700;border-color:#FFD700;box-shadow:0 0 6px rgba(255,215,0,0.5)}
+.vdot.active{background:rgba(255,215,0,0.3);border-color:#FFD700;transform:scale(1.2)}
+
+.prog-wrap{padding:0.3rem 0.9rem;background:#0a0008;border-bottom:1px solid rgba(255,215,0,0.08);flex-shrink:0;display:flex;align-items:center;gap:8px}
+.prog-track{flex:1;height:4px;background:#1a0a2a;border-radius:3px;overflow:hidden}
+.prog-fill{height:100%;background:linear-gradient(90deg,#C084FC,#FFD700);border-radius:3px;width:0%;transition:width 0.4s ease}
+.prog-label{font-size:0.58rem;color:#3a1a5a;font-weight:700;white-space:nowrap}
+
+.puzzle-area{flex:1;overflow:hidden;position:relative;background:#08000f;touch-action:none}
+#puzzleCanvas{position:absolute;top:0;left:0;width:100%;height:100%;touch-action:none}
+#loadingOverlay{position:absolute;inset:0;background:#08000f;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1rem;z-index:10}
+.spinner{width:40px;height:40px;border:3px solid #1a0a2a;border-top-color:#FFD700;border-radius:50%;animation:spin 0.8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.loading-text{font-family:'Press Start 2P',monospace;font-size:0.48rem;color:#3a1a5a;letter-spacing:2px}
+@keyframes redPulse{0%{box-shadow:inset 0 0 60px rgba(255,0,50,0.85)}100%{box-shadow:inset 0 0 0 rgba(255,0,50,0)}}
+.flash-red{animation:redPulse 0.4s ease-out}
+
+/* ══════════════════════════════
+   CHAT POPUP — WhatsApp-style "Puzzle Bot"
+══════════════════════════════ */
+#chatPopup{
+  position:absolute;left:50%;bottom:14px;transform:translateX(-50%) translateY(12px);
+  width:min(86%,300px);
+  background:linear-gradient(165deg,#15102a,#0c0818);
+  border:1px solid rgba(255,215,0,0.18);
+  border-radius:18px;
+  padding:0.7rem 0.8rem 0.75rem;
+  box-shadow:0 10px 34px rgba(0,0,0,0.55),0 0 0 1px rgba(255,255,255,0.02) inset;
+  z-index:25;
+  opacity:0;pointer-events:none;
+  transition:opacity 0.35s ease,transform 0.35s ease;
+}
+#chatPopup.show{opacity:1;transform:translateX(-50%) translateY(0);pointer-events:auto}
+.chat-bot-row{display:flex;align-items:flex-start;gap:7px;margin-bottom:0.55rem}
+.chat-bot-avatar{width:24px;height:24px;border-radius:50%;background:linear-gradient(135deg,#FFD700,#C084FC);display:flex;align-items:center;justify-content:center;font-size:0.7rem;flex-shrink:0}
+.chat-bot-bubble{background:rgba(255,255,255,0.07);border-radius:14px 14px 14px 4px;padding:0.5rem 0.7rem;font-size:0.78rem;font-weight:700;color:#FFE9C7;line-height:1.35;animation:chatPop 0.3s ease both}
+.chat-bot-name{font-size:0.55rem;font-weight:800;color:#C084FC;letter-spacing:0.5px;margin-bottom:2px}
+@keyframes chatPop{from{opacity:0;transform:scale(0.85) translateY(4px)}to{opacity:1;transform:scale(1) translateY(0)}}
+
+.chat-reply-row{display:flex;justify-content:flex-end;margin-bottom:0.5rem;min-height:1px}
+.chat-reply-bubble{background:linear-gradient(135deg,#25D366,#128C7E);color:#fff;border-radius:14px 14px 4px 14px;padding:0.45rem 0.75rem;font-size:0.76rem;font-weight:700;max-width:80%;text-align:right;opacity:0;transform:scale(0.9);transition:all 0.18s ease}
+.chat-reply-bubble.visible{opacity:1;transform:scale(1)}
+
+.chat-quick-replies{display:flex;flex-wrap:wrap;gap:6px;justify-content:flex-end}
+.chat-quick-btn{background:rgba(255,215,0,0.12);border:1.5px solid rgba(255,215,0,0.45);color:#FFD700;font-weight:800;font-size:0.74rem;padding:0.4rem 0.85rem;border-radius:20px;cursor:pointer;transition:transform 0.12s,opacity 0.18s,background 0.12s;animation:chatBtnIn 0.3s ease both}
+.chat-quick-btn:nth-child(1){animation-delay:0.05s}
+.chat-quick-btn:nth-child(2){animation-delay:0.12s}
+.chat-quick-btn:nth-child(3){animation-delay:0.19s}
+.chat-quick-btn:nth-child(4){animation-delay:0.26s}
+.chat-quick-btn:active{transform:scale(0.93);background:rgba(255,215,0,0.25)}
+.chat-quick-btn.tapped{opacity:0;transform:scale(0.6);pointer-events:none}
+@keyframes chatBtnIn{from{opacity:0;transform:translateY(6px) scale(0.9)}to{opacity:1;transform:translateY(0) scale(1)}}
+
+/* ══════════════════════════════
+   INTER-VERSE WIN (verses 1-5)
+══════════════════════════════ */
+#verseWinScreen{
+  display:none;flex-direction:column;align-items:center;
+  height:100dvh;overflow-y:auto;-webkit-overflow-scrolling:touch;
+  padding:0 0 2.5rem;text-align:center;position:relative;
+  background:#0a0008;
+}
+.vw-bg{position:absolute;inset:0;background:radial-gradient(ellipse at 50% 20%,#1a0a2a 0%,#0a0008 65%);pointer-events:none}
+.vw-inner{position:relative;z-index:1;width:100%;max-width:340px;padding:0 1.1rem;margin:0 auto;display:flex;flex-direction:column;align-items:center}
+
+@keyframes vwIn{from{opacity:0;transform:scale(0.85) translateY(-12px)}to{opacity:1;transform:scale(1) translateY(0)}}
+@keyframes vwUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+
+.vw-star{font-size:2.2rem;margin-top:1.4rem;animation:vwIn 0.45s cubic-bezier(0.22,1,0.36,1) both}
+.vw-label{font-size:0.55rem;font-weight:800;color:#6a3a8a;letter-spacing:3px;text-transform:uppercase;margin:0.3rem 0 0.1rem;animation:vwUp 0.35s 0.1s ease both}
+.vw-verse-title{font-family:'Cinzel',serif;font-size:1.3rem;font-weight:900;color:#FFD700;text-shadow:0 0 18px rgba(255,215,0,0.45);margin-bottom:0.15rem;animation:vwIn 0.45s 0.08s cubic-bezier(0.22,1,0.36,1) both;line-height:1.2}
+.vw-player{font-size:0.75rem;font-weight:800;color:#C084FC;margin-bottom:0.8rem;animation:vwUp 0.35s 0.18s ease both}
+
+.vw-img-wrap{position:relative;width:100%;max-width:240px;margin-bottom:0.8rem;animation:vwUp 0.4s 0.22s ease both}
+.vw-img{width:100%;border-radius:10px;display:block;border:2px solid rgba(255,215,0,0.4);box-shadow:0 0 22px rgba(255,215,0,0.2)}
+.vw-img-actions{position:absolute;bottom:7px;right:7px;display:flex;gap:5px}
+.img-action-btn{width:33px;height:33px;border-radius:50%;background:rgba(8,0,15,0.82);border:1px solid rgba(255,255,255,0.12);color:#fff;font-size:0.9rem;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:transform 0.12s;backdrop-filter:blur(4px)}
+.img-action-btn:active{transform:scale(0.87)}
+.img-action-btn.share-btn{background:rgba(192,132,252,0.18);border-color:rgba(192,132,252,0.4);color:#C084FC}
+.img-action-btn.dl-btn{background:rgba(255,215,0,0.15);border-color:rgba(255,215,0,0.4);color:#FFD700}
+
+.vw-stats{display:grid;grid-template-columns:1fr 1fr;gap:7px;width:100%;margin-bottom:0.75rem;animation:vwUp 0.35s 0.3s ease both}
+.vw-stat{background:#0d0018;border:1px solid rgba(255,255,255,0.06);border-radius:10px;padding:0.65rem 0.5rem;position:relative;overflow:hidden}
+.vw-stat::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,#C084FC,#FFD700)}
+.vw-stat-val{font-family:'Press Start 2P',monospace;font-size:0.72rem;color:#FFE600;display:block;margin-bottom:2px}
+.vw-stat-lbl{font-size:0.55rem;color:#4a2a6a;font-weight:700;letter-spacing:0.5px;text-transform:uppercase}
+.best-badge{display:inline-flex;align-items:center;gap:3px;font-size:0.5rem;font-weight:800;color:#FFB327;background:rgba(255,179,39,0.1);border:1px solid rgba(255,179,39,0.2);border-radius:20px;padding:1px 6px;margin-top:2px}
+
+/* verse progress row */
+.vw-progress-row{width:100%;display:flex;gap:5px;margin-bottom:0.75rem;animation:vwUp 0.35s 0.36s ease both}
+.vp-dot{flex:1;height:6px;border-radius:3px;background:#1a0a2a;transition:all 0.4s}
+.vp-dot.done{background:linear-gradient(90deg,#C084FC,#FFD700);box-shadow:0 0 6px rgba(255,215,0,0.4)}
+.vp-dot.current{background:rgba(255,215,0,0.3)}
+
+/* next verse button — pulsing gold */
+.vw-actions{display:flex;flex-direction:column;gap:0.6rem;width:100%;animation:vwUp 0.35s 0.42s ease both}
+.btn-next-verse{width:100%;padding:1rem 1.5rem;font-family:'Cinzel',serif;font-size:1rem;font-weight:900;letter-spacing:2px;background:linear-gradient(135deg,#FFD700,#FFA040);color:#000;border:none;border-radius:14px;cursor:pointer;box-shadow:0 0 28px rgba(255,215,0,0.4);animation:goldPulse 2s 1s ease-in-out infinite;transition:transform 0.12s}
+.btn-next-verse:active{transform:scale(0.97)}
+@keyframes goldPulse{0%,100%{box-shadow:0 0 28px rgba(255,215,0,0.4)}50%{box-shadow:0 0 50px rgba(255,215,0,0.75),0 0 90px rgba(255,215,0,0.25)}}
+.vw-next-label{font-size:0.58rem;color:#4a2a6a;text-align:center;letter-spacing:1px;text-transform:uppercase}
+
+.vw-secondary{display:flex;gap:0.5rem;width:100%}
+.btn-again,.btn-back{flex:1;padding:0.7rem 0.5rem;font-size:0.62rem;font-weight:800;border-radius:10px;cursor:pointer;transition:transform 0.12s;text-decoration:none;display:flex;align-items:center;justify-content:center;letter-spacing:0.3px}
+.btn-again{background:rgba(255,255,255,0.05);color:#555;border:1px solid rgba(255,255,255,0.08)}
+.btn-again:active{background:rgba(255,255,255,0.1);transform:scale(0.97)}
+.btn-back{background:rgba(255,255,255,0.03);color:#3a2050;border:1px solid rgba(255,255,255,0.05)}
+.btn-back:active{background:rgba(255,255,255,0.07);transform:scale(0.97)}
+
+/* ══════════════════════════════
+   GRAND FINALE — all 6 done
+══════════════════════════════ */
+#finaleScreen{
+  display:none;flex-direction:column;align-items:center;
+  height:100dvh;overflow-y:auto;-webkit-overflow-scrolling:touch;
+  padding:0 0 3rem;text-align:center;
+  background:#0a0008;
+}
+.finale-bg{position:absolute;inset:0;background:radial-gradient(ellipse at 50% 10%,#1f0a00 0%,#0a0008 60%);pointer-events:none;z-index:0}
+.finale-inner{position:relative;z-index:1;width:100%;max-width:380px;padding:0 1.1rem;margin:0 auto;display:flex;flex-direction:column;align-items:center}
+
+@keyframes finIn{from{opacity:0;transform:scale(0.8) translateY(-20px)}to{opacity:1;transform:scale(1) translateY(0)}}
+@keyframes finUp{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:translateY(0)}}
+
+.finale-trophy{font-size:3.5rem;margin-top:1.6rem;animation:finIn 0.6s cubic-bezier(0.22,1,0.36,1) both}
+.finale-title{font-family:'Cinzel',serif;font-size:1.6rem;font-weight:900;line-height:1.15;background:linear-gradient(135deg,#FFD700,#FFA0C0,#C084FC);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:0.2rem;animation:finIn 0.6s 0.06s cubic-bezier(0.22,1,0.36,1) both}
+.finale-psalm{font-family:'Cinzel',serif;font-size:0.85rem;color:rgba(255,215,0,0.4);letter-spacing:4px;text-transform:uppercase;margin-bottom:0.3rem;animation:finUp 0.4s 0.15s ease both}
+.finale-player{font-size:0.8rem;font-weight:800;color:#C084FC;margin-bottom:0.15rem;animation:finUp 0.4s 0.2s ease both}
+.finale-dept{font-size:0.62rem;color:#3a1a5a;margin-bottom:1.2rem;animation:finUp 0.4s 0.25s ease both}
+
+/* Scripture quote */
+.finale-quote{background:rgba(255,215,0,0.05);border:1px solid rgba(255,215,0,0.15);border-left:3px solid #FFD700;border-radius:10px;padding:0.85rem 1rem;margin-bottom:1.1rem;animation:finUp 0.4s 0.3s ease both;text-align:left}
+.finale-quote-text{font-size:0.78rem;color:#bbb;line-height:1.65;font-style:italic}
+.finale-quote-ref{font-size:0.6rem;color:#FFD700;font-weight:800;margin-top:6px;letter-spacing:1px}
+
+/* Gallery */
+.gallery-label{font-size:0.58rem;font-weight:800;color:#3a1a5a;letter-spacing:2.5px;text-transform:uppercase;margin-bottom:0.6rem;animation:finUp 0.4s 0.35s ease both;align-self:flex-start}
+.gallery-scroll{display:grid;grid-template-columns:1fr 1fr 1fr;gap:7px;width:100%;margin-bottom:1.1rem;animation:finUp 0.4s 0.4s ease both}
+.gallery-item{border-radius:8px;overflow:hidden;aspect-ratio:1/1;position:relative;cursor:pointer}
+.gallery-item img{width:100%;height:100%;object-fit:cover;display:block;transition:transform 0.2s}
+.gallery-item:active img{transform:scale(0.95)}
+.gallery-item .gnum{position:absolute;bottom:4px;right:5px;font-family:'Press Start 2P',monospace;font-size:0.42rem;color:#FFD700;text-shadow:0 1px 3px rgba(0,0,0,0.9);background:rgba(0,0,0,0.5);padding:1px 4px;border-radius:3px}
+/* staggered border glow */
+.gallery-item:nth-child(1){border:2px solid rgba(255,215,0,0.5)}
+.gallery-item:nth-child(2){border:2px solid rgba(192,132,252,0.5)}
+.gallery-item:nth-child(3){border:2px solid rgba(255,160,192,0.5)}
+.gallery-item:nth-child(4){border:2px solid rgba(0,245,255,0.4)}
+.gallery-item:nth-child(5){border:2px solid rgba(57,255,20,0.4)}
+.gallery-item:nth-child(6){border:2px solid rgba(255,179,39,0.5)}
+
+/* finale total stats */
+.finale-stats{display:grid;grid-template-columns:1fr 1fr 1fr;gap:7px;width:100%;margin-bottom:1rem;animation:finUp 0.4s 0.46s ease both}
+.fin-stat{background:#0d0018;border:1px solid rgba(255,255,255,0.06);border-radius:10px;padding:0.65rem 0.4rem}
+.fin-stat-val{font-family:'Press Start 2P',monospace;font-size:0.62rem;color:#FFE600;display:block;margin-bottom:2px}
+.fin-stat-lbl{font-size:0.52rem;color:#3a1a5a;font-weight:700;letter-spacing:0.3px;text-transform:uppercase}
+
+/* Share buttons */
+.finale-share{display:flex;flex-direction:column;gap:0.6rem;width:100%;animation:finUp 0.4s 0.52s ease both}
+.btn-whatsapp{width:100%;padding:1rem 1.5rem;font-size:0.88rem;font-weight:800;background:linear-gradient(135deg,#25D366,#128C7E);color:#fff;border:none;border-radius:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;transition:transform 0.12s;box-shadow:0 0 22px rgba(37,211,102,0.35)}
+.btn-whatsapp:active{transform:scale(0.97)}
+.btn-whatsapp svg{width:22px;height:22px;flex-shrink:0}
+.finale-share-row{display:flex;gap:0.55rem}
+.btn-share-gen,.btn-dl-all{flex:1;padding:0.75rem 0.5rem;font-size:0.72rem;font-weight:800;border-radius:12px;cursor:pointer;transition:transform 0.12s;display:flex;align-items:center;justify-content:center;gap:6px}
+.btn-share-gen{background:rgba(192,132,252,0.15);border:1px solid rgba(192,132,252,0.35);color:#C084FC}
+.btn-share-gen:active{transform:scale(0.97)}
+.btn-dl-all{background:rgba(255,215,0,0.1);border:1px solid rgba(255,215,0,0.3);color:#FFD700}
+.btn-dl-all:active{transform:scale(0.97)}
+
+.finale-restart{margin-top:0.3rem;font-size:0.62rem;color:#3a1a5a;cursor:pointer;padding:0.5rem;text-decoration:underline;text-underline-offset:3px}
+
+/* image lightbox */
+#lightbox{position:fixed;inset:0;background:rgba(0,0,0,0.92);z-index:200;display:none;align-items:center;justify-content:center;padding:1rem}
+#lightbox img{max-width:100%;max-height:90dvh;border-radius:12px;border:2px solid rgba(255,215,0,0.4)}
+#lightbox:active{background:rgba(0,0,0,0.95)}
+
+/* toast */
+.copy-toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#12082a;border:1px solid rgba(255,215,0,0.3);border-radius:10px;padding:8px 18px;font-size:0.75rem;font-weight:700;color:#FFD700;opacity:0;transition:opacity 0.2s;pointer-events:none;z-index:300;white-space:nowrap}
+.copy-toast.show{opacity:1}
+</style>
+</head>
+<body>
+
+<!-- ══ ENTRY SCREEN ══ -->
+<div id="entryScreen">
+  <div class="entry-glow"></div>
+  <div class="entry-glow2"></div>
+  <div class="entry-cross">✝️</div>
+  <div class="entry-title">Psalm 23</div>
+  <div class="entry-sub">Puzzle Journey</div>
+  <div class="entry-verse">"Blessed is the one who does not walk in step with the wicked…"</div>
+  <div class="form-card">
+    <div>
+      <label class="field-label">Your name</label>
+      <input type="text" id="nameInput" placeholder="Enter your name" autocomplete="off"/>
+    </div>
+    <div>
+      <label class="field-label">I am from</label>
+      <select id="deptSelect">
+        <option value="">— Select —</option>
+        <option>Friends &amp; Family</option>
+        <option>Cyber Security</option><option>EIE</option>
+        <option>CSE-1</option><option>CSE-2</option><option>CSE-3</option>
+        <option>Mechanical Engineering</option>
+        <option>ECE-1</option><option>ECE-2</option><option>ECE-3</option>
+        <option>AI DS-1</option><option>AI DS-2</option>
+        <option>Agri and Civil</option><option>EEE</option>
+        <option>Medical Electronics</option>
+        <option>IT-1</option><option>IT-2</option>
+      </select>
+    </div>
+    <button class="start-btn" onclick="enterPsalm()">BEGIN THE PSALM ✝</button>
+  </div>
+</div>
+
+<!-- ══ PUZZLE SCREEN ══ -->
+<div id="puzzleScreen">
+  <div class="top-nav">
+    <button id="prevBtn" class="nav-btn disabled-btn" onclick="goToPrev()">‹ Prev</button>
+    <div class="puzzle-nav-info">
+      <div class="puzzle-nav-title" id="navTitle">Psalm 23</div>
+      <div class="puzzle-nav-sub" id="navSub">Verse 1 of 6</div>
+    </div>
+    <button id="nextNavBtn" class="nav-btn next-btn disabled-btn" onclick="skipToNext()">Next ›</button>
+  </div>
+
+  <div class="verse-dots" id="verseDots"></div>
+  <div class="prog-wrap">
+    <div class="prog-track"><div class="prog-fill" id="progFill"></div></div>
+    <div class="prog-label" id="progLabel">0 / 0</div>
+  </div>
+  <div class="puzzle-area" id="puzzleArea">
+    <div id="loadingOverlay"><div class="spinner"></div><div class="loading-text">LOADING…</div></div>
+    <canvas id="puzzleCanvas"></canvas>
+
+    <!-- WhatsApp-style chat popup -->
+    <div id="chatPopup">
+      <div class="chat-bot-row">
+        <div class="chat-bot-avatar">🤖</div>
+        <div style="flex:1">
+          <div class="chat-bot-name">Puzzle Bot</div>
+          <div class="chat-bot-bubble" id="chatBotMsg"></div>
+        </div>
+      </div>
+      <div class="chat-reply-row">
+        <div class="chat-reply-bubble" id="chatReplyBubble"></div>
+      </div>
+      <div class="chat-quick-replies" id="chatQuickReplies"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ INTER-VERSE WIN ══ -->
+<div id="verseWinScreen">
+  <div class="vw-bg"></div>
+  <div class="vw-inner">
+    <div class="vw-star" id="vwStar">⭐</div>
+    <div class="vw-label">Verse solved!</div>
+    <div class="vw-verse-title" id="vwTitle"></div>
+    <div class="vw-player" id="vwPlayer"></div>
+    <div class="vw-img-wrap">
+      <img id="vwImg" class="vw-img" alt=""/>
+      <div class="vw-img-actions">
+        <button class="img-action-btn share-btn" onclick="shareCurrentVerse()" title="Share">⬆</button>
+        <button class="img-action-btn dl-btn" onclick="downloadCurrentVerse()" title="Download">⬇</button>
+      </div>
+    </div>
+    <div class="vw-stats">
+      <div class="vw-stat"><span class="vw-stat-val" id="vwTime">-</span><span class="vw-stat-lbl">Time</span><div class="best-badge" id="vwTimeBest" style="display:none">⚡ Best!</div></div>
+      <div class="vw-stat"><span class="vw-stat-val" id="vwMoves">-</span><span class="vw-stat-lbl">Moves</span><div class="best-badge" id="vwMovesBest" style="display:none">⚡ Best!</div></div>
+    </div>
+    <div class="vw-progress-row" id="vwProgressRow"></div>
+    <div class="vw-actions" id="vwActions"></div>
+  </div>
+</div>
+
+<!-- ══ FINALE SCREEN ══ -->
+<div id="finaleScreen">
+  <div class="finale-bg"></div>
+  <div class="finale-inner">
+    <div class="finale-trophy">🏆</div>
+    <div class="finale-title">Psalm 23<br>Complete!</div>
+    <div class="finale-psalm">All 6 Verses Solved</div>
+    <div class="finale-player" id="finalePlayer"></div>
+    <div class="finale-dept" id="finaleDept"></div>
+
+    <div class="finale-quote">
+      <div class="finale-quote-text">"But whose delight is in the law of the Lord, and who meditates on his law day and night. That person is like a tree planted by streams of water, which yields its fruit in season…"</div>
+      <div class="finale-quote-ref">— Psalm 23:2–3</div>
+    </div>
+
+    <div class="gallery-label">✦ All 6 Verses</div>
+    <div class="gallery-scroll" id="finaleGallery"></div>
+
+    <div class="finale-stats">
+      <div class="fin-stat"><span class="fin-stat-val" id="finTotalTime">-</span><span class="fin-stat-lbl">Total Time</span></div>
+      <div class="fin-stat"><span class="fin-stat-val" id="finTotalMoves">-</span><span class="fin-stat-lbl">Total Moves</span></div>
+      <div class="fin-stat"><span class="fin-stat-val">6/6</span><span class="fin-stat-lbl">Verses</span></div>
+    </div>
+
+    <div class="finale-share">
+      <button class="btn-whatsapp" onclick="shareWhatsApp()">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+        Share on WhatsApp
+      </button>
+      <div class="finale-share-row">
+        <button class="btn-share-gen" onclick="shareGeneral()">⬆ Share</button>
+        <button class="btn-dl-all" onclick="downloadCurrentVerseFromFinale()">⬇ Save Image</button>
+      </div>
+    </div>
+    <div class="finale-restart" onclick="restartAll()">↺ Start over</div>
+  </div>
+</div>
+
+<!-- Lightbox -->
+<div id="lightbox" onclick="closeLightbox()"><img id="lightboxImg" alt="Psalm verse"/></div>
+<div class="copy-toast" id="copyToast"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+<script>
+/* ═══════════════════════════════
+   PSALM DATA — 6 verses
+═══════════════════════════════ */
+const VERSES = [
+{ id:"ps1v1", num:1, title:"Verse 1", sub:"The Blessed Way",     imageUrl:"https://raw.githubusercontent.com/andrewveda/jigsaw/main/psalm/1.png", cols:4, rows:4 },
+{ id:"ps1v2", num:2, title:"Verse 2", sub:"Delight in the Law",  imageUrl:"https://raw.githubusercontent.com/andrewveda/jigsaw/main/psalm/2.png", cols:4, rows:4 },
+{ id:"ps1v3", num:3, title:"Verse 3", sub:"Tree by the Water",   imageUrl:"https://raw.githubusercontent.com/andrewveda/jigsaw/main/psalm/3.png", cols:4, rows:4 },
+{ id:"ps1v4", num:4, title:"Verse 4", sub:"Like Chaff",          imageUrl:"https://raw.githubusercontent.com/andrewveda/jigsaw/main/psalm/4.png", cols:4, rows:4 },
+{ id:"ps1v5", num:5, title:"Verse 5", sub:"The Judgment",        imageUrl:"https://raw.githubusercontent.com/andrewveda/jigsaw/main/psalm/5.png", cols:4, rows:4 },
+{ id:"ps1v6", num:6, title:"Verse 6", sub:"The Lord Watches",    imageUrl:"https://raw.githubusercontent.com/andrewveda/jigsaw/main/psalm/6.png", cols:4, rows:4 },
+];
+
+const SUPABASE_URL = "https://yellow-lab-4999.andrewveda.workers.dev/functions/v1/logQuest";
+
+/* ═══════════════════════════════
+   STATE
+═══════════════════════════════ */
+let playerName = "", playerDept = "";
+let currentVerseIdx = 0;
+let totalTime = 0, totalMoves = 0; // accumulate across verses
+
+// per-puzzle engine state
+let canvas, ctx;
+let img = null;
+let cw, ch, pw, ph, boardX, boardY;
+let pieces = [], selectedPiece = null;
+let isDragging=false, dragAnchor=null;
+let startPointerX=0, startPointerY=0, currentPointerX=0, currentPointerY=0;
+const DRAG_THRESHOLD = 7;
+let placed=0, moves=0, startTime=null;
+let glowPiece=null, glowTimer=null;
+let locksSinceChat=0; // counts successful locks toward the "every 3rd lock" chat trigger
+
+function currentVerse(){ return VERSES[currentVerseIdx]; }
+function COLS(){ return currentVerse().cols; }
+function ROWS(){ return currentVerse().rows; }
+function TOTAL(){ return COLS()*ROWS(); }
+
+/* ═══════════════════════════════
+   STORAGE
+═══════════════════════════════ */
+function getBest(id){ try{return JSON.parse(localStorage.getItem("ps1_best_"+id)||"null");}catch(e){return null;} }
+function saveBest(id,secs,mv){
+  const prev=getBest(id);
+  const nt=!prev||secs<prev.secs, nm=!prev||mv<prev.moves;
+  if(!prev||secs<prev.secs||mv<prev.moves){
+    localStorage.setItem("ps1_best_"+id,JSON.stringify({secs:Math.min(secs,prev?.secs??secs),moves:Math.min(mv,prev?.moves??mv)}));
+  }
+  return{newTime:nt,newMoves:nm};
+}
+function getSolvedVerses(){ try{return JSON.parse(localStorage.getItem("ps1_solved")||"[]");}catch(e){return[];} }
+function markVerseSolved(id){ const s=getSolvedVerses(); if(!s.includes(id)){s.push(id);localStorage.setItem("ps1_solved",JSON.stringify(s));} }
+
+/* ═══════════════════════════════
+   ENTRY
+═══════════════════════════════ */
+function enterPsalm(){
+  const n=document.getElementById("nameInput").value.trim();
+  const d=document.getElementById("deptSelect").value;
+  if(!n){alert("Please enter your name!");return;}
+  if(!d){alert("Please select where you are from!");return;}
+  playerName=n; playerDept=d;
+  localStorage.setItem("ps1_name",n); localStorage.setItem("ps1_dept",d);
+  document.getElementById("entryScreen").style.display="none";
+  document.getElementById("puzzleScreen").style.display="flex";
+  currentVerseIdx=0; totalTime=0; totalMoves=0;
+  buildDots();
+  initPuzzle();
+}
+
+/* ═══════════════════════════════
+   DOTS
+═══════════════════════════════ */
+function buildDots(){
+  const wrap=document.getElementById("verseDots");
+  wrap.innerHTML="";
+  VERSES.forEach((_,i)=>{
+    const d=document.createElement("div");
+    d.className="vdot"+(i<currentVerseIdx?" done":i===currentVerseIdx?" active":"");
+    wrap.appendChild(d);
+  });
+}
+function updateDots(){
+  const dots=document.querySelectorAll(".vdot");
+  dots.forEach((d,i)=>{ d.className="vdot"+(i<currentVerseIdx?" done":i===currentVerseIdx?" active":""); });
+}
+
+/* ═══════════════════════════════
+   NAVIGATION (prev/next skip — only for already solved)
+═══════════════════════════════ */
+function goToPrev(){
+  if(currentVerseIdx<=0)return;
+  currentVerseIdx--;
+  img=null;
+  updateNav();
+  initPuzzle();
+}
+function skipToNext(){
+  const solved=getSolvedVerses();
+  if(currentVerseIdx>=VERSES.length-1)return;
+  if(!solved.includes(currentVerse().id)){
+    showToast("Solve this verse first!");return;
+  }
+  currentVerseIdx++;
+  img=null;
+  updateNav();
+  initPuzzle();
+}
+function updateNav(){
+  updateDots();
+  const v=currentVerse();
+  document.getElementById("navTitle").textContent=v.title+" — "+v.sub;
+  document.getElementById("navSub").textContent=`Verse ${v.num} of ${VERSES.length}`;
+  document.getElementById("prevBtn").classList.toggle("disabled-btn", currentVerseIdx===0);
+  const solved=getSolvedVerses();
+  document.getElementById("nextNavBtn").classList.toggle("disabled-btn",
+    currentVerseIdx>=VERSES.length-1 || !solved.includes(currentVerse().id));
+}
+
+/* ═══════════════════════════════
+   TIMER
+═══════════════════════════════ */
+function startTimer(){startTime=Date.now();}
+function elapsed(){return startTime?Math.floor((Date.now()-startTime)/1000):0;}
+
+/* ═══════════════════════════════
+   WHATSAPP-STYLE CHAT POPUP
+   Friendly, playful, Christian-themed lines that
+   celebrate virtues (faith, kindness, patience, joy,
+   perseverance, gratitude, hope, courage) in a way
+   kids will enjoy. Short bot lines + tappable replies.
+═══════════════════════════════ */
+const CHAT_LINES = [
+  { bot:"Nice! One piece for Jesus! 🧩", reply:["Yes","I","Love","This!"] },
+  { bot:"That was a tricky one!", reply:["It","Really","Was! 😂"] },
+  { bot:"You're getting good at this.", reply:["I","Know. 😎"] },
+  { bot:"Halfway there, friend!", reply:["Let's","Keep","Going! 🚀"] },
+  { bot:"That piece almost fooled you.", reply:["Not","Anymore! 😁"] },
+  { bot:"Ready for another?", reply:["Bring","It","On! 💪"] },
+  { bot:"That clicked perfectly!", reply:["So","Satisfying! ✨"] },
+  { bot:"You're on a roll!", reply:["Don't","Jinx","Me! 😂"] },
+  { bot:"Only a few left now.", reply:["I","Can","Do","This! 💪"] },
+  { bot:"Oops... almost!", reply:["I'll","Get","It. 😄"] },
+  { bot:"Great recovery!", reply:["Thanks! 😊"] },
+  { bot:"You're flying through this!", reply:["Feeling","Lucky","Today! 🍀"] },
+  { bot:"One more piece locked!", reply:["Awesome! 🎉"] },
+  { bot:"That's patience paying off! 🕊️", reply:["Worth","The","Wait! 😇"] },
+  { bot:"Faithful in small things!", reply:["Just","Like","David! 🙌"] },
+  { bot:"You stayed kind to that piece!", reply:["Aww","Thanks! 💛"] },
+  { bot:"Joy looks good on you!", reply:["I'm","So","Happy! 😄"] },
+  { bot:"Brave move, soldier of faith!", reply:["I","Am","Brave! 🛡️"] },
+  { bot:"Grateful for this puzzle?", reply:["Always","Grateful! 🙏"] },
+  { bot:"Hope is rising piece by piece!", reply:["Hope","Wins! 🌅"] },
+  { bot:"Like a tree by the water! 🌳", reply:["Growing","Strong! 💪"] },
+  { bot:"Blessed are the persistent!", reply:["I'll","Never","Give","Up! 🔥"] },
+];
+
+let chatBusy=false;
+
+function maybeShowChat(){
+  if(chatBusy)return;
+  locksSinceChat++;
+  const everyThird = locksSinceChat>=3;
+  const randomChance = Math.random() < 0.35; // 30-40% probability
+  if(everyThird || randomChance){
+    locksSinceChat=0;
+    showChatPopup();
+  }
+}
+
+function showChatPopup(){
+  chatBusy=true;
+  const convo=CHAT_LINES[Math.floor(Math.random()*CHAT_LINES.length)];
+  const popup=document.getElementById("chatPopup");
+  const botMsg=document.getElementById("chatBotMsg");
+  const replyBubble=document.getElementById("chatReplyBubble");
+  const repliesWrap=document.getElementById("chatQuickReplies");
+
+  botMsg.textContent=convo.bot;
+  replyBubble.textContent="";
+  replyBubble.classList.remove("visible");
+  repliesWrap.innerHTML="";
+
+  let buttons=[];
+  convo.reply.forEach(word=>{
+    const b=document.createElement("button");
+    b.className="chat-quick-btn";
+    b.textContent=word;
+    b.onclick=()=>handleChatTap(word,b,buttons,convo.reply.length);
+    repliesWrap.appendChild(b);
+    buttons.push(b);
+  });
+
+  popup.classList.add("show");
+
+  let tappedWords=[];
+  function handleChatTap(word,btn,allBtns,total){
+    if(btn.classList.contains("tapped"))return;
+    btn.classList.add("tapped");
+    tappedWords.push(word);
+    replyBubble.textContent=tappedWords.join(" ");
+    replyBubble.classList.add("visible");
+    if(tappedWords.length>=total){
+      setTimeout(()=>{
+        popup.classList.remove("show");
+        chatBusy=false;
+      },1000);
+    }
+  }
+
+  // safety: if the player ignores the popup, auto-dismiss after a while
+  clearTimeout(showChatPopup._timeout);
+  showChatPopup._timeout=setTimeout(()=>{
+    if(popup.classList.contains("show")){
+      popup.classList.remove("show");
+      chatBusy=false;
+    }
+  },9000);
+}
+
+/* ═══════════════════════════════
+   DOM READY
+═══════════════════════════════ */
+document.addEventListener("DOMContentLoaded",()=>{
+  canvas=document.getElementById("puzzleCanvas");
+  ctx=canvas.getContext("2d");
+  canvas.addEventListener("mousedown", onDown,{passive:false});
+  canvas.addEventListener("mousemove", onMove,{passive:false});
+  canvas.addEventListener("mouseup",   onUp,  {passive:false});
+  canvas.addEventListener("mouseleave",onUp,  {passive:false});
+  canvas.addEventListener("touchstart",onDown,{passive:false});
+  canvas.addEventListener("touchmove", onMove,{passive:false});
+  canvas.addEventListener("touchend",  onUp,  {passive:false});
+  canvas.addEventListener("click",e=>{
+    if(!selectedPiece)return;
+    const{x,y}=getPos(e);
+    if(!hitPiece(x,y)){selectedPiece=null;drawAll();}
+  },{passive:false});
+
+  // auto-login if returning
+  const n=localStorage.getItem("ps1_name"),d=localStorage.getItem("ps1_dept");
+  if(n&&d){
+    document.getElementById("nameInput").value=n;
+    document.getElementById("deptSelect").value=d;
+  }
+});
+
+/* ═══════════════════════════════
+   PUZZLE INIT
+═══════════════════════════════ */
+function initPuzzle(){
+  pieces=[];selectedPiece=null;isDragging=false;dragAnchor=null;glowPiece=null;
+  placed=0;moves=0;startTime=null;locksSinceChat=0;
+  document.getElementById("chatPopup").classList.remove("show");
+  chatBusy=false;
+  document.getElementById("progFill").style.width="0%";
+  document.getElementById("progLabel").textContent=`0 / ${TOTAL()}`;
+  document.getElementById("loadingOverlay").style.display="flex";
+  updateNav();
+
+  const v=currentVerse();
+
+  if(img&&img.complete&&img.naturalWidth>0&&img.src.includes(encodeURIComponent(v.imageUrl.split("/").pop()).replace(/%20/g,"+"))||
+     img&&img.complete&&img.naturalWidth>0&&img.src===v.imageUrl){
+    buildPuzzle();return;
+  }
+  img=new Image();img.crossOrigin="anonymous";
+  img.onload=buildPuzzle;
+  img.onerror=()=>showToast("⚠️ Image failed to load.");
+  img.src=v.imageUrl;
+}
+
+/* ═══════════════════════════════
+   BUILD — no pre-locked pieces
+═══════════════════════════════ */
+function buildPuzzle(){
+  const area=canvas.parentElement;
+  const dpr=window.devicePixelRatio||1;
+  cw=area.clientWidth;ch=area.clientHeight;
+  canvas.width=cw*dpr;canvas.height=ch*dpr;
+  canvas.style.width=cw+"px";canvas.style.height=ch+"px";
+  ctx=canvas.getContext("2d");ctx.scale(dpr,dpr);
+
+  const pad=10,imgAR=img.naturalWidth/img.naturalHeight;
+  const boardAR=(COLS()/ROWS())*imgAR;
+  const maxW=cw-pad*2,maxH=ch-pad*2;
+  let boardW,boardH;
+  if(maxW/maxH>boardAR){boardH=maxH;boardW=Math.floor(boardH*boardAR);}
+  else{boardW=maxW;boardH=Math.floor(boardW/boardAR);}
+  pw=Math.floor(boardW/COLS());ph=Math.floor(boardH/ROWS());
+  boardX=Math.floor((cw-pw*COLS())/2);boardY=Math.floor((ch-ph*ROWS())/2);
+
+  let slots;
+  do{
+    slots=Array.from({length:TOTAL()},(_,i)=>({r:Math.floor(i/COLS()),c:i%COLS()}));
+    slots.sort(()=>Math.random()-0.5);
+  }while(slots.some((s,i)=>s.r===Math.floor(i/COLS())&&s.c===i%COLS()));
+
+  pieces=[];let idx=0;
+  for(let r=0;r<ROWS();r++)for(let c=0;c<COLS();c++){
+    const slot=slots[idx++];
+    pieces.push({id:pieces.length,tr:r,tc:c,row:slot.r,col:slot.c,locked:false});
+  }
+  placed=0;updateProgress();
+  document.getElementById("loadingOverlay").style.display="none";
+  drawAll();startTimer();
+}
+
+/* ═══════════════════════════════
+   DRAWING
+═══════════════════════════════ */
+function showGlow(p){clearTimeout(glowTimer);glowPiece=p;drawAll();glowTimer=setTimeout(()=>{glowPiece=null;drawAll();},600);}
+
+function drawAll(){
+  if(!canvas||!ctx)return;
+  ctx.clearRect(0,0,cw,ch);
+  ctx.strokeStyle="rgba(255,215,0,0.1)";ctx.lineWidth=1.5;
+  ctx.strokeRect(boardX,boardY,pw*COLS(),ph*ROWS());
+  const dc=(isDragging&&dragAnchor)?[dragAnchor]:[];
+  const dIds=new Set(dc.map(p=>p.id));
+  const tIds=new Set();
+  if(!isDragging&&selectedPiece)[selectedPiece].forEach(p=>tIds.add(p.id));
+  for(const p of pieces)if(!dIds.has(p.id))drawPiece(p,0,0,false,tIds.has(p.id),glowPiece&&p.id===glowPiece.id);
+  if(dc.length){const dx=currentPointerX-startPointerX,dy=currentPointerY-startPointerY;drawPiece(dc[0],dx,dy,true,false,false);}
+}
+
+function drawPiece(p,ox,oy,isDragged,isTap,isGlow){
+  const x=boardX+p.col*pw+ox,y=boardY+p.row*ph+oy;
+  ctx.save();roundRect(ctx,x,y,pw,ph,4);ctx.clip();
+  ctx.drawImage(img,p.tc*(img.naturalWidth/COLS()),p.tr*(img.naturalHeight/ROWS()),img.naturalWidth/COLS(),img.naturalHeight/ROWS(),x,y,pw,ph);
+  if(p.locked&&isGlow){
+    ctx.restore();ctx.save();
+    ctx.shadowColor="#FFD700";ctx.shadowBlur=20;
+    roundRect(ctx,x,y,pw,ph,4);ctx.strokeStyle="rgba(255,215,0,0.9)";ctx.lineWidth=3;ctx.stroke();
+  }else if(!p.locked&&(isDragged||isTap)){
+    ctx.strokeStyle="#C084FC";ctx.lineWidth=3;ctx.stroke();
+    ctx.fillStyle="rgba(192,132,252,0.15)";ctx.fillRect(x,y,pw,ph);
+  }else if(!p.locked){
+    ctx.strokeStyle="rgba(255,255,255,0.08)";ctx.lineWidth=1;ctx.stroke();
+  }
+  ctx.restore();
+}
+
+function roundRect(ctx,x,y,w,h,r){
+  ctx.beginPath();
+  ctx.moveTo(x+r,y);ctx.lineTo(x+w-r,y);ctx.quadraticCurveTo(x+w,y,x+w,y+r);
+  ctx.lineTo(x+w,y+h-r);ctx.quadraticCurveTo(x+w,y+h,x+w-r,y+h);
+  ctx.lineTo(x+r,y+h);ctx.quadraticCurveTo(x,y+h,x,y+h-r);
+  ctx.lineTo(x,y+r);ctx.quadraticCurveTo(x,y,x+r,y);ctx.closePath();
+}
+
+/* ═══════════════════════════════
+   MOVE — fully validated
+═══════════════════════════════ */
+function triggerRedFlash(){const a=document.getElementById("puzzleArea");a.classList.remove("flash-red");void a.offsetWidth;a.classList.add("flash-red");}
+
+function executeClusterMove(anchor,deltaR,deltaC){
+  if(deltaR===0&&deltaC===0)return false;
+  const clusterIds=new Set([anchor.id]);
+  const displacedMap=new Map();
+  const tr=anchor.row+deltaR,tc=anchor.col+deltaC;
+  const occ=pieces.find(p=>p.row===tr&&p.col===tc&&p.id!==anchor.id);
+  if(occ)displacedMap.set(occ.id,{piece:occ,toR:anchor.row,toC:anchor.col});
+
+  const finalPositions=new Map();
+  finalPositions.set(anchor.id,{r:tr,c:tc});
+  for(const[id,{toR,toC}]of displacedMap)finalPositions.set(id,{r:toR,c:toC});
+
+  for(const[,{r,c}]of finalPositions){
+    if(r<0||r>=ROWS()||c<0||c>=COLS()){triggerRedFlash();return false;}
+    const occ2=pieces.find(p=>p.row===r&&p.col===c);
+    if(occ2&&occ2.locked&&!finalPositions.has(occ2.id)){triggerRedFlash();return false;}
+  }
+
+  moves++;
+  anchor.row=tr;anchor.col=tc;
+  for(const[,{piece:dp,toR,toC}]of displacedMap){dp.row=toR;dp.col=toC;}
+
+  let newLocks=0;
+  for(const p of pieces)if(!p.locked&&p.row===p.tr&&p.col===p.tc){p.locked=true;newLocks++;}
+  placed+=newLocks;updateProgress();
+
+  if(newLocks>0){
+    confetti({particleCount:20,spread:40,origin:{y:0.5},colors:["#FFD700","#C084FC","#FFA0C0"]});
+    maybeShowChat();
+    if(placed===TOTAL())setTimeout(showVerseWin,650);
+  }
+  return true;
+}
+
+/* ═══════════════════════════════
+   POINTER HANDLERS
+═══════════════════════════════ */
+function getPos(e){
+  const rect=canvas.getBoundingClientRect();
+  const sx=cw/rect.width,sy=ch/rect.height;
+  const src=(e.touches&&e.touches.length)?e.touches[0]:e;
+  return{x:(src.clientX-rect.left)*sx,y:(src.clientY-rect.top)*sy};
+}
+function hitPiece(x,y){
+  const col=Math.floor((x-boardX)/pw),row=Math.floor((y-boardY)/ph);
+  if(row<0||row>=ROWS()||col<0||col>=COLS())return null;
+  return pieces.find(p=>p.row===row&&p.col===col)||null;
+}
+function onDown(e){
+  e.preventDefault();
+  const{x,y}=getPos(e),p=hitPiece(x,y);
+  if(!p)return;
+  if(p.locked){showGlow(p);return;}
+  dragAnchor=p;startPointerX=x;startPointerY=y;currentPointerX=x;currentPointerY=y;isDragging=false;
+}
+function onMove(e){
+  if(!dragAnchor)return;e.preventDefault();
+  const{x,y}=getPos(e);currentPointerX=x;currentPointerY=y;
+  if(!isDragging&&Math.hypot(x-startPointerX,y-startPointerY)>DRAG_THRESHOLD){isDragging=true;selectedPiece=null;}
+  if(isDragging)drawAll();
+}
+function onUp(e){
+  if(!dragAnchor)return;e.preventDefault();
+  if(isDragging){
+    const dc=Math.round((currentPointerX-startPointerX)/pw);
+    const dr=Math.round((currentPointerY-startPointerY)/ph);
+    if(dc!==0||dr!==0)executeClusterMove(dragAnchor,dr,dc);
+    isDragging=false;dragAnchor=null;drawAll();return;
+  }
+  const p=dragAnchor;dragAnchor=null;
+  if(!selectedPiece){selectedPiece=p;drawAll();return;}
+  if(selectedPiece.id===p.id){selectedPiece=null;drawAll();return;}
+  const dr=p.row-selectedPiece.row,dc=p.col-selectedPiece.col;
+  executeClusterMove(selectedPiece,dr,dc);
+  selectedPiece=null;drawAll();
+}
+
+function updateProgress(){
+  document.getElementById("progFill").style.width=Math.round(placed/TOTAL()*100)+"%";
+  document.getElementById("progLabel").textContent=`${placed} / ${TOTAL()}`;
+}
+
+/* ═══════════════════════════════
+   VERSE WIN SCREEN
+═══════════════════════════════ */
+function showVerseWin(){
+  const v=currentVerse();
+  const s=elapsed(),m=Math.floor(s/60),sec=s%60;
+  const timeStr=`${m}:${sec.toString().padStart(2,"0")}`;
+  totalTime+=s;totalMoves+=moves;
+  markVerseSolved(v.id);
+
+  const bests=saveBest(v.id,s,moves);
+
+  document.getElementById("chatPopup").classList.remove("show");
+  chatBusy=false;
+
+  // confetti
+  let running=true;const end=Date.now()+2500;
+  (function frame(){if(!running)return;
+    confetti({particleCount:5,angle:60,spread:50,origin:{x:0},colors:["#FFD700","#C084FC","#FFA0C0"]});
+    confetti({particleCount:5,angle:120,spread:50,origin:{x:1},colors:["#FFD700","#C084FC","#FFA0C0"]});
+    if(Date.now()<end)requestAnimationFrame(frame);else running=false;
+  }());
+
+  document.getElementById("puzzleScreen").style.display="none";
+
+  // star by verse number
+  const stars=["✨","⭐","🌟","💫","🌠","👑"];
+  document.getElementById("vwStar").textContent=stars[currentVerseIdx]||"⭐";
+  document.getElementById("vwTitle").textContent=v.title+": "+v.sub;
+  document.getElementById("vwPlayer").textContent=playerName;
+  document.getElementById("vwImg").src=img.src;
+  document.getElementById("vwImg").alt=v.title+" — solved";
+  document.getElementById("vwTime").textContent=timeStr;
+  document.getElementById("vwMoves").textContent=moves;
+  if(bests.newTime) document.getElementById("vwTimeBest").style.display="inline-flex";
+  else document.getElementById("vwTimeBest").style.display="none";
+  if(bests.newMoves)document.getElementById("vwMovesBest").style.display="inline-flex";
+  else document.getElementById("vwMovesBest").style.display="none";
+
+  // verse progress dots
+  const pr=document.getElementById("vwProgressRow");
+  pr.innerHTML="";
+  VERSES.forEach((_,i)=>{
+    const d=document.createElement("div");
+    d.className="vp-dot"+(i<=currentVerseIdx?" done":i===currentVerseIdx+1?" current":"");
+    pr.appendChild(d);
+  });
+
+  // actions
+  buildVerseWinActions();
+
+  document.getElementById("verseWinScreen").style.display="flex";
+  document.getElementById("verseWinScreen").scrollTop=0;
+
+  sendToSupabase({student_name:playerName,department:playerDept,time_spent:s,moves,quest_id:"Psalm1-v"+v.num});
+}
+
+function buildVerseWinActions(){
+  const c=document.getElementById("vwActions");c.innerHTML="";
+  const isLast=currentVerseIdx===VERSES.length-1;
+
+  if(!isLast){
+    const next=VERSES[currentVerseIdx+1];
+    const btn=document.createElement("button");
+    btn.className="btn-next-verse";
+    btn.innerHTML=`▶ VERSE ${next.num}: ${next.sub.toUpperCase()}`;
+    btn.onclick=goToNextVerse;
+    c.appendChild(btn);
+    const lbl=document.createElement("div");
+    lbl.className="vw-next-label";lbl.textContent=`${VERSES.length-currentVerseIdx-1} verse${VERSES.length-currentVerseIdx-1!==1?"s":""} remaining`;
+    c.appendChild(lbl);
+  } else {
+    const btn=document.createElement("button");
+    btn.className="btn-next-verse";
+    btn.style.background="linear-gradient(135deg,#FFD700,#FFA0C0,#C084FC)";
+    btn.innerHTML="👑 SEE THE FULL PSALM";
+    btn.onclick=showFinale;
+    c.appendChild(btn);
+    const lbl=document.createElement("div");
+    lbl.className="vw-next-label";lbl.textContent="All 6 verses complete — behold!";
+    c.appendChild(lbl);
+  }
+
+  const row=document.createElement("div");row.className="vw-secondary";
+  const ag=document.createElement("button");ag.className="btn-again";ag.textContent="↺ Retry";ag.onclick=retryVerse;
+  const bk=document.createElement("a");bk.className="btn-back";bk.textContent="✝ Menu";bk.href="#";bk.onclick=(e)=>{e.preventDefault();restartAll();};
+  row.appendChild(ag);row.appendChild(bk);c.appendChild(row);
+}
+
+function goToNextVerse(){
+  currentVerseIdx++;
+  img=null;
+  document.getElementById("verseWinScreen").style.display="none";
+  document.getElementById("puzzleScreen").style.display="flex";
+  document.getElementById("progFill").style.width="0%";
+  document.getElementById("progLabel").textContent=`0 / ${TOTAL()}`;
+  initPuzzle();
+}
+
+function retryVerse(){
+  img=null;
+  document.getElementById("verseWinScreen").style.display="none";
+  document.getElementById("puzzleScreen").style.display="flex";
+  initPuzzle();
+}
+
+/* ═══════════════════════════════
+   FINALE SCREEN
+═══════════════════════════════ */
+function showFinale(){
+  document.getElementById("verseWinScreen").style.display="none";
+
+  // gallery
+  const gallery=document.getElementById("finaleGallery");
+  gallery.innerHTML="";
+  VERSES.forEach((v,i)=>{
+    const item=document.createElement("div");item.className="gallery-item";
+    const img2=document.createElement("img");img2.src=v.imageUrl;img2.alt=v.title;img2.loading="lazy";
+    img2.onerror=()=>{item.style.background="#1a0a2a";item.style.display="flex";item.style.alignItems="center";item.style.justifyContent="center";item.textContent="✝";};
+    const num=document.createElement("div");num.className="gnum";num.textContent="v"+(i+1);
+    item.appendChild(img2);item.appendChild(num);
+    item.onclick=()=>openLightbox(v.imageUrl,v.title);
+    gallery.appendChild(item);
+  });
+
+  const tm=Math.floor(totalTime/60),ts=totalTime%60;
+  document.getElementById("finTotalTime").textContent=`${tm}:${ts.toString().padStart(2,"0")}`;
+  document.getElementById("finTotalMoves").textContent=totalMoves;
+  document.getElementById("finalePlayer").textContent=playerName;
+  document.getElementById("finaleDept").textContent=playerDept;
+
+  document.getElementById("finaleScreen").style.display="flex";
+  document.getElementById("finaleScreen").scrollTop=0;
+
+  // mega confetti
+  let running=true;const end=Date.now()+4500;
+  (function frame(){if(!running)return;
+    confetti({particleCount:8,angle:60,spread:60,origin:{x:0},colors:["#FFD700","#C084FC","#FFA0C0","#fff"]});
+    confetti({particleCount:8,angle:120,spread:60,origin:{x:1},colors:["#FFD700","#C084FC","#FFA0C0","#fff"]});
+    if(Date.now()<end)requestAnimationFrame(frame);else running=false;
+  }());
+}
+
+/* ═══════════════════════════════
+   LIGHTBOX
+═══════════════════════════════ */
+function openLightbox(src,alt){
+  document.getElementById("lightboxImg").src=src;
+  document.getElementById("lightboxImg").alt=alt;
+  document.getElementById("lightbox").style.display="flex";
+}
+function closeLightbox(){document.getElementById("lightbox").style.display="none";}
+
+/* ═══════════════════════════════
+   SHARE & DOWNLOAD
+═══════════════════════════════ */
+function getVerseShareText(v){
+  return`✝️ I just solved ${v.title} (${v.sub}) of Psalm 23 on Puzzle Quest in ${moves} moves!\n\nTry it: ${location.href}`;
+}
+
+async function shareCurrentVerse(){
+  const v=currentVerse();
+  const text=getVerseShareText(v);
+  if(navigator.share){
+    try{
+      const resp=await fetch(img.src);
+      const blob=await resp.blob();
+      const file=new File([blob],`psalm1_v${v.num}.png`,{type:blob.type});
+      if(navigator.canShare&&navigator.canShare({files:[file]})){
+        await navigator.share({title:"Psalm 23 Puzzle",text,files:[file]});
+      }else{await navigator.share({title:"Psalm 23 Puzzle",text,url:location.href});}
+    }catch(e){if(e.name!=="AbortError")copyPuzzleLink();}
+  }else{copyPuzzleLink();}
+}
+
+function downloadCurrentVerse(){
+  const v=currentVerse();
+  const a=document.createElement("a");a.href=img.src;a.download=`psalm1_verse${v.num}.png`;a.target="_blank";a.click();
+}
+
+async function shareCurrentVerseFromWin(){
+  const v=currentVerse();
+  const vwImg=document.getElementById("vwImg");
+  const text=`✝️ I just solved "${v.title}: ${v.sub}" of Psalm 23! Praise God! 🙏\n${location.href}`;
+  if(navigator.share){
+    try{
+      const resp=await fetch(vwImg.src);
+      const blob=await resp.blob();
+      const file=new File([blob],`psalm1_v${v.num}.png`,{type:blob.type});
+      if(navigator.canShare&&navigator.canShare({files:[file]})){
+        await navigator.share({title:"Psalm 23",text,files:[file]});
+      }else{await navigator.share({title:"Psalm 23",text,url:location.href});}
+    }catch(e){if(e.name!=="AbortError")copyPuzzleLink();}
+  }else{copyPuzzleLink();}
+}
+// wire up win screen share/dl buttons
+function shareCurrentVerseWin(){shareCurrentVerseFromWin();}
+function downloadCurrentVerseWin(){
+  const v=currentVerse();
+  const a=document.createElement("a");a.href=document.getElementById("vwImg").src;a.download=`psalm1_verse${v.num}.png`;a.target="_blank";a.click();
+}
+// remap win screen buttons
+document.addEventListener("DOMContentLoaded",()=>{
+  document.querySelector(".vw-img-actions .share-btn").onclick=shareCurrentVerseWin;
+  document.querySelector(".vw-img-actions .dl-btn").onclick=downloadCurrentVerseWin;
+});
+
+function shareWhatsApp(){
+  const tm=Math.floor(totalTime/60),ts=totalTime%60;
+  const timeStr=`${tm}:${ts.toString().padStart(2,"0")}`;
+  const text=`✝️ *Psalm 23 — Puzzle Quest*\n\nI, ${playerName}, just completed all 6 verses of Psalm 23 in ${timeStr} with ${totalMoves} total moves!\n\n🏆 ${VERSES.map(v=>v.sub).join(" · ")}\n\n"Blessed is the one who does not walk in step with the wicked…"\n\n🧩 Try it yourself: ${location.href}`;
+  const url="https://wa.me/?text="+encodeURIComponent(text);
+  window.open(url,"_blank");
+}
+
+async function shareGeneral(){
+  const tm=Math.floor(totalTime/60),ts=totalTime%60;
+  const timeStr=`${tm}:${ts.toString().padStart(2,"0")}`;
+  const text=`✝️ I completed all 6 verses of Psalm 23 on Puzzle Quest in ${timeStr}! 🏆`;
+  if(navigator.share){
+    try{await navigator.share({title:"Psalm 23 Complete!",text,url:location.href});}
+    catch(e){if(e.name!=="AbortError")copyPuzzleLink();}
+  }else{copyPuzzleLink();}
+}
+
+function downloadCurrentVerseFromFinale(){
+  const v=VERSES[0];
+  const a=document.createElement("a");a.href=v.imageUrl;a.download="psalm1_complete.png";a.target="_blank";a.click();
+}
+
+function copyPuzzleLink(){
+  if(navigator.clipboard){
+    navigator.clipboard.writeText(location.href).then(()=>showToast("Link copied! ✝️")).catch(()=>showToast("Copy the link manually"));
+  }else{showToast("Share link: "+location.href);}
+}
+
+function showToast(msg){
+  const t=document.getElementById("copyToast");
+  t.textContent=msg;t.classList.add("show");
+  setTimeout(()=>t.classList.remove("show"),2400);
+}
+
+async function sendToSupabase(payload){
+  try{await fetch(SUPABASE_URL,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(payload)});}
+  catch(e){console.warn("Supabase dropped:",e);}
+}
+
+function restartAll(){
+  currentVerseIdx=0;totalTime=0;totalMoves=0;
+  img=null;
+  document.getElementById("finaleScreen").style.display="none";
+  document.getElementById("verseWinScreen").style.display="none";
+  document.getElementById("puzzleScreen").style.display="flex";
+  buildDots();
+  initPuzzle();
+}
+
+window.addEventListener("resize",()=>{
+  if(document.getElementById("puzzleScreen").style.display==="flex"&&img?.complete)buildPuzzle();
+});
+</script>
+</body>
+</html>
