@@ -730,10 +730,28 @@ function executeClusterMove(anchor,deltaR,deltaC){
   if(deltaR===0&&deltaC===0)return false;
   const clusterIds=new Set([anchor.id]);
   const displacedMap=new Map();
-  const tr=anchor.row+deltaR,tc=anchor.col+deltaC;
-  const occ=pieces.find(p=>p.row===tr&&p.col===tc&&p.id!==anchor.id);
-  if(occ)displacedMap.set(occ.id,{piece:occ,toR:anchor.row,toC:anchor.col});
+  const tr = anchor.row + deltaR;
+const tc = anchor.col + deltaC;
 
+const occ = pieces.find(
+    p => p.row === tr &&
+         p.col === tc &&
+         p.id !== anchor.id
+);
+
+// Locked pieces are immovable.
+if (occ && occ.locked) {
+    triggerRedFlash();
+    return false;
+}
+
+if (occ) {
+    displacedMap.set(occ.id, {
+        piece: occ,
+        toR: anchor.row,
+        toC: anchor.col
+    });
+}
   const finalPositions=new Map();
   finalPositions.set(anchor.id,{r:tr,c:tc});
   for(const[id,{toR,toC}]of displacedMap)finalPositions.set(id,{r:toR,c:toC});
