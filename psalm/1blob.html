@@ -1014,9 +1014,10 @@ async function shareCurrentVerseFromWin(){
 }
 // wire up win screen share/dl buttons
 function shareCurrentVerseWin(){shareCurrentVerseFromWin();}
-function downloadCurrentVerseWin(){
-  const v=currentVerse();
-  const a=document.createElement("a");a.href=document.getElementById("vwImg").src;a.download=`psalm1_verse${v.num}.png`;a.target="_blank";a.click();
+async function downloadCurrentVerseWin() {
+  const v = currentVerse();
+  const imageUrl = document.getElementById("vwImg").src;
+  await downloadImage(imageUrl, `Psalm1-Verse-${v.num}.png`);
 }
 // remap win screen buttons
 document.addEventListener("DOMContentLoaded",()=>{
