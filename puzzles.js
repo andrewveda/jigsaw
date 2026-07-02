@@ -1,24 +1,22 @@
 /* ============================================================
    PUZZLE DIRECTORY DATA
-   ------------------------------------------------------------
    This file defines every quest that shows up in directory.html.
 
    A "quest" is one card in the directory. It can hold:
-    - ONE puzzle  → a single poster / book cover. Clicking its
-                     card in the directory jumps straight into
-                     that puzzle.
-    - MANY puzzles → a collection. Clicking its card expands the
-                     card to show each puzzle's tag; clicking a
-                     puzzle jumps straight into just that one.
+   - ONE puzzle    → a single poster / book cover. Clicking its card
+                      in the directory jumps straight into that puzzle.
+   - MANY puzzles  → a collection. Clicking its card expands the card
+                      to show each puzzle's tag; clicking a puzzle
+                      jumps straight into just that one.
 
-   Add, remove, or reorder quests and puzzles freely — the
-   directory page and the puzzle engine both adapt automatically.
+   Add, remove, or reorder quests and puzzles freely — the directory
+   page and the puzzle engine both adapt automatically.
 
-   Drop your image files into this same folder and point
-   `imageUrl` at the filename (or a full https:// URL).
+   Drop your image files into this same folder and point `imageUrl`
+   at the filename (or a full https:// URL).
    ============================================================ */
-window.PUZZLE_DIRECTORY = {
 
+window.PUZZLE_DIRECTORY = {
   directoryTitle: "Puzzle Directory",
   directoryTagline: "Pick a poster or a full puzzle quest to solve.",
 
@@ -64,6 +62,48 @@ window.PUZZLE_DIRECTORY = {
       finaleQuote: { text: "The moment you stop learning is the moment you stop growing.", ref: "— Puzzle Quest" },
       puzzles: [
         { id: "learning-poster-1", num: 1, title: "Always Learning", sub: "Stay Curious", imageUrl: "learning-poster.png", cols: 4, rows: 4 }
+      ]
+    },
+
+    /* ---- New: Aathichudi (Avvaiyar) ---- */
+    {
+      id: "aathichudi-1",
+      tag: "Aathichudi",
+      description: "One-line moral verses from Avvaiyar's Aathichudi, letters அ to ஊ.",
+      coverImage: "https://raw.githubusercontent.com/andrewveda/SRM-VEC-English-PWA/9dd20b407e68511bd83996f17878402e334beeb3/assets/file_00000000f018720ba2eb655a0e74bc69.png",
+      finaleQuote: { text: "Do not give up hope. Do not stop doing good.", ref: "— Aathichudi, Avvaiyar" },
+      puzzles: [
+        { id: "aathichudi-1-1", num: 1, title: "Aathichudi", sub: "அ – ஊ",
+          imageUrl: "https://raw.githubusercontent.com/andrewveda/SRM-VEC-English-PWA/9dd20b407e68511bd83996f17878402e334beeb3/assets/file_00000000f018720ba2eb655a0e74bc69.png",
+          cols: 4, rows: 4 }
+      ]
+    },
+
+    /* ---- New: Obelix and Co. (Asterix book cover) ---- */
+    {
+      id: "obelix-and-co",
+      tag: "Obelix and Co.",
+      description: "Cover art from the Asterix book, Obelix and Co.",
+      coverImage: "https://raw.githubusercontent.com/andrewveda/asterix/main/RCO001_1663947548.jpg",
+      finaleQuote: { text: "Every little Gaul has his own idea of business.", ref: "— Obelix and Co." },
+      puzzles: [
+        { id: "obelix-and-co-1", num: 1, title: "Obelix and Co.", sub: "Cover",
+          imageUrl: "https://raw.githubusercontent.com/andrewveda/asterix/main/RCO001_1663947548.jpg",
+          cols: 4, rows: 4 }
+      ]
+    },
+
+    /* ---- New: Thirukural 12 (⚠ verse number unverified — confirm before final use) ---- */
+    {
+      id: "thirukural-12",
+      tag: "Thirukural 12",
+      description: "An illustrated poster of Thirukural 12.",
+      coverImage: "https://raw.githubusercontent.com/andrewveda/SRM-VEC-English-PWA/9972f629516fc35b4ec8305d50ad3a849d2a89a7/assets/file_000000001724720baf487991251f477a.png",
+      finaleQuote: { text: "TBD — please confirm the exact couplet text/translation.", ref: "— Thirukural 12" },
+      puzzles: [
+        { id: "thirukural-12-1", num: 1, title: "Thirukural", sub: "12",
+          imageUrl: "https://raw.githubusercontent.com/andrewveda/SRM-VEC-English-PWA/9972f629516fc35b4ec8305d50ad3a849d2a89a7/assets/file_000000001724720baf487991251f477a.png",
+          cols: 4, rows: 4 }
       ]
     },
 
