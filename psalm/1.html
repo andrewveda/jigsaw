@@ -526,14 +526,7 @@ let chatBusy=false;
    let builtReply = "";
 
 function maybeShowChat(){
-  if(chatBusy)return;
-  locksSinceChat++;
-  const everyThird = locksSinceChat>=3;
-  const randomChance = Math.random() < 0.35; // 30-40% probability
-  if(everyThird || randomChance){
-    locksSinceChat=0;
-    showChatPopup();
-  }
+  return;
 }
 
 function showChatPopup(){
