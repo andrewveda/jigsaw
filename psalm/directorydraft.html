@@ -1,0 +1,981 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover"/>
+<meta name="theme-color" content="#f8f3e7"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+<title>Psalms Puzzle Directory</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700;900&family=DM+Sans:wght@400;700;800&display=swap" rel="stylesheet"/>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;overflow-x:hidden}
+body{font-family:'DM Sans',sans-serif;background:#f8f3e7;color:#3a2e1a;-webkit-font-smoothing:antialiased}
+
+/* ══════════════════════════════
+   IVORY + ANTIQUE GOLD PALETTE
+   Background: #f8f3e7 (ivory)
+   Primary:    #b8862f (antique gold)
+   Secondary:  #8b7355 (bronze)
+   Accent:     #e8dcc8 (parchment)
+   Text:       #3a2e1a (deep umber)
+   Muted:      #8a7256 (aged tan)
+   Panel:      #fffaf0 (warm white)
+   Dark:       #2a1e10 (espresso, used sparingly)
+══════════════════════════════ */
+
+/* ══════════════════════════════
+   HEADER
+══════════════════════════════ */
+.header{position:sticky;top:0;z-index:50;background:rgba(248,243,231,0.95);backdrop-filter:blur(16px);border-bottom:1px solid rgba(184,134,47,0.18);padding:0.9rem 1rem 0.7rem;text-align:center;display:flex;flex-direction:column;align-items:center}
+.header-top-row{display:flex;width:100%;justify-content:space-between;align-items:center;max-width:600px;margin-bottom:0.2rem}
+.header-cross{font-size:1.8rem;color:#b8862f}
+.audio-toggle{background:none;border:none;cursor:pointer;font-size:1.4rem;color:#b8862f;padding:5px;transition:opacity 0.2s}
+.audio-toggle:active{opacity:0.7}
+.header-title{font-family:'Cinzel',serif;font-size:1.4rem;font-weight:900;background:linear-gradient(135deg,#9c7a30,#b8862f,#8b7355);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;letter-spacing:-0.5px}
+.header-sub{font-size:0.62rem;color:#7a6249;font-weight:800;letter-spacing:3px;text-transform:uppercase;margin-top:0.15rem}
+.header-verse{font-size:0.68rem;color:#8a7256;font-style:italic;margin-top:0.3rem;line-height:1.4;max-width:320px;margin-left:auto;margin-right:auto}
+
+/* ══════════════════════════════
+   SEARCH / FILTER
+══════════════════════════════ */
+.search-wrap{padding:0.7rem 1rem 0.3rem;position:sticky;top:calc(env(safe-area-inset-top) + 90px);z-index:40;background:rgba(248,243,231,0.92);backdrop-filter:blur(10px)}
+.search-input{width:100%;padding:0.75rem 1rem 0.75rem 2.6rem;background:#fffaf0;border:1px solid rgba(184,134,47,0.25);border-radius:14px;font-size:0.9rem;color:#3a2e1a;outline:none;font-family:'DM Sans',sans-serif;transition:border-color 0.15s;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='18' height='18' viewBox='0 0 24 24' fill='none' stroke='%238a7256' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3Cpath d='m21 21-4.3-4.3'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:0.85rem center;background-size:18px}
+.search-input:focus{border-color:#b8862f;box-shadow:0 0 0 3px rgba(184,134,47,0.12)}
+.search-input::placeholder{color:#b0a080}
+.filter-tabs{display:flex;gap:6px;padding:0.6rem 1rem;overflow-x:auto;scrollbar-width:none;-ms-overflow-style:none;position:sticky;top:calc(env(safe-area-inset-top) + 150px);z-index:40;background:rgba(248,243,231,0.92);backdrop-filter:blur(10px)}
+.filter-tabs::-webkit-scrollbar{display:none}
+.filter-tab{flex-shrink:0;padding:0.4rem 0.9rem;background:#f2e9d6;border:1px solid rgba(58,46,26,0.08);border-radius:20px;font-size:0.72rem;font-weight:800;color:#8a7256;cursor:pointer;transition:all 0.15s;white-space:nowrap;font-family:'DM Sans',sans-serif}
+.filter-tab.active{background:rgba(184,134,47,0.16);border-color:rgba(184,134,47,0.45);color:#8b6b2f}
+.filter-tab:active{transform:scale(0.95)}
+
+/* ══════════════════════════════
+   GRID
+══════════════════════════════ */
+.grid-wrap{padding:0.5rem 0.8rem 3rem;display:grid;grid-template-columns:repeat(2,1fr);gap:10px;max-width:600px;margin:0 auto}
+@media(min-width:500px){.grid-wrap{grid-template-columns:repeat(3,1fr);gap:12px}}
+@media(min-width:700px){.grid-wrap{grid-template-columns:repeat(4,1fr);gap:14px}}
+
+.card{position:relative;border-radius:14px;overflow:hidden;aspect-ratio:3/4;background:#ece0c8;border:1px solid rgba(184,134,47,0.15);cursor:pointer;transition:transform 0.18s ease,box-shadow 0.18s ease;opacity:0;animation:cardIn 0.4s ease both}
+@keyframes cardIn{from{opacity:0;transform:translateY(12px) scale(0.96)}to{opacity:1;transform:translateY(0) scale(1)}}
+.card:active{transform:scale(0.96)}
+.card:hover{box-shadow:0 4px 20px rgba(184,134,47,0.25)}
+.card-img{width:100%;height:100%;object-fit:cover;display:block;transition:transform 0.3s ease}
+.card:hover .card-img{transform:scale(1.05)}
+.card-overlay{position:absolute;inset:0;background:linear-gradient(to top,rgba(15,10,4,0.88) 0%,rgba(15,10,4,0.28) 40%,transparent 70%);display:flex;flex-direction:column;justify-content:flex-end;padding:0.7rem}
+.card-badge{position:absolute;top:8px;left:8px;padding:3px 8px;background:rgba(201,168,76,0.2);border:1px solid rgba(201,168,76,0.35);border-radius:8px;font-size:0.55rem;font-weight:800;color:#f0dfae;letter-spacing:0.5px;backdrop-filter:blur(4px)}
+.card-title{font-family:'Cinzel',serif;font-size:0.78rem;font-weight:700;color:#f5f0e6;line-height:1.2;margin-bottom:2px;text-shadow:0 1px 4px rgba(0,0,0,0.8)}
+.card-sub{font-size:0.58rem;color:#d4b896;font-weight:700;letter-spacing:0.5px}
+.card-meta{display:flex;align-items:center;justify-content:flex-end;margin-top:6px}
+.card-size{font-size:0.52rem;color:#e8dcc8;font-weight:700;background:rgba(245,240,230,0.12);padding:2px 6px;border-radius:4px}
+
+/* ══════════════════════════════
+   PUZZLE MODAL
+══════════════════════════════ */
+#puzzleModal{position:fixed;inset:0;z-index:100;background:#f8f3e7;display:none;flex-direction:column;height:100dvh;overflow:hidden}
+#puzzleModal.show{display:flex}
+.pm-header{display:flex;align-items:center;gap:8px;padding:0.6rem 0.8rem;background:#f8f3e7;border-bottom:1px solid rgba(184,134,47,0.15);flex-shrink:0}
+.pm-back{width:36px;height:36px;border-radius:50%;background:#f2e9d6;border:1px solid rgba(58,46,26,0.1);color:#3a2e1a;font-size:1rem;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all 0.15s}
+.pm-back:active{background:#e8dcc8;transform:scale(0.92)}
+.pm-audio-btn{background:none;border:none;cursor:pointer;font-size:1.2rem;color:#b8862f;padding:4px 7px;transition:opacity 0.2s;flex-shrink:0}
+.pm-audio-btn:active{opacity:0.7}
+.pm-info{flex:1;min-width:0}
+.pm-title{font-family:'Cinzel',serif;font-size:0.75rem;font-weight:700;color:#4a3a20;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pm-sub{font-size:0.5rem;color:#8a7256;margin-top:1px;letter-spacing:1px;text-transform:uppercase;font-weight:800}
+.pm-reset{padding:6px 12px;background:rgba(184,134,47,0.12);border:1px solid rgba(184,134,47,0.35);border-radius:8px;color:#8b6b2f;font-size:0.6rem;font-weight:800;cursor:pointer;transition:all 0.15s;font-family:'DM Sans',sans-serif}
+.pm-reset:active{transform:scale(0.92);background:rgba(184,134,47,0.22)}
+
+.pm-prog-wrap{padding:0.3rem 0.9rem;background:#f8f3e7;border-bottom:1px solid rgba(184,134,47,0.1);flex-shrink:0;display:flex;align-items:center;gap:8px}
+.pm-prog-track{flex:1;height:4px;background:#e8dcc8;border-radius:3px;overflow:hidden}
+.pm-prog-fill{height:100%;background:linear-gradient(90deg,#8b7355,#c9a84c);border-radius:3px;width:0%;transition:width 0.4s ease}
+.pm-prog-label{font-size:0.58rem;color:#8a7256;font-weight:700;white-space:nowrap}
+
+.pm-area{flex:1;overflow:hidden;position:relative;background:#ece0c8;touch-action:none}
+#puzzleCanvas{position:absolute;top:0;left:0;width:100%;height:100%;touch-action:none}
+#pmLoading{position:absolute;inset:0;background:#ece0c8;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1rem;z-index:10}
+.pm-spinner{width:36px;height:36px;border:3px solid #e0d2b0;border-top-color:#b8862f;border-radius:50%;animation:spin 0.8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.pm-loading-text{font-family:'Cinzel',serif;font-size:0.55rem;color:#8a7256;letter-spacing:3px}
+
+/* win overlay inside modal */
+.pm-win{position:absolute;inset:0;background:rgba(248,243,231,0.97);display:none;flex-direction:column;align-items:center;justify-content:center;padding:2rem 1.5rem;text-align:center;z-index:20;backdrop-filter:blur(8px);overflow-y:auto}
+.pm-win.show{display:flex}
+.pm-win-star{font-size:3rem;margin-bottom:0.5rem;color:#b8862f;animation:winPop 0.5s cubic-bezier(0.22,1,0.36,1) both}
+.pm-win-title{font-family:'Cinzel',serif;font-size:1.3rem;font-weight:900;color:#8b6b2f;margin-bottom:0.3rem;animation:winPop 0.5s 0.08s cubic-bezier(0.22,1,0.36,1) both}
+.pm-win-sub{font-size:0.7rem;color:#8b7355;font-weight:700;margin-bottom:1rem;animation:winUp 0.4s 0.15s ease both}
+.pm-win-img-wrap{width:100%;max-width:190px;margin-bottom:1.1rem;border-radius:12px;overflow:hidden;border:2px solid rgba(184,134,47,0.35);box-shadow:0 6px 22px rgba(139,115,85,0.25);animation:winUp 0.4s 0.18s ease both}
+.pm-win-img{width:100%;display:block}
+.pm-win-stats{display:flex;gap:12px;margin-bottom:1.4rem;animation:winUp 0.4s 0.22s ease both}
+.pm-win-stat{background:#fffaf0;border:1px solid rgba(184,134,47,0.18);border-radius:12px;padding:0.7rem 1rem;min-width:80px}
+.pm-win-stat-val{font-family:'Cinzel',serif;font-size:0.9rem;color:#8b6b2f;display:block;margin-bottom:2px}
+.pm-win-stat-lbl{font-size:0.55rem;color:#8a7256;font-weight:700;letter-spacing:0.5px;text-transform:uppercase}
+.pm-win-btns{display:flex;flex-direction:column;gap:0.6rem;width:100%;max-width:260px;animation:winUp 0.4s 0.3s ease both}
+.pm-win-btn{padding:0.9rem 1.2rem;font-family:'Cinzel',serif;font-size:0.85rem;font-weight:900;letter-spacing:1.5px;background:linear-gradient(135deg,#c9a84c,#8b7355);color:#2a1e10;border:none;border-radius:14px;cursor:pointer;box-shadow:0 4px 20px rgba(184,134,47,0.3);transition:transform 0.12s}
+.pm-win-btn:active{transform:scale(0.97)}
+.pm-win-whatsapp{width:100%;padding:0.85rem 1.2rem;font-size:0.82rem;font-weight:800;background:linear-gradient(135deg,#25D366,#128C7E);color:#fff;border:none;border-radius:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;transition:transform 0.12s;box-shadow:0 4px 18px rgba(37,211,102,0.3);font-family:'DM Sans',sans-serif}
+.pm-win-whatsapp:active{transform:scale(0.97)}
+.pm-win-whatsapp svg{width:18px;height:18px;flex-shrink:0}
+.pm-win-secondary{display:flex;gap:0.5rem;width:100%;max-width:260px}
+.pm-win-sec-btn{flex:1;padding:0.6rem;font-size:0.62rem;font-weight:800;border-radius:10px;cursor:pointer;transition:transform 0.12s;font-family:'DM Sans',sans-serif}
+.pm-win-retry{background:#f2e9d6;color:#8a7256;border:1px solid rgba(58,46,26,0.1)}
+.pm-win-retry:active{background:#e8dcc8;transform:scale(0.97)}
+.pm-win-back{background:#f7f0e2;color:#6b5238;border:1px solid rgba(58,46,26,0.06)}
+.pm-win-back:active{background:#efe4cc;transform:scale(0.97)}
+@keyframes winPop{from{opacity:0;transform:scale(0.7) translateY(-15px)}to{opacity:1;transform:scale(1) translateY(0)}}
+@keyframes winUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+
+/* flash red on invalid move */
+@keyframes redPulse{0%{box-shadow:inset 0 0 60px rgba(180,40,40,0.75)}100%{box-shadow:inset 0 0 0 rgba(180,40,40,0)}}
+.flash-red{animation:redPulse 0.4s ease-out}
+
+/* ══════════════════════════════
+   EMPTY STATE
+══════════════════════════════ */
+.empty-state{text-align:center;padding:3rem 1rem;color:#8a7256;display:none}
+.empty-state.show{display:block}
+.empty-state-icon{font-size:2.5rem;margin-bottom:0.5rem}
+.empty-state-text{font-size:0.85rem;font-weight:700}
+
+/* ══════════════════════════════
+   SCROLLBAR
+══════════════════════════════ */
+::-webkit-scrollbar{width:4px}
+::-webkit-scrollbar-track{background:#f8f3e7}
+::-webkit-scrollbar-thumb{background:#e0d2b0;border-radius:2px}
+::-webkit-scrollbar-thumb:hover{background:#d4c298}
+
+/* ══════════════════════════════
+   ENTRY SCREEN
+══════════════════════════════ */
+#entryScreen{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  min-height:100dvh;
+  padding:2rem;
+  background: radial-gradient(circle at center, #efe4cc 0%, #f8f3e7 70%);
+  position: relative;
+  overflow: hidden;
+}
+#entryScreen::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg width='80' height='80' viewBox='0 0 80 80' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23b8862f' fill-opacity='0.05' fill-rule='evenodd'%3E%3Cpath d='M11 18c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm48 25c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm-43 0c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm63 31c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM34 90c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm11-76c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm-22 1c-1.657 0-3 1.343-3 3s1.343 3 3 3 3-1.343 3-3-1.343-3-3-3zm57 0c-1.657 0-3 1.343-3 3s1.343 3 3 3 3-1.343 3-3-1.343-3-3-3zm-73 17c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zm60 0c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM35 20c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zm14 0c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM9 95c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zm96 5c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM0 80c5.523 0 10-4.477 10-10S5.523 60 0 60s-10 4.477-10 10 4.477 10 10 10zm80 0c5.523 0 10-4.477 10-10S85.523 60 80 60s-10 4.477-10 10 4.477 10 10 10zM0 0c5.523 0 10 4.477 10 10S5.523 20 0 20s-10-4.477-10-10 4.477-10 10-10zm80 0c5.523 0 10 4.477 10 10S85.523 20 80 20s-10-4.477-10-10 4.477-10 10-10zM40 90c8.837 0 16-7.163 16-16s-7.163-16-16-16-16 7.163-16 16 7.163 16 16 16zm0-70c8.837 0 16-7.163 16-16s-7.163-16-16-16-16 7.163-16 16 7.163 16 16 16z'/%3E%3C/g%3E%3C/svg%3E");
+  opacity: 0.5;
+}
+.entry-content {
+  position: relative;
+  z-index: 10;
+  width: 100%;
+  max-width: 400px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+.entry-icon { font-size: 3rem; color: #b8862f; margin-bottom: 0.5rem; }
+.entry-title {
+  font-family: 'Cinzel', serif;
+  font-size: 2.2rem;
+  font-weight: 900;
+  background: linear-gradient(135deg,#9c7a30,#b8862f,#8b7355);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 0.3rem;
+}
+.entry-sub {
+  font-size: 0.8rem;
+  color: #7a6249;
+  font-weight: 800;
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  margin-bottom: 1.5rem;
+}
+.entry-overview {
+  font-size: 0.9rem;
+  line-height: 1.6;
+  color: #5a4a30;
+  background: #fdf8ec;
+  border: 1px solid rgba(184,134,47,0.2);
+  padding: 1.2rem;
+  border-radius: 16px;
+  margin-bottom: 2rem;
+  font-style: italic;
+}
+.entry-overview p + p { margin-top: 1rem; }
+
+.form-card{
+  width:100%;
+  display:flex;
+  flex-direction:column;
+  gap:1rem;
+}
+.field-group { text-align: left; }
+.field-label{
+  display: block;
+  font-size:.75rem;
+  font-weight:800;
+  color:#8b6b2f;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 0.4rem;
+  margin-left: 0.5rem;
+}
+.form-card input{
+  width:100%;
+  padding:1rem 1.2rem;
+  border-radius:14px;
+  border:1px solid rgba(184,134,47,.3);
+  background:#fffaf0;
+  color:#3a2e1a;
+  font-size:1rem;
+  font-family: 'DM Sans', sans-serif;
+  transition: all 0.2s;
+}
+.form-card input::placeholder{ color:#b0a080; }
+.form-card input:focus {
+  border-color: #b8862f;
+  box-shadow: 0 0 10px rgba(184,134,47, 0.18);
+  outline: none;
+}
+.start-btn{
+  margin-top: 0.5rem;
+  padding:1.1rem;
+  border:none;
+  border-radius:14px;
+  background: linear-gradient(135deg, #c9a84c, #8b7355);
+  color:#2a1e10;
+  font-family:'Cinzel',serif;
+  font-weight:900;
+  font-size: 1.1rem;
+  letter-spacing: 1px;
+  cursor:pointer;
+  box-shadow: 0 4px 15px rgba(139,115,85, 0.3);
+  transition: transform 0.1s, box-shadow 0.2s;
+}
+.start-btn:active { transform: scale(0.98); box-shadow: 0 2px 8px rgba(139,115,85, 0.3); }
+
+</style>
+<base target="_blank">
+</head>
+<body>
+
+<div id="entryScreen">
+  <div class="entry-content">
+    <div class="entry-icon">✝️</div>
+    <h1 class="entry-title">Psalms Puzzle</h1>
+    <p class="entry-sub">Meditative Assembly</p>
+    
+    <div class="entry-overview">
+      <p>"Fix your eyes on His ways." Piecing together sacred words and art, one step at a time.</p>
+      <p>Enter your name below to begin your journey through the Psalms.</p>
+    </div>
+
+    <div class="form-card">
+      <div class="field-group">
+        <label class="field-label" for="nameInput">Your name</label>
+        <input
+          type="text"
+          id="nameInput"
+          placeholder="Enter your name"
+          autocomplete="off"
+        >
+      </div>
+      <button class="start-btn" onclick="enterApp()">
+        Begin ✝
+      </button>
+    </div>
+  </div>
+</div>
+
+<div id="directoryView" style="display:none">
+  <div class="header">
+    <div class="header-top-row">
+        <div class="header-cross">✝️</div>
+        <button class="audio-toggle" id="globalAudioToggle" onclick="toggleAudio()" title="Toggle Sound Feedback">🔊</button>
+    </div>
+    <div class="header-title">Psalms Puzzle</div>
+    <div class="header-sub">Directory</div>
+    <div class="header-verse">"I will meditate on your precepts and fix my eyes on your ways." — Psalm 119:15</div>
+  </div>
+
+  <div class="search-wrap">
+    <input type="text" class="search-input" id="searchInput" placeholder="Search psalms..." autocomplete="off"/>
+  </div>
+
+  <div class="filter-tabs" id="filterTabs">
+    <button class="filter-tab active" data-filter="all">All</button>
+    <button class="filter-tab" data-filter="psalm1">Psalm 1</button>
+    <button class="filter-tab" data-filter="psalm23">Psalm 23</button>
+    <button class="filter-tab" data-filter="psalm100">Psalm 100</button>
+  </div>
+
+  <div class="grid-wrap" id="puzzleGrid"></div>
+
+  <div class="empty-state" id="emptyState">
+    <div class="empty-state-icon">🔍</div>
+    <div class="empty-state-text">No puzzles found</div>
+  </div>
+</div>
+
+<div id="puzzleModal">
+  <div class="pm-header">
+    <button class="pm-back" onclick="closePuzzle()">←</button>
+    <button class="pm-audio-btn" id="pmAudioToggle" onclick="toggleAudio()" title="Toggle Sound Feedback">🔊</button>
+    <div class="pm-info">
+      <div class="pm-title" id="pmTitle">Psalm Puzzle</div>
+      <div class="pm-sub" id="pmSub">Drag pieces to solve</div>
+    </div>
+    <button class="pm-reset" onclick="resetPuzzle()">↺ Reset</button>
+  </div>
+  <div class="pm-prog-wrap">
+    <div class="pm-prog-track"><div class="pm-prog-fill" id="pmProgFill"></div></div>
+    <div class="pm-prog-label" id="pmProgLabel">0 / 0</div>
+  </div>
+  <div class="pm-area" id="pmArea">
+    <div id="pmLoading"><div class="pm-spinner"></div><div class="pm-loading-text">LOADING…</div></div>
+    <canvas id="puzzleCanvas"></canvas>
+    <div class="pm-win" id="pmWin">
+      <div class="pm-win-star">⭐</div>
+      <div class="pm-win-title" id="pmWinTitle">Solved!</div>
+      <div class="pm-win-sub" id="pmWinSub">Praise God!</div>
+      <div class="pm-win-img-wrap"><img class="pm-win-img" id="pmWinImg" alt=""/></div>
+      <div class="pm-win-stats">
+        <div class="pm-win-stat"><span class="pm-win-stat-val" id="pmWinTime">-</span><span class="pm-win-stat-lbl">Time</span></div>
+        <div class="pm-win-stat"><span class="pm-win-stat-val" id="pmWinMoves">-</span><span class="pm-win-stat-lbl">Moves</span></div>
+      </div>
+      <div class="pm-win-btns">
+        <button class="pm-win-btn" onclick="nextPuzzle()">▶ Next Puzzle</button>
+        <button class="pm-win-whatsapp" onclick="shareWhatsAppPuzzle()">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+          Share on WhatsApp
+        </button>
+        <div class="pm-win-secondary">
+          <button class="pm-win-sec-btn pm-win-retry" onclick="resetPuzzle()">↺ Retry</button>
+          <button class="pm-win-sec-btn pm-win-back" onclick="closePuzzle()">✝ Directory</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+<script>
+/* ═══════════════════════════════
+   PSALM DATA
+═══════════════════════════════ */
+const BASE_URL = "https://raw.githubusercontent.com/andrewveda/jigsaw/main/psalm/";
+
+const PUZZLES = [
+  { id:"ps1v1", psalm:1, title:"Psalm 1:1", sub:"The Blessed Way",      imageUrl:BASE_URL+"1_1.png", cols:4, rows:4, difficulty:2 },
+  { id:"ps1v2", psalm:1, title:"Psalm 1:2", sub:"Delight in the Law", imageUrl:BASE_URL+"1_2.png", cols:4, rows:4, difficulty:2 },
+  { id:"ps1v3", psalm:1, title:"Psalm 1:3", sub:"Tree by the Water",  imageUrl:BASE_URL+"1_3.png", cols:4, rows:4, difficulty:2 },
+  { id:"ps1v4", psalm:1, title:"Psalm 1:4", sub:"Like Chaff",         imageUrl:BASE_URL+"1_4.png", cols:4, rows:4, difficulty:2 },
+  { id:"ps1v5", psalm:1, title:"Psalm 1:5", sub:"The Judgment",       imageUrl:BASE_URL+"1_5.png", cols:4, rows:4, difficulty:2 },
+  { id:"ps1v6", psalm:1, title:"Psalm 1:6", sub:"The Lord Watches",  imageUrl:BASE_URL+"1_6.png", cols:4, rows:4, difficulty:2 },
+  { id:"ps23v1", psalm:23, title:"Psalm 23:1", sub:"The Lord is My Shepherd", imageUrl:BASE_URL+"23_1.png", cols:4, rows:4, difficulty:2 },
+  { id:"ps23v2", psalm:23, title:"Psalm 23:2", sub:"Green Pastures",        imageUrl:BASE_URL+"23_2.png", cols:4, rows:4, difficulty:2 },
+  { id:"ps23v3", psalm:23, title:"Psalm 23:3", sub:"Paths of Righteousness", imageUrl:BASE_URL+"23_3.png", cols:4, rows:4, difficulty:2 },
+  { id:"ps23v4", psalm:23, title:"Psalm 23:4", sub:"Valley of Shadow",      imageUrl:BASE_URL+"23_4.png", cols:4, rows:4, difficulty:2 },
+  { id:"ps23v5", psalm:23, title:"Psalm 23:5", sub:"Table Prepared",        imageUrl:BASE_URL+"23_5.png", cols:4, rows:4, difficulty:2 },
+  { id:"ps23v6", psalm:23, title:"Psalm 23:6", sub:"Goodness & Mercy",      imageUrl:BASE_URL+"23_6.png", cols:4, rows:4, difficulty:2 },
+  { id:"ps100", psalm:100, title:"Psalm 100", sub:"A Psalm of Praise",     imageUrl:BASE_URL+"100.png", cols:4, rows:4, difficulty:2 },
+];
+
+const SUPABASE_URL = "https://yellow-lab-4999.andrewveda.workers.dev/functions/v1/logQuest";
+let PLAYER_NAME = "";
+const PLAYER_DEPT = "FRIENDS & FAMILY";
+
+/* ═══════════════════════════════
+   AUDIO SYSTEM
+═══════════════════════════════ */
+let isAudioEnabled = localStorage.getItem("psalm_audio") !== "false";
+let audioCtx = null;
+let moveSoundBuffer = null;
+
+async function initAudio() {
+  if (audioCtx) return;
+  audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  moveSoundBuffer = createHarpSound();
+  updateAudioButton();
+}
+
+function createHarpSound() {
+  const duration = 0.5;
+  const sampleRate = audioCtx.sampleRate;
+  const buffer = audioCtx.createBuffer(1, sampleRate * duration, sampleRate);
+  const data = buffer.getChannelData(0);
+  const fundamental = 440;
+
+  for (let i = 0; i < buffer.length; i++) {
+    const t = i / sampleRate;
+    let sample = 0;
+    sample += 0.5 * Math.sin(2 * Math.PI * fundamental * t) * Math.exp(-6 * t);
+    sample += 0.25 * Math.sin(2 * Math.PI * fundamental * 2 * t) * Math.exp(-8 * t);
+    sample += 0.125 * Math.sin(2 * Math.PI * fundamental * 3 * t) * Math.exp(-10 * t);
+    data[i] = sample;
+  }
+  return buffer;
+}
+
+function playMoveSound() {
+  if (!isAudioEnabled || !audioCtx || !moveSoundBuffer) return;
+  if (audioCtx.state === 'suspended') audioCtx.resume();
+  
+  const source = audioCtx.createBufferSource();
+  source.buffer = moveSoundBuffer;
+  const gainNode = audioCtx.createGain();
+  gainNode.gain.setValueAtTime(0.3 + Math.random() * 0.1, audioCtx.currentTime);
+  source.connect(gainNode);
+  gainNode.connect(audioCtx.destination);
+  source.start();
+}
+
+// Synthesize a jubilant, arpeggiated harp chord (C Major 7)
+function playJubilantSound() {
+  if (!isAudioEnabled || !audioCtx) return;
+  if (audioCtx.state === 'suspended') audioCtx.resume();
+
+  const notes = [523.25, 659.25, 783.99, 987.77, 1046.50]; // C5, E5, G5, B5, C6
+  notes.forEach((freq, idx) => {
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    
+    osc.type = 'triangle';
+    osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+
+    const startTime = audioCtx.currentTime + (idx * 0.06); // Fast strum/arpeggio effect
+    
+    gain.gain.setValueAtTime(0, startTime);
+    gain.gain.linearRampToValueAtTime(0.2, startTime + 0.02);
+    gain.gain.exponentialRampToValueAtTime(0.001, startTime + 0.8);
+
+    osc.connect(gain);
+    gain.connect(audioCtx.destination);
+
+    osc.start(startTime);
+    osc.stop(startTime + 0.8);
+  });
+}
+function toggleAudio() {
+  isAudioEnabled = !isAudioEnabled;
+  localStorage.setItem("psalm_audio", isAudioEnabled);
+  updateAudioButton();
+  
+  // Try initializing audio ctx if it's currently null
+  if (isAudioEnabled) initAudio(); 
+}
+
+function updateAudioButton() {
+  const icon = isAudioEnabled ? "🔊" : "🔇";
+  const opacity = isAudioEnabled ? "1" : "0.5";
+  const btn = document.getElementById("globalAudioToggle");
+  if (btn) { btn.textContent = icon; btn.style.opacity = opacity; }
+  const pmBtn = document.getElementById("pmAudioToggle");
+  if (pmBtn) { pmBtn.textContent = icon; pmBtn.style.opacity = opacity; }
+}
+
+/* ═══════════════════════════════
+   DIRECTORY RENDERING
+═══════════════════════════════ */
+const grid = document.getElementById("puzzleGrid");
+const searchInput = document.getElementById("searchInput");
+const filterTabs = document.getElementById("filterTabs");
+const emptyState = document.getElementById("emptyState");
+let currentFilter = "all";
+let currentSearch = "";
+
+function renderDirectory() {
+  grid.innerHTML = "";
+  const filtered = PUZZLES.filter(p => {
+    const matchesFilter = currentFilter === "all" || currentFilter === `psalm${p.psalm}`;
+    const matchesSearch = !currentSearch || p.title.toLowerCase().includes(currentSearch) || p.sub.toLowerCase().includes(currentSearch);
+    return matchesFilter && matchesSearch;
+  });
+
+  if (filtered.length === 0) {
+    emptyState.classList.add("show");
+    return;
+  }
+  emptyState.classList.remove("show");
+
+  filtered.forEach((p, i) => {
+    const card = document.createElement("div");
+    card.className = "card";
+    card.style.animationDelay = (i * 0.03) + "s";
+    card.onclick = () => openPuzzle(p);
+
+    card.innerHTML = `
+      <img class="card-img" src="${p.imageUrl}" alt="${p.title}" loading="lazy" onerror="this.parentElement.style.background='#ece0c8';this.style.display='none';this.parentElement.innerHTML+='<div style=\'display:flex;align-items:center;justify-content:center;height:100%;font-size:2rem;color:#b8862f\'>✝️</div>'">
+      <div class="card-overlay">
+        <div class="card-badge">Psalm ${p.psalm}</div>
+        <div class="card-title">${p.title}</div>
+        <div class="card-sub">${p.sub}</div>
+        <div class="card-meta">
+          <div class="card-size">${p.cols}×${p.rows}</div>
+        </div>
+      </div>
+    `;
+    grid.appendChild(card);
+  });
+}
+
+searchInput.addEventListener("input", (e) => {
+  currentSearch = e.target.value.trim().toLowerCase();
+  renderDirectory();
+});
+
+filterTabs.addEventListener("click", (e) => {
+  if (!e.target.classList.contains("filter-tab")) return;
+  document.querySelectorAll(".filter-tab").forEach(t => t.classList.remove("active"));
+  e.target.classList.add("active");
+  currentFilter = e.target.dataset.filter;
+  renderDirectory();
+});
+
+function enterApp() {
+  const name = document.getElementById("nameInput").value.trim();
+
+  if (!name) {
+    alert("Please enter your name!");
+    return;
+  }
+
+  PLAYER_NAME = name;
+  localStorage.setItem("psalm_name", name);
+
+  initAudio(); // Init audio on first real interaction
+
+  document.getElementById("entryScreen").style.display = "none";
+  document.getElementById("directoryView").style.display = "block";
+  updateAudioButton();
+  renderDirectory();  
+}
+/* ═══════════════════════════════
+   PUZZLE ENGINE
+═══════════════════════════════ */
+let canvas, ctx;
+let img = null;
+let cw, ch, pw, ph, boardX, boardY;
+let pieces = [], selectedPiece = null;
+let isDragging = false, dragAnchor = null;
+let startPointerX = 0, startPointerY = 0, currentPointerX = 0, currentPointerY = 0;
+const DRAG_THRESHOLD = 7;
+let placed = 0, moves = 0, startTime = null;
+let currentPuzzle = null;
+let glowPiece = null, glowTimer = null;
+
+function COLS() { return currentPuzzle.cols; }
+function ROWS() { return currentPuzzle.rows; }
+function TOTAL() { return COLS() * ROWS(); }
+
+function openPuzzle(puzzle) {
+  currentPuzzle = puzzle;
+  document.getElementById("puzzleModal").classList.add("show");
+  document.getElementById("pmTitle").textContent = puzzle.title;
+  document.getElementById("pmSub").textContent = puzzle.sub;
+  document.getElementById("pmWin").classList.remove("show");
+  document.getElementById("pmLoading").style.display = "flex";
+  updateAudioButton();
+  initPuzzle();
+}
+
+function closePuzzle() {
+  document.getElementById("puzzleModal").classList.remove("show");
+  document.getElementById("pmWin").classList.remove("show");
+  img = null;
+  currentPuzzle = null;
+}
+
+function resetPuzzle() {
+  document.getElementById("pmWin").classList.remove("show");
+  initPuzzle();
+}
+
+function nextPuzzle() {
+  const idx = PUZZLES.findIndex(p => p.id === currentPuzzle.id);
+  if (idx >= 0 && idx < PUZZLES.length - 1) {
+    openPuzzle(PUZZLES[idx + 1]);
+  } else {
+    closePuzzle();
+  }
+}
+
+function initPuzzle() {
+  pieces = []; selectedPiece = null; isDragging = false; dragAnchor = null; glowPiece = null;
+  placed = 0; moves = 0; startTime = null;
+  document.getElementById("pmProgFill").style.width = "0%";
+  document.getElementById("pmProgLabel").textContent = `0 / ${TOTAL()}`;
+  document.getElementById("pmLoading").style.display = "flex";
+
+  img = new Image();
+  img.crossOrigin = "anonymous";
+  img.onload = buildPuzzle;
+  img.onerror = () => {
+    document.getElementById("pmLoading").innerHTML = '<div style="color:#8b6b2f;font-size:0.8rem;font-weight:700">Failed to load image</div>';
+  };
+  img.src = currentPuzzle.imageUrl;
+}
+
+function buildPuzzle() {
+  const area = canvas.parentElement;
+  const dpr = window.devicePixelRatio || 1;
+  cw = area.clientWidth;
+  ch = area.clientHeight;
+  canvas.width = cw * dpr;
+  canvas.height = ch * dpr;
+  canvas.style.width = cw + "px";
+  canvas.style.height = ch + "px";
+  ctx = canvas.getContext("2d");
+  ctx.scale(dpr, dpr);
+
+  const pad = 10;
+  const imgAR = img.naturalWidth / img.naturalHeight;
+  const boardAR = (COLS() / ROWS()) * imgAR;
+  const maxW = cw - pad * 2;
+  const maxH = ch - pad * 2;
+  let boardW, boardH;
+  if (maxW / maxH > boardAR) {
+    boardH = maxH;
+    boardW = Math.floor(boardH * boardAR);
+  } else {
+    boardW = maxW;
+    boardH = Math.floor(boardW / boardAR);
+  }
+  pw = Math.floor(boardW / COLS());
+  ph = Math.floor(boardH / ROWS());
+  boardX = Math.floor((cw - pw * COLS()) / 2);
+  boardY = Math.floor((ch - ph * ROWS()) / 2);
+
+  // Shuffle slots ensuring no piece starts in correct position
+  let slots;
+  do {
+    slots = Array.from({ length: TOTAL() }, (_, i) => ({ r: Math.floor(i / COLS()), c: i % COLS() }));
+    slots.sort(() => Math.random() - 0.5);
+  } while (slots.some((s, i) => s.r === Math.floor(i / COLS()) && s.c === i % COLS()));
+
+  pieces = [];
+  let idx = 0;
+  for (let r = 0; r < ROWS(); r++) {
+    for (let c = 0; c < COLS(); c++) {
+      const slot = slots[idx++];
+      pieces.push({ id: pieces.length, tr: r, tc: c, row: slot.r, col: slot.c, locked: false });
+    }
+  }
+  placed = 0;
+  updateProgress();
+  document.getElementById("pmLoading").style.display = "none";
+  drawAll();
+  startTime = Date.now();
+}
+
+/* ═══════════════════════════════
+   DRAWING
+═══════════════════════════════ */
+function showGlow(p) {
+  clearTimeout(glowTimer);
+  glowPiece = p;
+  drawAll();
+  glowTimer = setTimeout(() => { glowPiece = null; drawAll(); }, 600);
+}
+
+function drawAll() {
+  if (!canvas || !ctx) return;
+  ctx.clearRect(0, 0, cw, ch);
+  ctx.strokeStyle = "rgba(184,134,47,0.18)";
+  ctx.lineWidth = 1.5;
+  ctx.strokeRect(boardX, boardY, pw * COLS(), ph * ROWS());
+
+  const dc = (isDragging && dragAnchor) ? [dragAnchor] : [];
+  const dIds = new Set(dc.map(p => p.id));
+  const tIds = new Set();
+  if (!isDragging && selectedPiece) [selectedPiece].forEach(p => tIds.add(p.id));
+
+  for (const p of pieces) {
+    if (!dIds.has(p.id)) drawPiece(p, 0, 0, false, tIds.has(p.id), glowPiece && p.id === glowPiece.id);
+  }
+  if (dc.length) {
+    const dx = currentPointerX - startPointerX;
+    const dy = currentPointerY - startPointerY;
+    drawPiece(dc[0], dx, dy, true, false, false);
+  }
+}
+
+function drawPiece(p, ox, oy, isDragged, isTap, isGlow) {
+  const x = boardX + p.col * pw + ox;
+  const y = boardY + p.row * ph + oy;
+  ctx.save();
+  roundRect(ctx, x, y, pw, ph, 4);
+  ctx.clip();
+  ctx.drawImage(
+    img,
+    p.tc * (img.naturalWidth / COLS()),
+    p.tr * (img.naturalHeight / ROWS()),
+    img.naturalWidth / COLS(),
+    img.naturalHeight / ROWS(),
+    x, y, pw, ph
+  );
+  if (p.locked && isGlow) {
+    ctx.restore(); ctx.save();
+    ctx.shadowColor = "#b8862f";
+    ctx.shadowBlur = 20;
+    roundRect(ctx, x, y, pw, ph, 4);
+    ctx.strokeStyle = "rgba(184,134,47,0.9)";
+    ctx.lineWidth = 3;
+    ctx.stroke();
+  } else if (!p.locked && (isDragged || isTap)) {
+    ctx.strokeStyle = "#8b7355";
+    ctx.lineWidth = 3;
+    ctx.stroke();
+    ctx.fillStyle = "rgba(139,115,85,0.15)";
+    ctx.fillRect(x, y, pw, ph);
+  } else if (!p.locked) {
+    ctx.strokeStyle = "rgba(58,46,26,0.1)";
+    ctx.lineWidth = 1;
+    ctx.stroke();
+  }
+  ctx.restore();
+}
+
+function roundRect(ctx, x, y, w, h, r) {
+  ctx.beginPath();
+  ctx.moveTo(x + r, y); ctx.lineTo(x + w - r, y); ctx.quadraticCurveTo(x + w, y, x + w, y + r);
+  ctx.lineTo(x + w, y + h - r); ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+  ctx.lineTo(x + r, y + h); ctx.quadraticCurveTo(x, y + h, x, y + h - r);
+  ctx.lineTo(x, y + r); ctx.quadraticCurveTo(x, y, x + r, y); ctx.closePath();
+}
+
+/* ═══════════════════════════════
+   MOVE LOGIC
+═══════════════════════════════ */
+function triggerRedFlash() {
+  const a = document.getElementById("pmArea");
+  a.classList.remove("flash-red");
+  void a.offsetWidth;
+  a.classList.add("flash-red");
+}
+
+function executeClusterMove(anchor, deltaR, deltaC) {
+  if (deltaR === 0 && deltaC === 0) return false;
+
+  const displacedMap = new Map();
+  const tr = anchor.row + deltaR;
+  const tc = anchor.col + deltaC;
+
+  const occ = pieces.find(p => p.row === tr && p.col === tc && p.id !== anchor.id);
+  if (occ && occ.locked) { triggerRedFlash(); return false; }
+  if (occ) {
+    displacedMap.set(occ.id, { piece: occ, toR: anchor.row, toC: anchor.col });
+  }
+
+  const finalPositions = new Map();
+  finalPositions.set(anchor.id, { r: tr, c: tc });
+  for (const [id, { toR, toC }] of displacedMap) {
+    finalPositions.set(id, { r: toR, c: toC });
+  }
+
+  for (const [, { r, c }] of finalPositions) {
+    if (r < 0 || r >= ROWS() || c < 0 || c >= COLS()) { triggerRedFlash(); return false; }
+    const occ2 = pieces.find(p => p.row === r && p.col === c);
+    if (occ2 && occ2.locked && !finalPositions.has(occ2.id)) { triggerRedFlash(); return false; }
+  }
+
+  // Valid move executes
+  moves++;
+  playMoveSound();
+
+  anchor.row = tr; anchor.col = tc;
+  for (const [, { piece: dp, toR, toC }] of displacedMap) { dp.row = toR; dp.col = toC; }
+
+  let newLocks = 0;
+  for (const p of pieces) {
+    if (!p.locked && p.row === p.tr && p.col === p.tc) {
+      p.locked = true;
+      newLocks++;
+    }
+  }
+  placed += newLocks;
+  updateProgress();
+
+if (newLocks > 0) {
+    playJubilantSound(); 
+    confetti({ particleCount: 20, spread: 40, origin: { y: 0.5 }, colors: ["#c9a84c", "#8b7355", "#e8dcc8"] });
+    if (placed === TOTAL()) setTimeout(showWin, 650);
+  }
+  return true;
+}
+
+/* ═══════════════════════════════
+   POINTER HANDLERS
+═══════════════════════════════ */
+function getPos(e) {
+  const rect = canvas.getBoundingClientRect();
+  const sx = cw / rect.width;
+  const sy = ch / rect.height;
+  const src = (e.touches && e.touches.length) ? e.touches[0] : e;
+  return { x: (src.clientX - rect.left) * sx, y: (src.clientY - rect.top) * sy };
+}
+
+function hitPiece(x, y) {
+  const col = Math.floor((x - boardX) / pw);
+  const row = Math.floor((y - boardY) / ph);
+  if (row < 0 || row >= ROWS() || col < 0 || col >= COLS()) return null;
+  return pieces.find(p => p.row === row && p.col === col) || null;
+}
+
+function onDown(e) {
+  e.preventDefault();
+  const { x, y } = getPos(e);
+  const p = hitPiece(x, y);
+  if (!p) return;
+  if (p.locked) { showGlow(p); return; }
+  
+  if (isAudioEnabled) initAudio(); // Handle unlocking audio on first real gesture
+  
+  dragAnchor = p;
+  startPointerX = x; startPointerY = y;
+  currentPointerX = x; currentPointerY = y;
+  isDragging = false;
+}
+
+function onMove(e) {
+  if (!dragAnchor) return;
+  e.preventDefault();
+  const { x, y } = getPos(e);
+  currentPointerX = x; currentPointerY = y;
+  if (!isDragging && Math.hypot(x - startPointerX, y - startPointerY) > DRAG_THRESHOLD) {
+    isDragging = true; selectedPiece = null;
+  }
+  if (isDragging) drawAll();
+}
+
+function onUp(e) {
+  if (!dragAnchor) return;
+  e.preventDefault();
+  if (isDragging) {
+    const dc = Math.round((currentPointerX - startPointerX) / pw);
+    const dr = Math.round((currentPointerY - startPointerY) / ph);
+    if (dc !== 0 || dr !== 0) executeClusterMove(dragAnchor, dr, dc);
+    isDragging = false; dragAnchor = null; drawAll();
+    return;
+  }
+  const p = dragAnchor; dragAnchor = null;
+  if (!selectedPiece) { selectedPiece = p; drawAll(); return; }
+  if (selectedPiece.id === p.id) { selectedPiece = null; drawAll(); return; }
+  const dr = p.row - selectedPiece.row;
+  const dc = p.col - selectedPiece.col;
+  executeClusterMove(selectedPiece, dr, dc);
+  selectedPiece = null; drawAll();
+}
+
+function updateProgress() {
+  document.getElementById("pmProgFill").style.width = Math.round(placed / TOTAL() * 100) + "%";
+  document.getElementById("pmProgLabel").textContent = `${placed} / ${TOTAL()}`;
+}
+
+/* ═══════════════════════════════
+   WIN SCREEN + SUPABASE LOG
+═══════════════════════════════ */
+function showWin() {
+  const s = Math.floor((Date.now() - startTime) / 1000);
+  const m = Math.floor(s / 60);
+  const sec = s % 60;
+  const timeStr = `${m}:${sec.toString().padStart(2, "0")}`;
+
+  document.getElementById("pmWinTitle").textContent = currentPuzzle.title + " Solved!";
+  document.getElementById("pmWinSub").textContent = currentPuzzle.sub;
+  document.getElementById("pmWinImg").src = currentPuzzle.imageUrl;
+  document.getElementById("pmWinImg").alt = currentPuzzle.title + " — solved";
+  document.getElementById("pmWinTime").textContent = timeStr;
+  document.getElementById("pmWinMoves").textContent = moves;
+  document.getElementById("pmWin").classList.add("show");
+
+  sendToSupabase({
+    student_name: PLAYER_NAME,
+    department: PLAYER_DEPT,
+    time_spent: s,
+    moves: moves,
+    quest_id: "Psalm-" + currentPuzzle.id
+  });
+
+  // Mega confetti
+  let running = true;
+  const end = Date.now() + 2500;
+  (function frame() {
+    if (!running) return;
+    confetti({ particleCount: 5, angle: 60, spread: 50, origin: { x: 0 }, colors: ["#c9a84c", "#8b7355", "#e8dcc8"] });
+    confetti({ particleCount: 5, angle: 120, spread: 50, origin: { x: 1 }, colors: ["#c9a84c", "#8b7355", "#e8dcc8"] });
+    if (Date.now() < end) requestAnimationFrame(frame); else running = false;
+  }());
+}
+
+function shareWhatsAppPuzzle() {
+  const p = currentPuzzle;
+  const timeStr = document.getElementById("pmWinTime").textContent;
+  const mv = document.getElementById("pmWinMoves").textContent;
+  const name = PLAYER_NAME || "A friend";
+  const text = `✝️ *${p.title} — ${p.sub}*\n\n${name} just solved this Psalms puzzle in ${timeStr} with ${mv} moves!\n\n"I will meditate on your precepts and fix my eyes on your ways." — Psalm 119:15\n\n🧩 Try it yourself: ${location.href}`;
+  const url = "https://wa.me/?text=" + encodeURIComponent(text);
+  window.open(url, "_blank");
+}
+
+async function sendToSupabase(payload) {
+  try {
+    await fetch(SUPABASE_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload)
+    });
+  } catch (e) {
+    console.warn("Supabase dropped:", e);
+  }
+}
+
+/* ═══════════════════════════════
+   INIT
+═══════════════════════════════ */
+document.addEventListener("DOMContentLoaded", () => {
+  canvas = document.getElementById("puzzleCanvas");
+  ctx = canvas.getContext("2d");
+  const savedName = localStorage.getItem("psalm_name");
+
+  if (savedName) {
+    PLAYER_NAME = savedName;
+    document.getElementById("nameInput").value = savedName;
+    document.getElementById("entryScreen").style.display = "none";
+    document.getElementById("directoryView").style.display = "block";
+    updateAudioButton();
+    renderDirectory();
+  } else {
+    document.getElementById("entryScreen").style.display = "flex";
+    document.getElementById("directoryView").style.display = "none";
+  }
+
+  updateAudioButton();
+
+  canvas.addEventListener("mousedown", onDown, { passive: false });
+  canvas.addEventListener("mousemove", onMove, { passive: false });
+  canvas.addEventListener("mouseup", onUp, { passive: false });
+  canvas.addEventListener("mouseleave", onUp, { passive: false });
+  canvas.addEventListener("touchstart", onDown, { passive: false });
+  canvas.addEventListener("touchmove", onMove, { passive: false });
+  canvas.addEventListener("touchend", onUp, { passive: false });
+  canvas.addEventListener("click", (e) => {
+    if (!selectedPiece) return;
+    const { x, y } = getPos(e);
+    if (!hitPiece(x, y)) { selectedPiece = null; drawAll(); }
+  }, { passive: false });
+});
+
+window.addEventListener("resize", () => {
+  if (document.getElementById("puzzleModal").classList.contains("show") && img && img.complete) {
+    buildPuzzle();
+  }
+});
+</script>
+</body>
+</html>
