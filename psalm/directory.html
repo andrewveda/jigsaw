@@ -892,6 +892,9 @@ async function sendToSupabase(payload) {
 /* ═══════════════════════════════
    INIT
 ═══════════════════════════════ */
+/* ═══════════════════════════════
+   INIT
+═══════════════════════════════ */
 document.addEventListener("DOMContentLoaded", () => {
   canvas = document.getElementById("puzzleCanvas");
   ctx = canvas.getContext("2d");
@@ -902,10 +905,11 @@ document.addEventListener("DOMContentLoaded", () => {
     document.getElementById("nameInput").value = savedName;
     document.getElementById("entryScreen").style.display = "none";
     document.getElementById("directoryView").style.display = "block";
-    updateAudioButton(); // [MOD] Ensure correct audio button state on load
+    updateAudioButton();
     renderDirectory();
   } else {
-    // If no name, ensure we hide directory
+    // MINIMAL FIX: Explicitly display entry screen and hide directory if no name is saved
+    document.getElementById("entryScreen").style.display = "flex";
     document.getElementById("directoryView").style.display = "none";
   }
 
