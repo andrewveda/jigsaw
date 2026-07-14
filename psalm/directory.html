@@ -622,6 +622,8 @@ function buildPuzzle() {
   canvas.style.height = ch + "px";
   ctx = canvas.getContext("2d");
   ctx.scale(dpr, dpr);
+   ctx.imageSmoothingEnabled = true;
+ctx.imageSmoothingQuality = "high";
 
   const pad = 10;
   const imgAR = img.naturalWidth / img.naturalHeight;
