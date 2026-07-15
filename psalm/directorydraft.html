@@ -14,16 +14,14 @@ html,body{height:100%;overflow-x:hidden}
 body{font-family:'DM Sans',sans-serif;background:#f8f3e7;color:#3a2e1a;-webkit-font-smoothing:antialiased}
 
 /* ══════════════════════════════
-   IVORY + ANTIQUE GOLD PALETTE
-   Background: #f8f3e7 (ivory)
-   Primary:    #b8862f (antique gold)
-   Secondary:  #8b7355 (bronze)
-   Accent:     #e8dcc8 (parchment)
-   Text:       #3a2e1a (deep umber)
-   Muted:      #8a7256 (aged tan)
-   Panel:      #fffaf0 (warm white)
-   Dark:       #2a1e10 (espresso, used sparingly)
+   DESKTOP WRAPPER
 ══════════════════════════════ */
+.desktop-wrap {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  position: relative;
+}
 
 /* ══════════════════════════════
    HEADER
@@ -56,11 +54,15 @@ body{font-family:'DM Sans',sans-serif;background:#f8f3e7;color:#3a2e1a;-webkit-f
 .grid-wrap{padding:0.5rem 0.8rem 3rem;display:grid;grid-template-columns:repeat(2,1fr);gap:10px;max-width:600px;margin:0 auto}
 @media(min-width:500px){.grid-wrap{grid-template-columns:repeat(3,1fr);gap:12px}}
 @media(min-width:700px){.grid-wrap{grid-template-columns:repeat(4,1fr);gap:14px}}
+@media(min-width:900px){.grid-wrap{grid-template-columns:repeat(5,1fr);gap:16px;max-width:1000px}}
 
 .card{position:relative;border-radius:14px;overflow:hidden;aspect-ratio:3/4;background:#ece0c8;border:1px solid rgba(184,134,47,0.15);cursor:pointer;transition:transform 0.18s ease,box-shadow 0.18s ease;opacity:0;animation:cardIn 0.4s ease both}
 @keyframes cardIn{from{opacity:0;transform:translateY(12px) scale(0.96)}to{opacity:1;transform:translateY(0) scale(1)}}
 .card:active{transform:scale(0.96)}
 .card:hover{box-shadow:0 4px 20px rgba(184,134,47,0.25)}
+@media (hover: hover) and (pointer: fine) {
+  .card:hover { transform: translateY(-4px); box-shadow: 0 8px 28px rgba(184,134,47,0.3); }
+}
 .card-img{width:100%;height:100%;object-fit:cover;display:block;transition:transform 0.3s ease}
 .card:hover .card-img{transform:scale(1.05)}
 .card-overlay{position:absolute;inset:0;background:linear-gradient(to top,rgba(15,10,4,0.88) 0%,rgba(15,10,4,0.28) 40%,transparent 70%);display:flex;flex-direction:column;justify-content:flex-end;padding:0.7rem}
@@ -75,6 +77,33 @@ body{font-family:'DM Sans',sans-serif;background:#f8f3e7;color:#3a2e1a;-webkit-f
 ══════════════════════════════ */
 #puzzleModal{position:fixed;inset:0;z-index:100;background:#f8f3e7;display:none;flex-direction:column;height:100dvh;overflow:hidden}
 #puzzleModal.show{display:flex}
+
+/* Desktop: centered modal overlay */
+@media (min-width: 768px) {
+  #puzzleModal {
+    background: rgba(42, 30, 16, 0.45);
+    backdrop-filter: blur(12px);
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+  }
+  #puzzleModal.show {
+    display: flex;
+  }
+  .pm-modal-card {
+    width: 100%;
+    max-width: 900px;
+    max-height: 85vh;
+    background: #f8f3e7;
+    border-radius: 20px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    position: relative;
+  }
+}
+
 .pm-header{display:flex;align-items:center;gap:8px;padding:0.6rem 0.8rem;background:#f8f3e7;border-bottom:1px solid rgba(184,134,47,0.15);flex-shrink:0}
 .pm-back{width:36px;height:36px;border-radius:50%;background:#f2e9d6;border:1px solid rgba(58,46,26,0.1);color:#3a2e1a;font-size:1rem;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all 0.15s}
 .pm-back:active{background:#e8dcc8;transform:scale(0.92)}
@@ -99,30 +128,25 @@ body{font-family:'DM Sans',sans-serif;background:#f8f3e7;color:#3a2e1a;-webkit-f
 .pm-loading-text{font-family:'Cinzel',serif;font-size:0.55rem;color:#8a7256;letter-spacing:3px}
 
 /* win overlay inside modal */
-.pm-win{position:absolute;inset:0;background:rgba(248,243,231,0.97);display:none;flex-direction:column;align-items:center;justify-content:center;padding:2rem 1.5rem;text-align:center;z-index:20;backdrop-filter:blur(8px);overflow-y:auto}
+.pm-win{position:absolute;inset:0;background:rgba(248,243,231,0.97);display:none;flex-direction:column;align-items:center;justify-content:center;padding:1.5rem 1.2rem;text-align:center;z-index:20;backdrop-filter:blur(8px);overflow-y:auto}
 .pm-win.show{display:flex}
-.pm-win-star{font-size:3rem;margin-bottom:0.5rem;color:#b8862f;animation:winPop 0.5s cubic-bezier(0.22,1,0.36,1) both}
-.pm-win-title{font-family:'Cinzel',serif;font-size:1.3rem;font-weight:900;color:#8b6b2f;margin-bottom:0.3rem;animation:winPop 0.5s 0.08s cubic-bezier(0.22,1,0.36,1) both}
-.pm-win-sub{font-size:0.7rem;color:#8b7355;font-weight:700;margin-bottom:1rem;animation:winUp 0.4s 0.15s ease both}
-.pm-win-img-wrap{width:100%;max-width:190px;margin-bottom:1.1rem;border-radius:12px;overflow:hidden;border:2px solid rgba(184,134,47,0.35);box-shadow:0 6px 22px rgba(139,115,85,0.25);animation:winUp 0.4s 0.18s ease both}
-.pm-win-img{width:100%;display:block}
-.pm-win-stats{display:flex;gap:12px;margin-bottom:1.4rem;animation:winUp 0.4s 0.22s ease both}
-.pm-win-stat{background:#fffaf0;border:1px solid rgba(184,134,47,0.18);border-radius:12px;padding:0.7rem 1rem;min-width:80px}
-.pm-win-stat-val{font-family:'Cinzel',serif;font-size:0.9rem;color:#8b6b2f;display:block;margin-bottom:2px}
-.pm-win-stat-lbl{font-size:0.55rem;color:#8a7256;font-weight:700;letter-spacing:0.5px;text-transform:uppercase}
-.pm-win-btns{display:flex;flex-direction:column;gap:0.6rem;width:100%;max-width:260px;animation:winUp 0.4s 0.3s ease both}
+.pm-win-title{font-family:'Cinzel',serif;font-size:1.3rem;font-weight:900;color:#8b6b2f;margin-bottom:0.2rem;animation:winPop 0.5s cubic-bezier(0.22,1,0.36,1) both}
+.pm-win-sub{font-size:0.75rem;color:#8b7355;font-weight:700;margin-bottom:0.8rem;animation:winUp 0.4s 0.12s ease both}
+.pm-win-img-wrap{width:100%;max-width:320px;margin-bottom:1.2rem;border-radius:14px;overflow:hidden;border:2px solid rgba(184,134,47,0.4);box-shadow:0 8px 28px rgba(139,115,85,0.3);animation:winUp 0.4s 0.16s ease both}
+.pm-win-img{width:100%;height:auto;max-height:55vh;object-fit:contain;display:block}
+.pm-win-btns{display:flex;flex-direction:column;gap:0.6rem;width:100%;max-width:280px;animation:winUp 0.4s 0.22s ease both}
 .pm-win-btn{padding:0.9rem 1.2rem;font-family:'Cinzel',serif;font-size:0.85rem;font-weight:900;letter-spacing:1.5px;background:linear-gradient(135deg,#c9a84c,#8b7355);color:#2a1e10;border:none;border-radius:14px;cursor:pointer;box-shadow:0 4px 20px rgba(184,134,47,0.3);transition:transform 0.12s}
 .pm-win-btn:active{transform:scale(0.97)}
 .pm-win-whatsapp{width:100%;padding:0.85rem 1.2rem;font-size:0.82rem;font-weight:800;background:linear-gradient(135deg,#25D366,#128C7E);color:#fff;border:none;border-radius:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;transition:transform 0.12s;box-shadow:0 4px 18px rgba(37,211,102,0.3);font-family:'DM Sans',sans-serif}
 .pm-win-whatsapp:active{transform:scale(0.97)}
 .pm-win-whatsapp svg{width:18px;height:18px;flex-shrink:0}
-.pm-win-secondary{display:flex;gap:0.5rem;width:100%;max-width:260px}
+.pm-win-secondary{display:flex;gap:0.5rem;width:100%;max-width:280px}
 .pm-win-sec-btn{flex:1;padding:0.6rem;font-size:0.62rem;font-weight:800;border-radius:10px;cursor:pointer;transition:transform 0.12s;font-family:'DM Sans',sans-serif}
 .pm-win-retry{background:#f2e9d6;color:#8a7256;border:1px solid rgba(58,46,26,0.1)}
 .pm-win-retry:active{background:#e8dcc8;transform:scale(0.97)}
 .pm-win-back{background:#f7f0e2;color:#6b5238;border:1px solid rgba(58,46,26,0.06)}
 .pm-win-back:active{background:#efe4cc;transform:scale(0.97)}
-@keyframes winPop{from{opacity:0;transform:scale(0.7) translateY(-15px)}to{opacity:1;transform:scale(1) translateY(0)}}
+@keyframes winPop{from{opacity:0;transform:scale(0.8) translateY(-10px)}to{opacity:1;transform:scale(1) translateY(0)}}
 @keyframes winUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
 
 /* flash red on invalid move */
@@ -258,8 +282,13 @@ body{font-family:'DM Sans',sans-serif;background:#f8f3e7;color:#3a2e1a;-webkit-f
   transition: transform 0.1s, box-shadow 0.2s;
 }
 .start-btn:active { transform: scale(0.98); box-shadow: 0 2px 8px rgba(139,115,85, 0.3); }
+.card-img{image-rendering:-webkit-optimize-contrast}
 
+/* Cursor states for drag */
+#puzzleCanvas { cursor: grab; }
+#puzzleCanvas:active { cursor: grabbing; }
 </style>
+<base target="_blank">
 <base target="_blank">
 </head>
 <body>
@@ -267,12 +296,15 @@ body{font-family:'DM Sans',sans-serif;background:#f8f3e7;color:#3a2e1a;-webkit-f
 <div id="entryScreen">
   <div class="entry-content">
     <div class="entry-icon">✝️</div>
-    <h1 class="entry-title">Psalms Puzzle</h1>
-    <p class="entry-sub">Meditative Assembly</p>
-    
+    <h1 class="entry-title">Psalms</h1>
+    <p class="entry-sub">Puzzle and Praise!</p>
+
     <div class="entry-overview">
-      <p>"Fix your eyes on His ways." Piecing together sacred words and art, one step at a time.</p>
-      <p>Enter your name below to begin your journey through the Psalms.</p>
+      <p>"Shout for joy to the Lord, all the earth! 
+      Worship the Lord with gladness! Come before Him with joyful songs! </p>
+      <p> Psalm 100:1-2</p>   
+       <p> Piecing together sacred words, one piece at a time.</p>
+
     </div>
 
     <div class="form-card">
@@ -293,70 +325,76 @@ body{font-family:'DM Sans',sans-serif;background:#f8f3e7;color:#3a2e1a;-webkit-f
 </div>
 
 <div id="directoryView" style="display:none">
-  <div class="header">
-    <div class="header-top-row">
-        <div class="header-cross">✝️</div>
-        <button class="audio-toggle" id="globalAudioToggle" onclick="toggleAudio()" title="Toggle Sound Feedback">🔊</button>
+  <div class="desktop-wrap">
+    <div class="header">
+      <div class="header-top-row">
+          <div class="header-cross">✝️</div>
+          <button class="audio-toggle" id="globalAudioToggle" onclick="toggleAudio()" title="Toggle Sound Feedback">🔇</button>
+      </div>
+      <div class="header-title">Psalms</div>
+      <div class="header-sub">Puzzle and Praise!</div>
+      <div class="header-verse">"I will meditate on your precepts and fix my eyes on your ways." — Psalm 119:15</div>
     </div>
-    <div class="header-title">Psalms Puzzle</div>
-    <div class="header-sub">Directory</div>
-    <div class="header-verse">"I will meditate on your precepts and fix my eyes on your ways." — Psalm 119:15</div>
-  </div>
 
-  <div class="search-wrap">
-    <input type="text" class="search-input" id="searchInput" placeholder="Search psalms..." autocomplete="off"/>
-  </div>
+    <div class="search-wrap">
+      <input type="text" class="search-input" id="searchInput" placeholder="Search psalms..." autocomplete="off"/>
+    </div>
 
-  <div class="filter-tabs" id="filterTabs">
-    <button class="filter-tab active" data-filter="all">All</button>
-    <button class="filter-tab" data-filter="psalm1">Psalm 1</button>
-    <button class="filter-tab" data-filter="psalm23">Psalm 23</button>
-    <button class="filter-tab" data-filter="psalm100">Psalm 100</button>
-  </div>
+    <div class="filter-tabs" id="filterTabs">
+      <button class="filter-tab active" data-filter="all">All</button>
+      <button class="filter-tab" data-filter="psalm1">Psalm 1</button>
+      <button class="filter-tab" data-filter="psalm1">Psalm 2</button>
+      <button class="filter-tab" data-filter="psalm1">Psalm 3</button> 
+      <button class="filter-tab" data-filter="psalm23">Psalm 23</button>
+      <button class="filter-tab" data-filter="psalm100">Psalm 100</button>
+       <button class="filter-tab" data-filter="psalm117">Psalm 117</button>
+       <button class="filter-tab" data-filter="psalm123">Psalm 123</button>
+  <button class="filter-tab" data-filter="psalm130">Psalm 130</button>
+    <button class="filter-tab" data-filter="psalm131">Psalm 131</button>
+  <button class="filter-tab" data-filter="psalm133">Psalm 133</button>
+    </div>
 
-  <div class="grid-wrap" id="puzzleGrid"></div>
+    <div class="grid-wrap" id="puzzleGrid"></div>
 
-  <div class="empty-state" id="emptyState">
-    <div class="empty-state-icon">🔍</div>
-    <div class="empty-state-text">No puzzles found</div>
+    <div class="empty-state" id="emptyState">
+      <div class="empty-state-icon">🔍</div>
+      <div class="empty-state-text">No puzzles found</div>
+    </div>
   </div>
 </div>
 
 <div id="puzzleModal">
-  <div class="pm-header">
-    <button class="pm-back" onclick="closePuzzle()">←</button>
-    <button class="pm-audio-btn" id="pmAudioToggle" onclick="toggleAudio()" title="Toggle Sound Feedback">🔊</button>
-    <div class="pm-info">
-      <div class="pm-title" id="pmTitle">Psalm Puzzle</div>
-      <div class="pm-sub" id="pmSub">Drag pieces to solve</div>
-    </div>
-    <button class="pm-reset" onclick="resetPuzzle()">↺ Reset</button>
-  </div>
-  <div class="pm-prog-wrap">
-    <div class="pm-prog-track"><div class="pm-prog-fill" id="pmProgFill"></div></div>
-    <div class="pm-prog-label" id="pmProgLabel">0 / 0</div>
-  </div>
-  <div class="pm-area" id="pmArea">
-    <div id="pmLoading"><div class="pm-spinner"></div><div class="pm-loading-text">LOADING…</div></div>
-    <canvas id="puzzleCanvas"></canvas>
-    <div class="pm-win" id="pmWin">
-      <div class="pm-win-star">⭐</div>
-      <div class="pm-win-title" id="pmWinTitle">Solved!</div>
-      <div class="pm-win-sub" id="pmWinSub">Praise God!</div>
-      <div class="pm-win-img-wrap"><img class="pm-win-img" id="pmWinImg" alt=""/></div>
-      <div class="pm-win-stats">
-        <div class="pm-win-stat"><span class="pm-win-stat-val" id="pmWinTime">-</span><span class="pm-win-stat-lbl">Time</span></div>
-        <div class="pm-win-stat"><span class="pm-win-stat-val" id="pmWinMoves">-</span><span class="pm-win-stat-lbl">Moves</span></div>
+  <div class="pm-modal-card">
+    <div class="pm-header">
+      <button class="pm-back" onclick="closePuzzle()">←</button>
+      <button class="pm-audio-btn" id="pmAudioToggle" onclick="toggleAudio()" title="Toggle Sound Feedback">🔇</button>
+      <div class="pm-info">
+        <div class="pm-title" id="pmTitle">Psalm Puzzle</div>
+        <div class="pm-sub" id="pmSub">Drag pieces to solve</div>
       </div>
-      <div class="pm-win-btns">
-        <button class="pm-win-btn" onclick="nextPuzzle()">▶ Next Puzzle</button>
-        <button class="pm-win-whatsapp" onclick="shareWhatsAppPuzzle()">
-          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
-          Share on WhatsApp
-        </button>
-        <div class="pm-win-secondary">
-          <button class="pm-win-sec-btn pm-win-retry" onclick="resetPuzzle()">↺ Retry</button>
-          <button class="pm-win-sec-btn pm-win-back" onclick="closePuzzle()">✝ Directory</button>
+      <button class="pm-reset" onclick="resetPuzzle()">↺ Reset</button>
+    </div>
+    <div class="pm-prog-wrap">
+      <div class="pm-prog-track"><div class="pm-prog-fill" id="pmProgFill"></div></div>
+      <div class="pm-prog-label" id="pmProgLabel">0 / 0</div>
+    </div>
+    <div class="pm-area" id="pmArea">
+      <div id="pmLoading"><div class="pm-spinner"></div><div class="pm-loading-text">LOADING…</div></div>
+      <canvas id="puzzleCanvas"></canvas>
+      <div class="pm-win" id="pmWin">
+        <div class="pm-win-title" id="pmWinTitle">Solved!</div>
+        <div class="pm-win-sub" id="pmWinSub">Praise God!</div>
+        <div class="pm-win-img-wrap"><img class="pm-win-img" id="pmWinImg" alt=""/></div>
+        <div class="pm-win-btns">
+          <button class="pm-win-btn" onclick="nextPuzzle()">▶ Next Verse</button>
+          <button class="pm-win-whatsapp" onclick="shareWhatsAppPuzzle()">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+            Share on WhatsApp
+          </button>
+          <div class="pm-win-secondary">
+            <button class="pm-win-sec-btn pm-win-retry" onclick="resetPuzzle()">↺ Retry</button>
+            <button class="pm-win-sec-btn pm-win-back" onclick="closePuzzle()">✝ Directory</button>
+          </div>
         </div>
       </div>
     </div>
@@ -377,13 +415,25 @@ const PUZZLES = [
   { id:"ps1v4", psalm:1, title:"Psalm 1:4", sub:"Like Chaff",         imageUrl:BASE_URL+"1_4.png", cols:4, rows:4, difficulty:2 },
   { id:"ps1v5", psalm:1, title:"Psalm 1:5", sub:"The Judgment",       imageUrl:BASE_URL+"1_5.png", cols:4, rows:4, difficulty:2 },
   { id:"ps1v6", psalm:1, title:"Psalm 1:6", sub:"The Lord Watches",  imageUrl:BASE_URL+"1_6.png", cols:4, rows:4, difficulty:2 },
-  { id:"ps23v1", psalm:23, title:"Psalm 23:1", sub:"The Lord is My Shepherd", imageUrl:BASE_URL+"23_1.png", cols:4, rows:4, difficulty:2 },
+ { id:"ps2v1", psalm:2, title:"Psalm 2:1–6",  sub:"The Nations Rage",     imageUrl:BASE_URL+"2_1.png", cols:4, rows:4, difficulty:2 },
+{ id:"ps2v2", psalm:2, title:"Psalm 2:7–12", sub:"The Lord's Anointed",  imageUrl:BASE_URL+"2_2.png", cols:4, rows:4, difficulty:2 },
+{ id:"ps3v1", psalm:3, title:"Psalm 3:1–4",  sub:"Many Are My Foes",     imageUrl:BASE_URL+"3_1.png", cols:4, rows:4, difficulty:2 },
+{ id:"ps3v2", psalm:3, title:"Psalm 3:5–8",  sub:"The Lord Sustains Me", imageUrl:BASE_URL+"3_2.png", cols:4, rows:4, difficulty:2 },
+   { id:"ps23v1", psalm:23, title:"Psalm 23:1", sub:"The Lord is My Shepherd", imageUrl:BASE_URL+"23_1.png", cols:4, rows:4, difficulty:2 },
   { id:"ps23v2", psalm:23, title:"Psalm 23:2", sub:"Green Pastures",        imageUrl:BASE_URL+"23_2.png", cols:4, rows:4, difficulty:2 },
   { id:"ps23v3", psalm:23, title:"Psalm 23:3", sub:"Paths of Righteousness", imageUrl:BASE_URL+"23_3.png", cols:4, rows:4, difficulty:2 },
   { id:"ps23v4", psalm:23, title:"Psalm 23:4", sub:"Valley of Shadow",      imageUrl:BASE_URL+"23_4.png", cols:4, rows:4, difficulty:2 },
   { id:"ps23v5", psalm:23, title:"Psalm 23:5", sub:"Table Prepared",        imageUrl:BASE_URL+"23_5.png", cols:4, rows:4, difficulty:2 },
   { id:"ps23v6", psalm:23, title:"Psalm 23:6", sub:"Goodness & Mercy",      imageUrl:BASE_URL+"23_6.png", cols:4, rows:4, difficulty:2 },
   { id:"ps100", psalm:100, title:"Psalm 100", sub:"A Psalm of Praise",     imageUrl:BASE_URL+"100.png", cols:4, rows:4, difficulty:2 },
+   { id:"ps117", psalm:117, title:"Psalm 117", sub:"Praise the LORD", imageUrl:BASE_URL+"117.png", cols:4, rows:4, difficulty:2 },
+  { id:"ps123",   psalm:123, title:"Psalm 123",   sub:"Mercy from the Lord", imageUrl:BASE_URL+"123.png",   cols:4, rows:4, difficulty:2 },
+{ id:"ps130v1", psalm:130, title:"Psalm 130:1", sub:"Out of the Depths",   imageUrl:BASE_URL+"130_1.png", cols:4, rows:4, difficulty:2 },
+{ id:"ps130v2", psalm:130, title:"Psalm 130:2", sub:"Hear My Voice",       imageUrl:BASE_URL+"130_2.png", cols:4, rows:4, difficulty:2 },
+{ id:"ps130v3", psalm:130, title:"Psalm 130:3", sub:"Hope in the Lord",    imageUrl:BASE_URL+"130_3.png", cols:4, rows:4, difficulty:2 },
+    { id:"ps131", psalm:131, title:"Psalm 131", sub:"Quiet Trust", imageUrl:BASE_URL+"131.png", cols:4, rows:4, difficulty:2 },
+{ id:"ps133", psalm:133, title:"Psalm 133", sub:"Unity", imageUrl:BASE_URL+"133.png", cols:4, rows:4, difficulty:2 },
+
 ];
 
 const SUPABASE_URL = "https://yellow-lab-4999.andrewveda.workers.dev/functions/v1/logQuest";
@@ -391,9 +441,9 @@ let PLAYER_NAME = "";
 const PLAYER_DEPT = "FRIENDS & FAMILY";
 
 /* ═══════════════════════════════
-   AUDIO SYSTEM
+   AUDIO SYSTEM (MUTED BY DEFAULT)
 ═══════════════════════════════ */
-let isAudioEnabled = localStorage.getItem("psalm_audio") !== "false";
+let isAudioEnabled = localStorage.getItem("psalm_audio") === "true";
 let audioCtx = null;
 let moveSoundBuffer = null;
 
@@ -425,7 +475,7 @@ function createHarpSound() {
 function playMoveSound() {
   if (!isAudioEnabled || !audioCtx || !moveSoundBuffer) return;
   if (audioCtx.state === 'suspended') audioCtx.resume();
-  
+
   const source = audioCtx.createBufferSource();
   source.buffer = moveSoundBuffer;
   const gainNode = audioCtx.createGain();
@@ -435,21 +485,20 @@ function playMoveSound() {
   source.start();
 }
 
-// Synthesize a jubilant, arpeggiated harp chord (C Major 7)
 function playJubilantSound() {
   if (!isAudioEnabled || !audioCtx) return;
   if (audioCtx.state === 'suspended') audioCtx.resume();
 
-  const notes = [523.25, 659.25, 783.99, 987.77, 1046.50]; // C5, E5, G5, B5, C6
+  const notes = [523.25, 659.25, 783.99, 987.77, 1046.50];
   notes.forEach((freq, idx) => {
     const osc = audioCtx.createOscillator();
     const gain = audioCtx.createGain();
-    
+
     osc.type = 'triangle';
     osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
 
-    const startTime = audioCtx.currentTime + (idx * 0.06); // Fast strum/arpeggio effect
-    
+    const startTime = audioCtx.currentTime + (idx * 0.06);
+
     gain.gain.setValueAtTime(0, startTime);
     gain.gain.linearRampToValueAtTime(0.2, startTime + 0.02);
     gain.gain.exponentialRampToValueAtTime(0.001, startTime + 0.8);
@@ -461,12 +510,11 @@ function playJubilantSound() {
     osc.stop(startTime + 0.8);
   });
 }
+
 function toggleAudio() {
   isAudioEnabled = !isAudioEnabled;
   localStorage.setItem("psalm_audio", isAudioEnabled);
   updateAudioButton();
-  
-  // Try initializing audio ctx if it's currently null
   if (isAudioEnabled) initAudio(); 
 }
 
@@ -548,13 +596,12 @@ function enterApp() {
   PLAYER_NAME = name;
   localStorage.setItem("psalm_name", name);
 
-  initAudio(); // Init audio on first real interaction
-
   document.getElementById("entryScreen").style.display = "none";
   document.getElementById("directoryView").style.display = "block";
   updateAudioButton();
-  renderDirectory();  
+  renderDirectory(); 
 }
+
 /* ═══════════════════════════════
    PUZZLE ENGINE
 ═══════════════════════════════ */
@@ -632,6 +679,8 @@ function buildPuzzle() {
   canvas.style.height = ch + "px";
   ctx = canvas.getContext("2d");
   ctx.scale(dpr, dpr);
+   ctx.imageSmoothingEnabled = true;
+ctx.imageSmoothingQuality = "high";
 
   const pad = 10;
   const imgAR = img.naturalWidth / img.naturalHeight;
@@ -651,7 +700,6 @@ function buildPuzzle() {
   boardX = Math.floor((cw - pw * COLS()) / 2);
   boardY = Math.floor((ch - ph * ROWS()) / 2);
 
-  // Shuffle slots ensuring no piece starts in correct position
   let slots;
   do {
     slots = Array.from({ length: TOTAL() }, (_, i) => ({ r: Math.floor(i / COLS()), c: i % COLS() }));
@@ -784,7 +832,6 @@ function executeClusterMove(anchor, deltaR, deltaC) {
     if (occ2 && occ2.locked && !finalPositions.has(occ2.id)) { triggerRedFlash(); return false; }
   }
 
-  // Valid move executes
   moves++;
   playMoveSound();
 
@@ -801,7 +848,7 @@ function executeClusterMove(anchor, deltaR, deltaC) {
   placed += newLocks;
   updateProgress();
 
-if (newLocks > 0) {
+  if (newLocks > 0) {
     playJubilantSound(); 
     confetti({ particleCount: 20, spread: 40, origin: { y: 0.5 }, colors: ["#c9a84c", "#8b7355", "#e8dcc8"] });
     if (placed === TOTAL()) setTimeout(showWin, 650);
@@ -833,9 +880,9 @@ function onDown(e) {
   const p = hitPiece(x, y);
   if (!p) return;
   if (p.locked) { showGlow(p); return; }
-  
-  if (isAudioEnabled) initAudio(); // Handle unlocking audio on first real gesture
-  
+
+  if (isAudioEnabled) initAudio();
+
   dragAnchor = p;
   startPointerX = x; startPointerY = y;
   currentPointerX = x; currentPointerY = y;
@@ -882,16 +929,11 @@ function updateProgress() {
 ═══════════════════════════════ */
 function showWin() {
   const s = Math.floor((Date.now() - startTime) / 1000);
-  const m = Math.floor(s / 60);
-  const sec = s % 60;
-  const timeStr = `${m}:${sec.toString().padStart(2, "0")}`;
 
   document.getElementById("pmWinTitle").textContent = currentPuzzle.title + " Solved!";
   document.getElementById("pmWinSub").textContent = currentPuzzle.sub;
   document.getElementById("pmWinImg").src = currentPuzzle.imageUrl;
   document.getElementById("pmWinImg").alt = currentPuzzle.title + " — solved";
-  document.getElementById("pmWinTime").textContent = timeStr;
-  document.getElementById("pmWinMoves").textContent = moves;
   document.getElementById("pmWin").classList.add("show");
 
   sendToSupabase({
@@ -913,12 +955,33 @@ function showWin() {
   }());
 }
 
-function shareWhatsAppPuzzle() {
+async function shareWhatsAppPuzzle() {
   const p = currentPuzzle;
-  const timeStr = document.getElementById("pmWinTime").textContent;
-  const mv = document.getElementById("pmWinMoves").textContent;
   const name = PLAYER_NAME || "A friend";
-  const text = `✝️ *${p.title} — ${p.sub}*\n\n${name} just solved this Psalms puzzle in ${timeStr} with ${mv} moves!\n\n"I will meditate on your precepts and fix my eyes on your ways." — Psalm 119:15\n\n🧩 Try it yourself: ${location.href}`;
+  const text = `✝️ *${p.title} — ${p.sub}*
+
+${name} just completed this Psalms puzzle!
+
+🧩 Try it: ${location.href}`;
+
+  try {
+    const response = await fetch(p.imageUrl);
+    const blob = await response.blob();
+    const file = new File([blob], `${p.id}.png`, { type: blob.type });
+
+    if (navigator.canShare && navigator.canShare({ files: [file] })) {
+      await navigator.share({
+        files: [file],
+        title: p.title,
+        text: text
+      });
+      return;
+    }
+  } catch (err) {
+    console.log("Direct file share not supported or cancelled, opening default WhatsApp URL link");
+  }
+
+  // Fallback to text link sharing
   const url = "https://wa.me/?text=" + encodeURIComponent(text);
   window.open(url, "_blank");
 }
