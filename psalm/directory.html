@@ -31,8 +31,9 @@ body{font-family:'DM Sans',sans-serif;background:#f8f3e7;color:#3a2e1a;-webkit-f
 .header{position:sticky;top:0;z-index:50;background:rgba(248,243,231,0.95);backdrop-filter:blur(16px);border-bottom:1px solid rgba(184,134,47,0.18);padding:0.9rem 1rem 0.7rem;text-align:center;display:flex;flex-direction:column;align-items:center}
 .header-top-row{display:flex;width:100%;justify-content:space-between;align-items:center;max-width:600px;margin-bottom:0.2rem}
 .header-cross{font-size:1.8rem;color:#b8862f}
-.audio-toggle{background:none;border:none;cursor:pointer;font-size:1.4rem;color:#b8862f;padding:5px;transition:opacity 0.2s}
-.audio-toggle:active{opacity:0.7}
+.header-actions{display:flex;align-items:center;gap:4px}
+.audio-toggle,.comic-toggle{background:none;border:none;cursor:pointer;font-size:1.4rem;color:#b8862f;padding:5px;transition:opacity 0.2s}
+.audio-toggle:active,.comic-toggle:active{opacity:0.7}
 .header-title{font-family:'Cinzel',serif;font-size:1.4rem;font-weight:900;background:linear-gradient(135deg,#9c7a30,#b8862f,#8b7355);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;letter-spacing:-0.5px}
 .header-sub{font-size:0.62rem;color:#7a6249;font-weight:800;letter-spacing:3px;text-transform:uppercase;margin-top:0.15rem}
 .header-verse{font-size:0.68rem;color:#8a7256;font-style:italic;margin-top:0.3rem;line-height:1.4;max-width:320px;margin-left:auto;margin-right:auto}
@@ -131,6 +132,73 @@ body{font-family:'DM Sans',sans-serif;background:#f8f3e7;color:#3a2e1a;-webkit-f
 .empty-state.show{display:block}
 .empty-state-icon{font-size:2.5rem;margin-bottom:0.5rem}
 .empty-state-text{font-size:0.85rem;font-weight:700}
+
+/* ══════════════════════════════
+   COMIC TABLE OF CONTENTS
+══════════════════════════════ */
+#comicTocModal{position:fixed;inset:0;z-index:110;background:#f8f3e7;display:none;flex-direction:column;height:100dvh;overflow:hidden}
+#comicTocModal.show{display:flex}
+.ct-header{display:flex;align-items:center;gap:10px;padding:0.7rem 0.9rem;background:#f8f3e7;border-bottom:1px solid rgba(184,134,47,0.15);flex-shrink:0}
+.ct-back{width:36px;height:36px;border-radius:50%;background:#f2e9d6;border:1px solid rgba(58,46,26,0.1);color:#3a2e1a;font-size:1rem;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all 0.15s;flex-shrink:0}
+.ct-back:active{background:#e8dcc8;transform:scale(0.92)}
+.ct-header-titles{flex:1;min-width:0}
+.ct-title{font-family:'Cinzel',serif;font-size:1rem;font-weight:900;color:#4a3a20}
+.ct-sub{font-size:0.6rem;color:#8a7256;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;margin-top:1px}
+.ct-list{flex:1;overflow-y:auto;padding:0.6rem 0.9rem 2.5rem;max-width:640px;margin:0 auto;width:100%}
+.ct-row{display:flex;align-items:center;gap:12px;padding:0.7rem;background:#fffaf0;border:1px solid rgba(184,134,47,0.15);border-radius:14px;margin-bottom:8px;cursor:pointer;transition:transform 0.12s ease,box-shadow 0.12s ease;opacity:0;animation:cardIn 0.35s ease both}
+.ct-row:active{transform:scale(0.98);box-shadow:0 2px 10px rgba(184,134,47,0.15)}
+.ct-thumb{width:52px;height:52px;border-radius:10px;object-fit:cover;flex-shrink:0;background:#ece0c8;border:1px solid rgba(184,134,47,0.15)}
+.ct-thumb-fallback{width:52px;height:52px;border-radius:10px;flex-shrink:0;background:#ece0c8;border:1px solid rgba(184,134,47,0.15);display:flex;align-items:center;justify-content:center;font-size:1.3rem;color:#b8862f}
+.ct-row-info{flex:1;min-width:0}
+.ct-row-title{font-family:'Cinzel',serif;font-size:0.88rem;font-weight:700;color:#3a2e1a;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ct-row-sub{font-size:0.68rem;color:#8a7256;font-weight:700;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ct-row-right{display:flex;flex-direction:column;align-items:flex-end;gap:5px;flex-shrink:0}
+.ct-row-pages{font-size:0.55rem;font-weight:800;color:#8b6b2f;background:rgba(184,134,47,0.12);border:1px solid rgba(184,134,47,0.25);padding:2px 7px;border-radius:8px;white-space:nowrap}
+.ct-row-chevron{color:#c4a86a;font-size:1rem}
+
+/* ══════════════════════════════
+   COMIC READER
+══════════════════════════════ */
+#comicReaderModal{position:fixed;inset:0;z-index:120;background:#1a130a;display:none;flex-direction:column;height:100dvh;overflow:hidden}
+#comicReaderModal.show{display:flex}
+.cr-chrome{position:absolute;left:0;right:0;z-index:5;transition:opacity 0.25s ease,transform 0.25s ease;pointer-events:none}
+.cr-chrome.hidden{opacity:0;transform:translateY(-100%)}
+.cr-chrome.hidden.cr-bottom{transform:translateY(100%)}
+.cr-top{top:0;background:linear-gradient(to bottom,rgba(0,0,0,0.55),transparent);padding:calc(env(safe-area-inset-top) + 10px) 12px 30px;display:flex;align-items:center;gap:10px}
+.cr-top *{pointer-events:auto}
+.cr-back-btn{width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,0.12);border:1px solid rgba(255,255,255,0.2);color:#f5f0e6;font-size:1rem;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;backdrop-filter:blur(6px)}
+.cr-back-btn:active{background:rgba(255,255,255,0.22)}
+.cr-top-info{flex:1;min-width:0;text-align:center}
+.cr-top-title{font-family:'Cinzel',serif;font-size:0.85rem;font-weight:700;color:#f5f0e6;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cr-top-page{font-size:0.6rem;color:#d4b896;font-weight:700;letter-spacing:1px;margin-top:1px}
+.cr-top-spacer{width:36px;flex-shrink:0}
+.cr-bottom{bottom:0;padding:14px 16px calc(env(safe-area-inset-bottom) + 16px);display:flex;justify-content:center;background:linear-gradient(to top,rgba(0,0,0,0.5),transparent)}
+.cr-dots{display:flex;gap:7px;pointer-events:auto}
+.cr-dot{width:7px;height:7px;border-radius:50%;background:rgba(255,255,255,0.3);transition:all 0.2s}
+.cr-dot.active{background:#e8c774;width:20px;border-radius:4px}
+
+.cr-stage{flex:1;position:relative;overflow:hidden;touch-action:pan-y;background:#1a130a}
+.cr-track{display:flex;height:100%;transition:transform 0.32s cubic-bezier(0.22,1,0.36,1)}
+.cr-track.dragging{transition:none}
+.cr-page{flex:0 0 100%;height:100%;display:flex;align-items:center;justify-content:center;position:relative}
+.cr-page img{max-width:100%;max-height:100%;object-fit:contain;display:block;-webkit-user-drag:none;user-select:none}
+.cr-tap-zone{position:absolute;top:0;bottom:0;width:33.33%;z-index:2}
+.cr-tap-left{left:0}
+.cr-tap-right{right:0}
+
+.cr-loading{position:absolute;inset:0;background:#1a130a;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1rem;z-index:8}
+.cr-spinner{width:32px;height:32px;border:3px solid rgba(255,255,255,0.15);border-top-color:#e8c774;border-radius:50%;animation:spin 0.8s linear infinite}
+
+.cr-end{position:absolute;inset:0;background:rgba(26,19,10,0.97);display:none;flex-direction:column;align-items:center;justify-content:center;padding:2rem 1.4rem;text-align:center;z-index:9;backdrop-filter:blur(10px)}
+.cr-end.show{display:flex}
+.cr-end-icon{font-size:2.2rem;margin-bottom:0.6rem;animation:winPop 0.5s cubic-bezier(0.22,1,0.36,1) both}
+.cr-end-title{font-family:'Cinzel',serif;font-size:1.25rem;font-weight:900;color:#f0dfae;margin-bottom:0.3rem;animation:winUp 0.4s 0.08s ease both}
+.cr-end-sub{font-size:0.78rem;color:#c9b48c;font-weight:600;margin-bottom:1.6rem;max-width:280px;line-height:1.5;animation:winUp 0.4s 0.14s ease both}
+.cr-end-btns{display:flex;flex-direction:column;gap:0.6rem;width:100%;max-width:280px;animation:winUp 0.4s 0.2s ease both}
+.cr-end-btn{padding:0.9rem 1.2rem;font-family:'Cinzel',serif;font-size:0.85rem;font-weight:900;letter-spacing:1.5px;background:linear-gradient(135deg,#c9a84c,#8b7355);color:#2a1e10;border:none;border-radius:14px;cursor:pointer;box-shadow:0 4px 20px rgba(184,134,47,0.3);transition:transform 0.12s}
+.cr-end-btn:active{transform:scale(0.97)}
+.cr-end-btn-sec{padding:0.75rem 1.2rem;font-family:'DM Sans',sans-serif;font-size:0.75rem;font-weight:800;background:rgba(255,255,255,0.08);color:#e8dcc8;border:1px solid rgba(255,255,255,0.15);border-radius:14px;cursor:pointer;transition:transform 0.12s}
+.cr-end-btn-sec:active{transform:scale(0.97);background:rgba(255,255,255,0.14)}
 
 /* ══════════════════════════════
    SCROLLBAR
@@ -294,7 +362,10 @@ body{font-family:'DM Sans',sans-serif;background:#f8f3e7;color:#3a2e1a;-webkit-f
   <div class="header">
     <div class="header-top-row">
         <div class="header-cross">✝️</div>
-        <button class="audio-toggle" id="globalAudioToggle" onclick="toggleAudio()" title="Toggle Sound Feedback">🔇</button>
+        <div class="header-actions">
+          <button class="comic-toggle" id="comicOpenBtn" onclick="openComicToc()" title="Read as Comic">📖</button>
+          <button class="audio-toggle" id="globalAudioToggle" onclick="toggleAudio()" title="Toggle Sound Feedback">🔇</button>
+        </div>
     </div>
     <div class="header-title">Psalms</div>
     <div class="header-sub">Puzzle and Praise!</div>
@@ -361,6 +432,55 @@ body{font-family:'DM Sans',sans-serif;background:#f8f3e7;color:#3a2e1a;-webkit-f
           <button class="pm-win-sec-btn pm-win-retry" onclick="resetPuzzle()">↺ Retry</button>
           <button class="pm-win-sec-btn pm-win-back" onclick="closePuzzle()">✝ Directory</button>
         </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="comicTocModal">
+  <div class="ct-header">
+    <button class="ct-back" onclick="closeComicToc()">←</button>
+    <div class="ct-header-titles">
+      <div class="ct-title">Read the Psalms</div>
+      <div class="ct-sub">Tap a Psalm to begin</div>
+    </div>
+  </div>
+  <div class="ct-list" id="comicTocList"></div>
+</div>
+
+<div id="comicReaderModal">
+  <div class="cr-stage" id="crStage">
+    <div class="cr-loading" id="crLoading"><div class="cr-spinner"></div></div>
+    <div class="cr-track" id="crTrack"></div>
+
+    <div class="cr-tap-zone cr-tap-left" id="crTapLeft"></div>
+    <div class="cr-tap-zone cr-tap-right" id="crTapRight"></div>
+
+    <div class="cr-chrome cr-top" id="crChromeTop">
+      <button class="cr-back-btn" onclick="closeComicReader()">←</button>
+      <div class="cr-top-info">
+        <div class="cr-top-title" id="crTopTitle">Psalm</div>
+        <div class="cr-top-page" id="crTopPage">1 / 1</div>
+      </div>
+      <div class="cr-top-spacer"></div>
+    </div>
+
+    <div class="cr-chrome cr-bottom" id="crChromeBottom">
+      <div class="cr-dots" id="crDots"></div>
+    </div>
+
+    <div class="cr-end" id="crEnd">
+      <div class="cr-end-icon">✝️</div>
+      <div class="cr-end-title" id="crEndTitle">Psalm Finished</div>
+      <div class="cr-end-sub" id="crEndSub">You've read every page. Praise the Lord!</div>
+      <div class="cr-end-btns">
+        <button class="cr-end-btn" onclick="crGoNextPsalm()">▶ Next Psalm</button>
+        <button class="pm-win-whatsapp" onclick="shareWhatsAppReading()">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+          Share on WhatsApp
+        </button>
+        <button class="cr-end-btn-sec" onclick="crRereadPsalm()">↺ Read Again</button>
+        <button class="cr-end-btn-sec" onclick="closeComicReader()">✝ Back to Contents</button>
       </div>
     </div>
   </div>
@@ -961,6 +1081,33 @@ async function shareWhatsAppPuzzle() {
   window.open(url, "_blank");
 }
 
+async function shareWhatsAppReading() {
+  const g = crGroups[crGroupIdx];
+  const cover = g.pages[0];
+  const name = PLAYER_NAME || "A friend";
+  const text = `✝️ *Psalm ${g.psalm}*\n\n${name} just read this Psalm as a comic!\n\n📖 Read it: ${location.href}`;
+
+  try {
+    const response = await fetch(cover.imageUrl);
+    const blob = await response.blob();
+    const file = new File([blob], `psalm-${g.psalm}.png`, { type: blob.type });
+
+    if (navigator.canShare && navigator.canShare({ files: [file] })) {
+      await navigator.share({
+        files: [file],
+        title: "Psalm " + g.psalm,
+        text: text
+      });
+      return;
+    }
+  } catch (err) {
+    console.log("Direct file share not supported or cancelled, opening default WhatsApp URL link");
+  }
+
+  const url = "https://wa.me/?text=" + encodeURIComponent(text);
+  window.open(url, "_blank");
+}
+
 async function sendToSupabase(payload) {
   try {
     await fetch(SUPABASE_URL, {
@@ -1013,6 +1160,256 @@ window.addEventListener("resize", () => {
   if (document.getElementById("puzzleModal").classList.contains("show") && img && img.complete) {
     buildPuzzle();
   }
+  if (document.getElementById("comicReaderModal").classList.contains("show")) {
+    crStageWidth = document.getElementById("crStage").clientWidth;
+    crGoToPage(crIndex, false);
+  }
+});
+
+/* ═══════════════════════════════
+   COMIC MODE — TABLE OF CONTENTS
+═══════════════════════════════ */
+function groupByPsalm() {
+  const map = new Map();
+  for (const p of PUZZLES) {
+    if (!map.has(p.psalm)) map.set(p.psalm, []);
+    map.get(p.psalm).push(p);
+  }
+  return Array.from(map.entries())
+    .map(([num, pages]) => ({ psalm: num, pages }))
+    .sort((a, b) => a.psalm - b.psalm);
+}
+
+function renderComicToc() {
+  const list = document.getElementById("comicTocList");
+  list.innerHTML = "";
+  const groups = groupByPsalm();
+  groups.forEach((g, i) => {
+    const first = g.pages[0];
+    const row = document.createElement("div");
+    row.className = "ct-row";
+    row.style.animationDelay = (i * 0.03) + "s";
+    row.onclick = () => openComicReader(g.psalm);
+    row.innerHTML = `
+      <img class="ct-thumb" src="${first.imageUrl}" alt="Psalm ${g.psalm}" loading="lazy" onerror="this.outerHTML='<div class=\\'ct-thumb-fallback\\'>✝️</div>'">
+      <div class="ct-row-info">
+        <div class="ct-row-title">Psalm ${g.psalm}</div>
+        <div class="ct-row-sub">${first.sub}</div>
+      </div>
+      <div class="ct-row-right">
+        <div class="ct-row-pages">${g.pages.length} ${g.pages.length === 1 ? "page" : "pages"}</div>
+        <div class="ct-row-chevron">›</div>
+      </div>
+    `;
+    list.appendChild(row);
+  });
+}
+
+function openComicToc() {
+  renderComicToc();
+  document.getElementById("comicTocModal").classList.add("show");
+}
+
+function closeComicToc() {
+  document.getElementById("comicTocModal").classList.remove("show");
+}
+
+/* ═══════════════════════════════
+   COMIC MODE — READER
+═══════════════════════════════ */
+let crGroups = [];
+let crGroupIdx = 0;
+let crPages = [];
+let crIndex = 0;
+let crChromeTimer = null;
+let crStageWidth = 0;
+let crPtrActive = false, crStartX = 0, crStartY = 0, crLastX = 0, crMoved = false;
+
+function crProgressKey(psalmNum) { return "psalm_reader_progress_" + psalmNum; }
+
+function openComicReader(psalmNum, startIndex) {
+  crGroups = groupByPsalm();
+  crGroupIdx = crGroups.findIndex(g => g.psalm === psalmNum);
+  if (crGroupIdx < 0) crGroupIdx = 0;
+  crPages = crGroups[crGroupIdx].pages;
+
+  let startPage = startIndex;
+  if (typeof startPage !== "number") {
+    const saved = parseInt(localStorage.getItem(crProgressKey(psalmNum)) || "0", 10);
+    startPage = (saved >= 0 && saved < crPages.length) ? saved : 0;
+  }
+  crIndex = startPage;
+
+  document.getElementById("comicReaderModal").classList.add("show");
+  document.getElementById("crEnd").classList.remove("show");
+  crBuildTrack();
+  crShowChrome();
+  crScheduleChromeHide();
+}
+
+function closeComicReader() {
+  document.getElementById("comicReaderModal").classList.remove("show");
+  clearTimeout(crChromeTimer);
+}
+
+function crBuildTrack() {
+  const track = document.getElementById("crTrack");
+  track.innerHTML = "";
+  crPages.forEach((p, i) => {
+    const pageEl = document.createElement("div");
+    pageEl.className = "cr-page";
+    const im = document.createElement("img");
+    im.src = p.imageUrl;
+    im.alt = p.title;
+    im.draggable = false;
+    if (i === 0) {
+      im.onload = () => { document.getElementById("crLoading").style.display = "none"; };
+      im.onerror = () => { document.getElementById("crLoading").style.display = "none"; };
+    }
+    pageEl.appendChild(im);
+    track.appendChild(pageEl);
+  });
+  document.getElementById("crLoading").style.display = "flex";
+  crStageWidth = document.getElementById("crStage").clientWidth;
+  crRenderDots();
+  crGoToPage(crIndex, false);
+}
+
+function crRenderDots() {
+  const dots = document.getElementById("crDots");
+  dots.innerHTML = "";
+  crPages.forEach((_, i) => {
+    const d = document.createElement("div");
+    d.className = "cr-dot" + (i === crIndex ? " active" : "");
+    dots.appendChild(d);
+  });
+}
+
+function crUpdateChromeInfo() {
+  const psalmNum = crGroups[crGroupIdx].psalm;
+  document.getElementById("crTopTitle").textContent = "Psalm " + psalmNum;
+  document.getElementById("crTopPage").textContent = (crIndex + 1) + " / " + crPages.length;
+  document.querySelectorAll("#crDots .cr-dot").forEach((d, i) => d.classList.toggle("active", i === crIndex));
+}
+
+function crGoToPage(idx, animate) {
+  idx = Math.max(0, Math.min(crPages.length - 1, idx));
+  crIndex = idx;
+  const track = document.getElementById("crTrack");
+  track.classList.toggle("dragging", !animate);
+  crStageWidth = document.getElementById("crStage").clientWidth;
+  track.style.transform = `translateX(${-idx * crStageWidth}px)`;
+  crUpdateChromeInfo();
+  localStorage.setItem(crProgressKey(crGroups[crGroupIdx].psalm), String(idx));
+}
+
+function crNext() {
+  if (crIndex >= crPages.length - 1) { crShowEnd(); return; }
+  crGoToPage(crIndex + 1, true);
+}
+
+function crPrev() {
+  if (crIndex <= 0) { crGoToPage(crIndex, true); return; }
+  crGoToPage(crIndex - 1, true);
+}
+
+function crShowEnd() {
+  const g = crGroups[crGroupIdx];
+  const hasNext = crGroupIdx < crGroups.length - 1;
+  document.getElementById("crEndTitle").textContent = "Psalm " + g.psalm + " Finished";
+  document.getElementById("crEndSub").textContent = "You've read every page. Praise the Lord!" + (hasNext ? "" : " That's the last Psalm in this collection.");
+  document.getElementById("crEnd").classList.add("show");
+  clearTimeout(crChromeTimer);
+}
+
+function crGoNextPsalm() {
+  document.getElementById("crEnd").classList.remove("show");
+  if (crGroupIdx < crGroups.length - 1) {
+    openComicReader(crGroups[crGroupIdx + 1].psalm, 0);
+  } else {
+    closeComicReader();
+  }
+}
+
+function crRereadPsalm() {
+  document.getElementById("crEnd").classList.remove("show");
+  openComicReader(crGroups[crGroupIdx].psalm, 0);
+}
+
+/* ── Chrome auto-hide ── */
+function crShowChrome() {
+  document.getElementById("crChromeTop").classList.remove("hidden");
+  document.getElementById("crChromeBottom").classList.remove("hidden");
+}
+function crHideChrome() {
+  document.getElementById("crChromeTop").classList.add("hidden");
+  document.getElementById("crChromeBottom").classList.add("hidden");
+}
+function crToggleChrome() {
+  const hidden = document.getElementById("crChromeTop").classList.contains("hidden");
+  if (hidden) { crShowChrome(); crScheduleChromeHide(); }
+  else { crHideChrome(); clearTimeout(crChromeTimer); }
+}
+function crScheduleChromeHide() {
+  clearTimeout(crChromeTimer);
+  crChromeTimer = setTimeout(crHideChrome, 2200);
+}
+
+/* ── Swipe + tap gesture handling ── */
+function crOnDown(e) {
+  if (document.getElementById("crEnd").classList.contains("show")) return;
+  if (e.target.closest(".cr-chrome") || e.target.closest(".cr-end")) return;
+  e.preventDefault();
+  const t = e.touches ? e.touches[0] : e;
+  crPtrActive = true;
+  crMoved = false;
+  crStartX = t.clientX; crStartY = t.clientY; crLastX = t.clientX;
+  crStageWidth = document.getElementById("crStage").clientWidth;
+  document.getElementById("crTrack").classList.add("dragging");
+}
+
+function crOnMove(e) {
+  if (!crPtrActive) return;
+  e.preventDefault();
+  const t = e.touches ? e.touches[0] : e;
+  crLastX = t.clientX;
+  const dx = crLastX - crStartX;
+  if (Math.abs(dx) > 6) crMoved = true;
+  const track = document.getElementById("crTrack");
+  const base = -crIndex * crStageWidth;
+  track.style.transform = `translateX(${base + dx}px)`;
+}
+
+function crOnUp(e) {
+  if (!crPtrActive) return;
+  crPtrActive = false;
+  const track = document.getElementById("crTrack");
+  track.classList.remove("dragging");
+  const dx = crLastX - crStartX;
+
+  if (crMoved && Math.abs(dx) > crStageWidth * 0.15) {
+    if (dx < 0) crNext(); else crPrev();
+  } else if (!crMoved) {
+    const rect = document.getElementById("crStage").getBoundingClientRect();
+    const relX = (crStartX - rect.left) / rect.width;
+    if (relX < 0.33) crPrev();
+    else if (relX > 0.66) crNext();
+    else crToggleChrome();
+    if (!document.getElementById("crEnd").classList.contains("show")) crGoToPage(crIndex, true);
+  } else {
+    crGoToPage(crIndex, true);
+  }
+  crScheduleChromeHide();
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+  const stage = document.getElementById("crStage");
+  stage.addEventListener("mousedown", crOnDown, { passive: false });
+  stage.addEventListener("touchstart", crOnDown, { passive: false });
+  window.addEventListener("mousemove", crOnMove, { passive: false });
+  window.addEventListener("touchmove", crOnMove, { passive: false });
+  window.addEventListener("mouseup", crOnUp, { passive: false });
+  window.addEventListener("touchend", crOnUp, { passive: false });
 });
 </script>
 </body>
